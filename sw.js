@@ -1,38 +1,50 @@
 /* ============================================================
-   Talabat Images Finder — Offline Service Worker
+   Talabat GFX Studio — Offline Service Worker
    Place at:  <repo root>/sw.js   (beside index.html)
 
-   This repo contains ONE page: ./index.html
-   (The previous worker was copied from the GFX Studio repo and
-    demanded ./image-finder.html, which does not exist here. That
-    404 made install() throw, so the worker never activated and
-    nothing was ever cached — the tool had no offline mode at all.)
+   Covers BOTH pages in this repo, because they share one scope:
+     ./index.html          the Studio (tabs 1-5)
+     ./image-finder.html   the Image Finder, opened by "Open separately"
 
-   Bump VERSION every time you publish a new index.html. That is
-   what pushes the update to users.
+   That is the whole point of keeping image-finder.html in this repo
+   instead of linking out to /Image-Finder/: a service worker can only
+   control its own directory and below, so a sibling path could never
+   be cached by this worker.
    ============================================================ */
 
-const VERSION = 'finder-v1';
+/* Bump this string every time you publish a new index.html or
+   image-finder.html. That is what pushes the update to users. */
+const VERSION = 'gfx-v12';
 
 const APP_SHELL_CACHE = `app-shell-${VERSION}`;
 const RUNTIME_CACHE   = `runtime-${VERSION}`;
 
-/* MUST exist, or there is no offline mode. Keep this list tiny. */
-const REQUIRED_URLS = [
+/* Everything needed to boot either page with zero network.
+   Relative paths, so this works under /Talabat-GFX-TOOL/ on GitHub
+   Pages and on a custom domain without edits.                 */
+const PRECACHE_URLS = [
   './',
   './index.html',
-];
-
-/* Nice to have. A 404 here is logged and ignored — never fatal. */
-const OPTIONAL_URLS = [
+  './image-finder.html',
+  './manifest.webmanifest',
   './manifest-finder.webmanifest',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
   './icons/finder-192.png',
   './icons/finder-512.png',
   './icons/finder-maskable-512.png',
 ];
 
-/* Hosts that exist ONLY to reach the internet. Never cache,
-   never intercept — let them fail naturally offline.          */
+/* The tutorial videos are deliberately NOT precached: together they are
+   ~8.9 MB and most users never open the guide. They are cached on first
+   play by the same-origin handler below. Add them here if you want them
+   guaranteed offline:
+     './videos/guide-studio.mp4', './videos/guide-finder.mp4'          */
+
+/* Hosts that exist ONLY to reach the internet (CORS proxies, image
+   fetchers). Never cache, never intercept -- let them fail naturally
+   offline so the app's own error handling stays honest.        */
 const NEVER_CACHE_HOSTS = [
   'corsproxy.io',
   'api.allorigins.win',
@@ -42,15 +54,6 @@ const NEVER_CACHE_HOSTS = [
   'cleanup.pictures',
 ];
 
-async function cacheUrl(cache, url) {
-  // cache:'reload' bypasses the HTTP cache so we archive a truly fresh
-  // copy, not a stale one from GitHub Pages' max-age=600.
-  const res = await fetch(new Request(url, { cache: 'reload' }));
-  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
-  await cache.put(url, res);
-  return url;
-}
-
 // ---------------------------------------------------------------
 // INSTALL
 // ---------------------------------------------------------------
@@ -58,29 +61,32 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(APP_SHELL_CACHE);
 
-    // Optional assets first: settled individually so one 404 cannot
-    // abort the install (addAll() is atomic and would).
-    const opt = await Promise.allSettled(
-      OPTIONAL_URLS.map((url) => cacheUrl(cache, url))
+    // addAll() is atomic: one 404 aborts the whole install and you
+    // silently get no offline support at all. Cache individually and
+    // only treat the two HTML pages as mandatory.
+    const results = await Promise.allSettled(
+      PRECACHE_URLS.map(async (url) => {
+        // cache:'reload' bypasses the HTTP cache so we archive a truly
+        // fresh copy, not a stale one from GitHub's max-age=600.
+        const res = await fetch(new Request(url, { cache: 'reload' }));
+        if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+        await cache.put(url, res);
+        return url;
+      })
     );
-    const missed = OPTIONAL_URLS.filter((_, i) => opt[i].status === 'rejected');
-    if (missed.length) console.warn('[sw] optional precache misses:', missed);
 
-    // The page itself. './' and './index.html' are the same bytes on
-    // GitHub Pages, so one success is enough — cache the other from it.
-    const req = await Promise.allSettled(
-      REQUIRED_URLS.map((url) => cacheUrl(cache, url))
-    );
-    if (!req.some((r) => r.status === 'fulfilled')) {
-      throw new Error('[sw] FATAL: index.html could not be precached: ' +
-        req.map((r) => r.reason && r.reason.message).join(' | '));
-    }
-    const page = (await cache.match('./index.html')) || (await cache.match('./'));
-    for (const key of REQUIRED_URLS) {
-      if (!(await cache.match(key))) await cache.put(key, page.clone());
+    const failed = results
+      .map((r, i) => (r.status === 'rejected' ? PRECACHE_URLS[i] : null))
+      .filter(Boolean);
+    if (failed.length) console.warn('[sw] precache misses (non-fatal):', failed);
+
+    for (const required of ['./index.html', './image-finder.html']) {
+      if (!(await cache.match(required))) {
+        throw new Error(`[sw] FATAL: ${required} could not be precached`);
+      }
     }
 
-    console.log(`[sw] ${VERSION} installed — Images Finder is offline ready`);
+    console.log(`[sw] ${VERSION} installed — both pages offline ready`);
   })());
 
   self.skipWaiting();
@@ -116,9 +122,14 @@ self.addEventListener('fetch', (event) => {
   if (NEVER_CACHE_HOSTS.some((h) => url.hostname.endsWith(h))) return;
 
   // ---- Page loads / reloads: network-first, cache fallback ----
+  // Handles BOTH index.html and image-finder.html, which is what makes
+  // "Open separately" work with the network off.
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
-      const key = './index.html';
+      // Resolve which page was asked for, so the right one is restored.
+      let key = './index.html';
+      if (url.pathname.endsWith('/image-finder.html')) key = './image-finder.html';
+
       try {
         const preload = await event.preloadResponse;
         if (preload) {
@@ -133,8 +144,8 @@ self.addEventListener('fetch', (event) => {
       } catch {
         const cached =
           (await caches.match(key)) ||
-          (await caches.match('./')) ||
-          (await caches.match(req));
+          (await caches.match(req)) ||
+          (key === './index.html' ? await caches.match('./') : null);
         if (cached) return cached;
 
         return new Response(
@@ -149,7 +160,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ---- Same-origin assets: cache-first ----
+  // ---- Same-origin assets (incl. videos on first play): cache-first ----
   if (url.origin === self.location.origin) {
     event.respondWith((async () => {
       const cached = await caches.match(req);
