@@ -1,50 +1,27 @@
 /* ============================================================
-   Talabat GFX Studio — Offline Service Worker
-   Place at:  <repo root>/sw.js   (beside index.html)
-
-   Covers BOTH pages in this repo, because they share one scope:
-     ./index.html          the Studio (tabs 1-5)
-     ./image-finder.html   the Image Finder, opened by "Open separately"
-
-   That is the whole point of keeping image-finder.html in this repo
-   instead of linking out to /Image-Finder/: a service worker can only
-   control its own directory and below, so a sibling path could never
-   be cached by this worker.
+   Talabat Images Finder — Offline Service Worker
+   Keep this file beside index.html so it controls the whole app.
    ============================================================ */
 
-/* Bump this string every time you publish a new index.html or
-   image-finder.html. That is what pushes the update to users. */
-const VERSION = 'gfx-v12';
+/* Bump this string whenever the app shell changes. */
+const VERSION = 'finder-v13';
 
-const APP_SHELL_CACHE = `app-shell-${VERSION}`;
-const RUNTIME_CACHE   = `runtime-${VERSION}`;
+const CACHE_PREFIX    = 'talabat-image-finder-';
+const APP_SHELL_CACHE = `${CACHE_PREFIX}app-shell-${VERSION}`;
+const RUNTIME_CACHE   = `${CACHE_PREFIX}runtime-${VERSION}`;
 
-/* Everything needed to boot either page with zero network.
-   Relative paths, so this works under /Talabat-GFX-TOOL/ on GitHub
-   Pages and on a custom domain without edits.                 */
+/* Everything needed to boot the app with zero network.
+   Relative paths keep it compatible with GitHub Pages subpaths. */
 const PRECACHE_URLS = [
   './',
   './index.html',
-  './image-finder.html',
-  './manifest.webmanifest',
   './manifest-finder.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png',
-  './icons/finder-192.png',
-  './icons/finder-512.png',
-  './icons/finder-maskable-512.png',
+  './finder-192.png',
+  './finder-512.png',
+  './finder-maskable-512.png',
 ];
 
-/* The tutorial videos are deliberately NOT precached: together they are
-   ~8.9 MB and most users never open the guide. They are cached on first
-   play by the same-origin handler below. Add them here if you want them
-   guaranteed offline:
-     './videos/guide-studio.mp4', './videos/guide-finder.mp4'          */
-
-/* Hosts that exist ONLY to reach the internet (CORS proxies, image
-   fetchers). Never cache, never intercept -- let them fail naturally
-   offline so the app's own error handling stays honest.        */
+/* Internet-only helper hosts are never cached or intercepted. */
 const NEVER_CACHE_HOSTS = [
   'corsproxy.io',
   'api.allorigins.win',
@@ -80,13 +57,11 @@ self.addEventListener('install', (event) => {
       .filter(Boolean);
     if (failed.length) console.warn('[sw] precache misses (non-fatal):', failed);
 
-    for (const required of ['./index.html', './image-finder.html']) {
-      if (!(await cache.match(required))) {
-        throw new Error(`[sw] FATAL: ${required} could not be precached`);
-      }
+    if (!(await cache.match('./index.html'))) {
+      throw new Error('[sw] FATAL: ./index.html could not be precached');
     }
 
-    console.log(`[sw] ${VERSION} installed — both pages offline ready`);
+    console.log(`[sw] ${VERSION} installed — offline app ready`);
   })());
 
   self.skipWaiting();
@@ -99,7 +74,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keep = new Set([APP_SHELL_CACHE, RUNTIME_CACHE]);
     for (const name of await caches.keys()) {
-      if (!keep.has(name)) await caches.delete(name);
+      if (name.startsWith(CACHE_PREFIX) && !keep.has(name)) await caches.delete(name);
     }
     if (self.registration.navigationPreload) {
       await self.registration.navigationPreload.enable();
@@ -122,13 +97,9 @@ self.addEventListener('fetch', (event) => {
   if (NEVER_CACHE_HOSTS.some((h) => url.hostname.endsWith(h))) return;
 
   // ---- Page loads / reloads: network-first, cache fallback ----
-  // Handles BOTH index.html and image-finder.html, which is what makes
-  // "Open separately" work with the network off.
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
-      // Resolve which page was asked for, so the right one is restored.
-      let key = './index.html';
-      if (url.pathname.endsWith('/image-finder.html')) key = './image-finder.html';
+      const key = './index.html';
 
       try {
         const preload = await event.preloadResponse;
