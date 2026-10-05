@@ -123,6 +123,11 @@ textarea{direction:auto;text-align:start;line-height:2;word-break:normal;overflo
 .dz:hover,.dz.over{border-color:var(--or);background:var(--orl)}
 .dz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
 .dz-icon{font-size:2.5rem;margin-bottom:8px;display:block}
+.covers-drop-icon{position:relative;width:58px;height:48px;margin:0 auto 10px;display:block;filter:drop-shadow(0 5px 5px rgba(0,0,0,.24))}
+.covers-drop-icon i{position:absolute;display:block;width:37px;height:43px;border-radius:5px;border:2px solid rgba(255,255,255,.72);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.covers-drop-icon i:first-child{left:2px;top:4px;transform:rotate(-13deg);background:linear-gradient(145deg,#ffb347,#ff6a00)}
+.covers-drop-icon i:nth-child(2){left:18px;top:1px;transform:rotate(11deg);background:linear-gradient(145deg,#ff7b54,#c92b65)}
+.covers-drop-icon b{position:absolute;left:14px;top:12px;width:29px;height:25px;border-radius:4px;background:linear-gradient(145deg,#ffd56a,#ff7a00);border:2px solid #fff;color:#7a2c0b;font-size:1rem;line-height:21px;text-align:center;font-weight:900}
 .dz h3{font-size:.94rem;font-weight:700;margin-bottom:4px;color:var(--tx)}
 .dz p{font-size:.78rem;color:var(--mu);line-height:1.55}
 .ob{color:var(--or);font-weight:600}
@@ -769,7 +774,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
     <div class="csub">Add cover images here separately. Covers never mix with the normal image library.</div>
     <div class="dz covers-dz" id="coversDz" onclick="chooseCoversFolder(event)" ondragover="coversDragOver(event)" ondragleave="coversDragLeave()" ondrop="coversDrop(event)">
       <input type="file" id="coversFolderInput" webkitdirectory multiple accept="image/*" onchange="onCoversPicked(event)"/>
-      <span class="dz-icon">🖼️</span>
+      <span class="covers-drop-icon" aria-hidden="true"><i></i><i></i><b>✦</b></span>
       <h3>Drop your Covers folder here</h3>
       <p><span class="ob">Drag and drop cover images or a cover folder here</span> · separate from Image library</p>
       <p class="dz-alt">or <button class="btn bs bsm" onclick="event.stopPropagation();document.getElementById('coversFolderInput').click()">📂 Add Covers folder</button></p>
