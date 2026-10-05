@@ -487,6 +487,16 @@ textarea::placeholder{color:var(--mu)}
 .cat-tile-sel{width:100%;font:inherit;font-size:.64rem;padding:4px 5px;border-radius:var(--rx);
   border:1px solid var(--bd2);background:var(--sur);color:var(--tx);min-width:0}
 .cat-more{margin-top:11px;width:100%}
+.covers-category-summary{margin-top:10px;padding:12px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.covers-cat-btn{border:1px solid var(--bd);background:var(--sur);color:var(--tx2);border-radius:999px;padding:7px 11px;font:700 .7rem inherit;cursor:pointer}
+.covers-cat-btn:hover,.covers-cat-btn.active{border-color:var(--or);color:var(--or);background:var(--orl)}
+.covers-browser{margin-top:10px;padding:12px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs)}
+.covers-browser-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--tx)}
+.covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.cover-tile{min-width:0;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:7px}
+.cover-tile img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:7px;display:block;margin-bottom:6px}
+.cover-tile-name{font-size:.68rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:auto}
+.covers-empty{padding:16px;text-align:center;color:var(--mu);font-size:.75rem}
 .cat-foot,.cat-empty{font-size:.68rem;color:var(--mu);margin-top:10px}
 .cat-empty{margin-top:0;padding:14px;text-align:center;background:var(--sur2);
   border:1px dashed var(--bd2);border-radius:var(--rx)}
@@ -677,6 +687,9 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
     <button class="rnav" data-target="step1" onclick="goToStep('step1')">
       <span class="rn-ico">📁</span><span class="rn-tx">Image library</span>
       <span class="rn-badge" id="navLib">—</span></button>
+    <button class="rnav" data-target="coversStep" onclick="goToStep('coversStep')">
+      <span class="rn-ico">🖼️</span><span class="rn-tx">Covers</span>
+      <span class="rn-badge" id="navCovers">—</span></button>
     <button class="rnav" data-target="step2" onclick="goToStep('step2')">
       <span class="rn-ico">📋</span><span class="rn-tx">Menu items</span>
       <span class="rn-badge" id="navItems">—</span></button>
@@ -747,6 +760,25 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
       <div class="pb"><div class="pf" id="lFill"></div></div>
       <div class="pm" id="lMsg"></div>
     </div>
+  </div>
+
+  <!-- COVERS: intentionally independent from the normal image library -->
+  <div class="card covers-card" id="coversStep">
+    <div class="ctitle"><div class="snum">C</div>Covers</div>
+    <div class="csub">Add cover images here separately. Covers never mix with the normal image library.</div>
+    <div class="dz covers-dz" id="coversDz" onclick="chooseCoversFolder(event)" ondragover="coversDragOver(event)" ondragleave="coversDragLeave()" ondrop="coversDrop(event)">
+      <input type="file" id="coversFolderInput" webkitdirectory multiple accept="image/*" onchange="onCoversPicked(event)"/>
+      <span class="dz-icon">🖼️</span>
+      <h3>Drop your Covers folder here</h3>
+      <p><span class="ob">Drag and drop cover images or a cover folder here</span> · separate from Image library</p>
+      <p class="dz-alt">or <button class="btn bs bsm" onclick="event.stopPropagation();document.getElementById('coversFolderInput').click()">📂 Add Covers folder</button></p>
+    </div>
+    <div class="fl" id="coversLoaded" style="display:none">
+      <div class="fi">✅</div><div class="fd"><strong id="coversFolderName">Covers</strong><span id="coversStats">—</span></div>
+      <button class="btn bs bsm" style="margin-left:auto" onclick="resetCovers()">Change Covers folder</button>
+    </div>
+    <div id="coversCategorySummary" class="covers-category-summary" style="display:none"></div>
+    <div id="coversBrowser" class="covers-browser" style="display:none"></div>
   </div>
 
   <!-- STEP 2 -->
@@ -3643,6 +3675,68 @@ function resetFolder(){
 }
 
 /* ═══════════════════════════════════════
+   COVERS — intentionally separate from IMAGES/results
+═══════════════════════════════════════ */
+let COVERS=[],COVERS_ACTIVE='all';
+const COVER_TYPES=[
+  ['burger','Burger Covers'],['chicken','Chicken Covers'],['beef','Beef Covers'],
+  ['pizza','Pizza Covers'],['pasta','Pasta Covers'],['seafood','Seafood Covers'],
+  ['shawarma','Shawarma Covers'],['drink','Drinks Covers'],['dessert','Dessert Covers']
+];
+function chooseCoversFolder(){document.getElementById('coversFolderInput')?.click()}
+function coversDragOver(e){e.preventDefault();document.getElementById('coversDz')?.classList.add('over')}
+function coversDragLeave(){document.getElementById('coversDz')?.classList.remove('over')}
+function coversDrop(e){
+  e.preventDefault();coversDragLeave();
+  const entries=[...(e.dataTransfer?.items||[])].map(i=>i.webkitGetAsEntry?.()).filter(Boolean);
+  if(entries.length){collectCoversEntries(entries).then(files=>{if(files.length)loadCovers(files,'Covers');else toast('No image files found in the Covers drop.','e')});return}
+  const files=[...(e.dataTransfer?.files||[])].filter(isImg);if(files.length)loadCovers(files,'Covers');else toast('No image files found.','e');
+}
+async function collectCoversEntries(entries){
+  const out=[];
+  async function walk(entry){
+    if(entry.isFile){await new Promise(resolve=>entry.file(f=>{if(isImg(f)){try{Object.defineProperty(f,'__relPath',{value:String(entry.fullPath||f.name).replace(/^\//,'')})}catch(e){}out.push(f)}resolve()},resolve));return}
+    if(!entry.isDirectory)return;
+    const reader=entry.createReader();
+    await new Promise(resolve=>{const batch=()=>reader.readEntries(async items=>{if(!items.length){resolve();return}for(const item of items)await walk(item);batch()},resolve);batch()});
+  }
+  for(const entry of entries)await walk(entry);return out;
+}
+function onCoversPicked(e){
+  const files=[...(e.target.files||[])].filter(isImg);if(files.length)loadCovers(files,files[0].webkitRelativePath?.split('/')[0]||'Covers');else toast('No image files found.','e');e.target.value='';
+}
+function coverTypeOf(file){
+  const raw=String(file.__relPath||file.webkitRelativePath||file.name||''),parts=raw.split('/').filter(Boolean),parent=(parts.length>1?parts[parts.length-2]:'').replace(/[_-]+/g,' ').trim();
+  if(parent&&/cover/i.test(parent))return parent.replace(/\b\w/g,c=>c.toUpperCase());
+  const rel=raw.replace(/[_-]+/g,' ').toLowerCase();
+  const hit=COVER_TYPES.find(([key])=>new RegExp('(^|\\s)'+key+'(\\s|$)').test(rel));return hit?hit[1]:'Other Covers';
+}
+function loadCovers(files,folderName){
+  resetCovers(false);
+  COVERS=files.map(file=>({file,name:file.name,relPath:file.__relPath||file.webkitRelativePath||file.name,type:coverTypeOf(file),url:URL.createObjectURL(file)}));
+  COVERS_ACTIVE='all';
+  document.getElementById('coversDz').style.display='none';document.getElementById('coversLoaded').style.display='flex';
+  document.getElementById('coversFolderName').textContent=folderName||'Covers';
+  document.getElementById('coversStats').textContent=COVERS.length.toLocaleString()+' cover images loaded locally';
+  document.getElementById('navCovers').textContent=COVERS.length.toLocaleString();
+  renderCovers();toast('Loaded '+COVERS.length.toLocaleString()+' cover image'+(COVERS.length===1?'':'s')+'.','s');
+}
+function resetCovers(showDrop=true){
+  for(const c of COVERS){try{URL.revokeObjectURL(c.url)}catch(e){}}
+  COVERS=[];COVERS_ACTIVE='all';
+  const loaded=document.getElementById('coversLoaded'),summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser');
+  if(loaded)loaded.style.display='none';if(summary){summary.style.display='none';summary.innerHTML=''}if(browser){browser.style.display='none';browser.innerHTML=''}
+  const dz=document.getElementById('coversDz');if(dz&&showDrop)dz.style.display='block';const nav=document.getElementById('navCovers');if(nav)nav.textContent='—';
+}
+function renderCovers(){
+  const summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser');if(!summary||!browser)return;
+  const counts={};for(const c of COVERS)counts[c.type]=(counts[c.type]||0)+1;
+  const types=Object.keys(counts).sort();summary.style.display='flex';summary.innerHTML='<strong style="font-size:.75rem;color:var(--tx);width:100%">Cover categories</strong><button class="covers-cat-btn '+(COVERS_ACTIVE==='all'?'active':'')+'" onclick="selectCoversCategory(\'all\')">All Covers ('+COVERS.length+')</button>'+types.map(t=>'<button class="covers-cat-btn '+(COVERS_ACTIVE===t?'active':'')+'" onclick="selectCoversCategory(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+' ('+counts[t]+')</button>').join('');
+  const list=COVERS_ACTIVE==='all'?COVERS:COVERS.filter(c=>c.type===COVERS_ACTIVE);browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>'<div class="cover-tile"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>').join('')+'</div>':'<div class="covers-empty">No covers in this category.</div>');
+}
+function selectCoversCategory(type){COVERS_ACTIVE=type;renderCovers()}
+
+/* ═══════════════════════════════════════
    SEARCH
 ═══════════════════════════════════════ */
 async function startSearch(){
@@ -4726,7 +4820,7 @@ async function doZip(){
 }
 
 function resetSession(){
-  const hasWork=IMAGES.length||RESULTS.length||document.getElementById('menuTA')?.value.trim();
+  const hasWork=IMAGES.length||RESULTS.length||COVERS.length||document.getElementById('menuTA')?.value.trim();
   RUNNING=false;
   clearThumbCache();
   IMAGES.forEach(img=>{try{URL.revokeObjectURL(img.objectUrl)}catch(e){}});
@@ -4739,6 +4833,7 @@ function resetSession(){
   document.getElementById('searchBtn').disabled=false;document.getElementById('stopBtn').style.display='none';
   showProg('loadProg',false);showProg('searchProg',false);showProg('zipProg',false);
   document.getElementById('modal').classList.remove('open');countItems();updateStats();
+  resetCovers(true);
   PENDING_SESSION=null;SESSION_RESTORED=false;clearTimeout(SESSION_T);idbDel(SESSION_KEY);renderSessionBar();
   setSt('Ready — drop your image folder to begin.','');toast('New session ready. Your categories, learning and settings are kept.','s',7000);
 }
