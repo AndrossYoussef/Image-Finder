@@ -2271,7 +2271,7 @@ function catTileHtml({img,i},resDups,libDups){
         <span>${picked?'Selected for ZIP':'Select for ZIP'}</span></label>
       <button type="button" class="cat-thumb-btn" onclick="catLightbox(${i})"
         title="Open a larger preview of ${esc(img.name)}">
-        ${hasPreview(img)?`<img class="cat-thumb" src="${esc(BLOB_OK?(img.objectUrl||''):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} loading="lazy" decoding="async" alt="${esc(img.name)}"
+        ${hasPreview(img)?`<img class="cat-thumb" src="${esc(BLOB_OK?objectSrc(img):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} loading="lazy" decoding="async" alt="${esc(img.name)}"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'cat-thumb nothumb',textContent:'🖼️'}))"/>`
           :`<div class="cat-thumb nothumb">🖼️</div>`}
       </button>
@@ -2412,7 +2412,7 @@ function catLightbox(i){
   ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label',img.name||'Image preview');
   ov.innerHTML=`<div class="cat-lb-box">
       <button type="button" class="cat-lb-x" aria-label="Close preview">✕</button>
-      <img src="${esc(BLOB_OK?(img.objectUrl||''):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} alt="${esc(img.name||'')}"/>
+      <img src="${esc(BLOB_OK?objectSrc(img):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} alt="${esc(img.name||'')}"/>
       <div class="cat-lb-cap" dir="auto">${esc(img.relPath||img.name||'')}</div>
     </div>`;
   ov.addEventListener('click',e=>{if(e.target===ov||e.target.classList.contains('cat-lb-x'))closeCatLightbox()});
@@ -3555,7 +3555,7 @@ async function loadFiles(files,folderName){
     pathParts.pop();
     const tokens=canonTokens(file.name);
     const folderTokens=canonTokens(pathParts.join(' '));
-    IMAGES.push({name:file.name,relPath,normalized,categories,catKey:catInfo.key,catConf:catInfo.score,catSrc:catInfo.source,catSrcText:catInfo.src,allV:[...vs],tokens,folderTokens,file,objectUrl:URL.createObjectURL(file)});
+    IMAGES.push({name:file.name,relPath,normalized,categories,catKey:catInfo.key,catConf:catInfo.score,catSrc:catInfo.source,catSrcText:catInfo.src,allV:[...vs],tokens,folderTokens,file,objectUrl:null});
     const pct=Math.round(((i+1)/total)*80);
     setP('lFill','lPct','lLbl','lMsg',pct,'Loading '+(i+1)+'/'+total,(wasReused?'Reusing cached index: ':'Indexing new image: ')+file.name);
     if((i+1)%128===0)await yieldToBrowser();
@@ -3789,8 +3789,8 @@ function renderResults(){
   }
 
   const shown=vis.slice(0,RENDER_LIMIT);
-  requestAnimationFrame(()=>hookThumbs(grid));
   grid.innerHTML=shown.map(gi=>resultCardHtml(gi,dups)).join('')+(vis.length>shown.length?`<div class=more-results><span>Showing ${shown.length.toLocaleString()} of ${vis.length.toLocaleString()} filtered results</span><button class="btn bs bsm" onclick="renderMoreResults()">Load next ${Math.min(240,vis.length-shown.length).toLocaleString()}</button></div>`:'');
+  requestAnimationFrame(()=>hookThumbs(grid));
 }
 
 /* One result card. Split out of renderResults() so a single checkbox
@@ -3848,6 +3848,11 @@ function onBlobBlocked(){
 }
 
 const DATA_CACHE=new Map();           /* i -> data: URL, capped */
+function objectSrc(img){
+  if(!img||!img.file)return'';
+  if(!img.objectUrl)img.objectUrl=URL.createObjectURL(img.file);
+  return img.objectUrl;
+}
 function blobToDataURL(blob){
   return new Promise((res,rej)=>{
     const fr=new FileReader();
@@ -3865,7 +3870,7 @@ function cacheData(i,url){
 async function fullSrc(i){
   const img=IMAGES[i];
   if(!img||!img.file)return'';
-  if(BLOB_OK)return img.objectUrl||'';
+  if(BLOB_OK)return objectSrc(img);
   if(DATA_CACHE.has(i))return DATA_CACHE.get(i);
   try{return cacheData(i,await blobToDataURL(img.file))}catch(e){return''}
 }
@@ -3879,22 +3884,33 @@ function hookFulls(root){
     fullSrc(i).then(u=>{if(u&&el.isConnected)el.src=u});
   }
 }
-const THUMB_CACHE=new Map();
+const THUMB_CACHE=new Map();           /* i -> generated URL, bounded LRU */
+const THUMB_MAX=360;
 const THUMB_PX=320;
 const THUMB_OK=(typeof createImageBitmap==='function')&&(typeof OffscreenCanvas==='function');
 const THUMB_BLANK='data:image/svg+xml;charset=utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="4" height="3"/>');
-let THUMB_OBS=null,THUMB_Q=[],THUMB_BUSY=0;
+let THUMB_OBS=null,THUMB_Q=[],THUMB_BUSY=0,THUMB_GENERATION=0;
+function cacheThumb(i,url){
+  const old=THUMB_CACHE.get(i);
+  if(old&&old!==url){try{URL.revokeObjectURL(old)}catch(e){}}
+  THUMB_CACHE.delete(i);THUMB_CACHE.set(i,url);
+  while(THUMB_CACHE.size>THUMB_MAX){
+    const k=THUMB_CACHE.keys().next().value,u=THUMB_CACHE.get(k);
+    THUMB_CACHE.delete(k);try{URL.revokeObjectURL(u)}catch(e){}
+  }
+  return url;
+}
 function thumbSrc(i){
   const u=THUMB_CACHE.get(i);
-  if(u)return u;
+  if(u){THUMB_CACHE.delete(i);THUMB_CACHE.set(i,u);return u}
   if(!BLOB_OK)return DATA_CACHE.get(i)||THUMB_BLANK;   /* filled in by the tick */
-  return THUMB_OK?THUMB_BLANK:(IMAGES[i]?.objectUrl||'');
+  return THUMB_OK?THUMB_BLANK:objectSrc(IMAGES[i]);
 }
-async function buildThumb(i){
+async function buildThumb(i,generation=THUMB_GENERATION){
   if(THUMB_CACHE.has(i))return THUMB_CACHE.get(i);
   const img=IMAGES[i];
   if(!img||!img.file)return'';
-  if(!THUMB_OK)return BLOB_OK?(img.objectUrl||''):fullSrc(i);
+  if(!THUMB_OK)return BLOB_OK?objectSrc(img):fullSrc(i);
   try{
     const bmp=await createImageBitmap(img.file,{resizeWidth:THUMB_PX,resizeQuality:'medium'});
     const cv=new OffscreenCanvas(bmp.width,bmp.height);
@@ -3902,9 +3918,13 @@ async function buildThumb(i){
     if(bmp.close)bmp.close();
     const blob=await cv.convertToBlob({type:'image/jpeg',quality:.82});
     const url=BLOB_OK?URL.createObjectURL(blob):await blobToDataURL(blob);
-    THUMB_CACHE.set(i,url);
+    if(generation!==THUMB_GENERATION||IMAGES[i]?.file!==img.file){try{URL.revokeObjectURL(url)}catch(e){};return''}
+    cacheThumb(i,url);
     return url;
-  }catch(e){return BLOB_OK?(img.objectUrl||''):fullSrc(i)}
+  }catch(e){
+    if(generation!==THUMB_GENERATION||IMAGES[i]?.file!==img.file)return'';
+    return BLOB_OK?objectSrc(img):fullSrc(i);
+  }
 }
 /* One tick drives everything the user can actually see. Per-element timers
    could not keep up: a big library queues hundreds of off-screen thumbs, the
@@ -3933,7 +3953,7 @@ function thumbTick(){
       const src=el.getAttribute('src')||'';
       if(!src||src.startsWith('data:image/svg')){
         const i=+el.getAttribute('data-ti');
-        if(BLOB_OK){const u=IMAGES[i]?.objectUrl;if(u)el.src=u}
+        if(BLOB_OK){const u=objectSrc(IMAGES[i]);if(u)el.src=u}
         else fullSrc(i).then(u=>{if(u&&el.isConnected&&(el.getAttribute('src')||'').startsWith('data:image/svg'))el.src=u});
       }
     }
@@ -3953,11 +3973,12 @@ function pumpThumbs(){
     const i=+el.getAttribute('data-ti');
     if(!(i>=0)){continue}
     THUMB_BUSY++;
-    buildThumb(i).then(u=>{
-      if(!el.isConnected)return;
+    const generation=THUMB_GENERATION;
+    buildThumb(i,generation).then(u=>{
+      if(!el.isConnected||generation!==THUMB_GENERATION||+el.getAttribute('data-ti')!==i)return;
       /* only ever replace one picture with another — if the downscale failed,
          fall back to the full image rather than blanking the card */
-      if(u)el.src=u; else if(BLOB_OK){const f=IMAGES[i]?.objectUrl;if(f)el.src=f}
+      if(u)el.src=u; else if(BLOB_OK){const f=objectSrc(IMAGES[i]);if(f)el.src=f}
       el.removeAttribute('data-ti');
     }).catch(()=>{}).then(()=>{THUMB_BUSY--;pumpThumbs()});
   }
@@ -3991,8 +4012,10 @@ function healThumbs(){scheduleTick()}
 addEventListener('scroll',scheduleTick,{passive:true});
 addEventListener('resize',scheduleTick,{passive:true});
 function clearThumbCache(){
+  THUMB_GENERATION++;
   for(const u of THUMB_CACHE.values()){try{URL.revokeObjectURL(u)}catch(e){}}
   THUMB_CACHE.clear();THUMB_Q=[];
+  if(THUMB_TICK){clearTimeout(THUMB_TICK);THUMB_TICK=0}
 }
 function resultCardHtml(gi,dups){
   const r=RESULTS[gi];
@@ -4342,7 +4365,7 @@ function refreshModal(){
 
   /* Image */
   const mi=document.getElementById('mImg');mi.alt='Preview of '+img.name;
-  if(BLOB_OK)mi.src=img.objectUrl||''; else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
+  if(BLOB_OK)mi.src=objectSrc(img); else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
   document.getElementById('mSelectBtn').textContent='✅ Use this image for download';
 
   /* Info */
@@ -4367,7 +4390,7 @@ function openModalAlt(ri,ai){
   const pos=wm.indexOf(r)+1;
   document.getElementById('mPos').textContent=pos+' / '+wm.length;
   const mi=document.getElementById('mImg');mi.alt='Preview of '+img.name;
-  if(BLOB_OK)mi.src=img.objectUrl||''; else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
+  if(BLOB_OK)mi.src=objectSrc(img); else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
   document.getElementById('mSelectBtn').textContent='✅ Select this alternative for download';
   const tm=TM[getTier(alt.score)]||TM[5];
   document.getElementById('mScore').textContent=Math.round(alt.score*100)+'%';
@@ -4849,12 +4872,8 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
 </script>
 <script>
 (function () {
-  /* Auto edition ships as ONE self-contained file: everything (styles,
-     icons, the whole engine) is inline, so it already works offline from
-     disk. Registering the original ./sw.js here would only risk serving a
-     stale cached copy of the manual-category build. */
-  console.log('[pwa] standalone auto-categorizer build — service worker skipped.');
-  return;
+  /* The app is self-contained, but GitHub Pages can still provide offline
+     navigation and versioned updates through ./sw.js. */
   if (!('serviceWorker' in navigator)) {
     console.warn('[pwa] Service workers unsupported — offline mode unavailable.');
     return;
