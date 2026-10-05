@@ -35,5 +35,13 @@ In **Settings → Pages**, deploy from the branch containing these files (normal
 
 Service workers require HTTPS or localhost. Offline caching does not activate if `index.html` is opened directly as a `file://` URL.
 
+## Shared configuration (free, no API)
+
+The app reads `shared-config.json` from the same GitHub Pages site when online. This gives every user the same published category definitions, folder categories, auto-confirm rules, settings, and Covers type labels without CSV import/export or a third-party API.
+
+GitHub Pages is read-only from browser JavaScript. To change the shared baseline, edit `shared-config.json` in the repository and commit it to `main`; the next online visit receives the new configuration. Personal decisions and local edits remain in each user’s browser and are not uploaded.
+
+For true simultaneous multi-user editing, a writable backend or API is required; a static GitHub Pages site cannot safely accept browser writes.
+
 ## Updating
 When publishing a future version, change `VERSION` near the top of `sw.js` so returning users receive the new cache. Do not reuse an old service-worker version string.

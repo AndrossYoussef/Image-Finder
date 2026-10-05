@@ -12,7 +12,7 @@
    what pushes the update to users.
    ============================================================ */
 
-const VERSION = 'finder-v25-workspaces-filters-fingerprints-20261006';
+const VERSION = 'finder-v26-shared-config-20261006';
 
 const APP_SHELL_CACHE = `app-shell-${VERSION}`;
 const RUNTIME_CACHE   = `runtime-${VERSION}`;
@@ -25,6 +25,7 @@ const REQUIRED_URLS = [
 
 /* Nice to have. A 404 here is logged and ignored — never fatal. */
 const OPTIONAL_URLS = [
+  './shared-config.json',
   './manifest-finder.webmanifest',
   './icons/finder-192.png',
   './icons/finder-512.png',
@@ -125,6 +126,13 @@ self.addEventListener('fetch', (event) => {
   try { url = new URL(req.url); } catch { return; }
   if (!url.protocol.startsWith('http')) return;
   if (NEVER_CACHE_HOSTS.some((h) => url.hostname.endsWith(h))) return;
+
+  // Shared configuration is the one same-origin file that should refresh
+  // from GitHub Pages for every online visit instead of staying cache-first.
+  if (url.pathname.endsWith('/shared-config.json')) {
+    event.respondWith(fetch(req, { cache: 'no-store' }).catch(() => caches.match(req)));
+    return;
+  }
 
   // ---- Page loads / reloads: network-first, cache fallback ----
   if (req.mode === 'navigate') {

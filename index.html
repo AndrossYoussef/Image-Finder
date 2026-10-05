@@ -497,6 +497,7 @@ textarea::placeholder{color:var(--mu)}
 .covers-cat-btn:hover,.covers-cat-btn.active{border-color:var(--or);color:var(--or);background:var(--orl)}
 .covers-browser{margin-top:10px;padding:12px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs)}
 .covers-search-row{display:flex;gap:8px;margin-top:10px}.covers-search-row input{width:100%;background:var(--sur2);color:var(--tx);border:1px solid var(--bd);border-radius:var(--rx);padding:9px 11px;font:inherit;font-size:.75rem}.covers-search-row input:focus{outline:2px solid var(--or);outline-offset:-1px;border-color:var(--or)}
+.shared-config-note{margin:7px 0 2px;color:var(--mu);font-size:.67rem}.shared-config-note.loaded{color:var(--gn)}.shared-config-note.local{color:var(--tx2)}
 .covers-browser-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--tx)}
 .covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .cover-tile{min-width:0;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:7px}
@@ -743,6 +744,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
   <div class="card" id="step1">
     <div class="ctitle"><div class="snum">1</div>Drop Your Image Folder</div>
     <div class="csub">Drag your entire images folder here. Sub-folders included. Nothing leaves your device.</div>
+    <div class="shared-config-note" id="sharedConfigNote">Shared configuration: loading…</div>
     <div class="session-bar" id="sessionBar" style="display:none"></div>
     <div class="dz" id="dz" onclick="chooseFolder(event)" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
       <input type="file" id="folderInput" webkitdirectory multiple accept="image/*" onchange="onFolderPicked(event)"/>
@@ -2001,6 +2003,36 @@ function persistCustomCategories(){persist('tif_custom_categories_v1',CUSTOM_CAT
 function rebuildCategoryWords(){CATEGORY_WORDS=Object.fromEntries(Object.entries(CATEGORY_DEFS).map(([k,v])=>[k,new Set(v.words.flatMap(w=>smartTokens(w)))]));invalidateAutoCaches();try{refreshAutoCategories(false)}catch(e){}}
 Object.entries(CUSTOM_CATEGORY_DEFS).forEach(([k,v])=>{if(v&&typeof v.label==='string'&&Array.isArray(v.words)&&v.words.length)CATEGORY_DEFS[k]={label:v.label,words:v.words.map(String).filter(Boolean)}});
 let CATEGORY_WORDS=Object.fromEntries(Object.entries(CATEGORY_DEFS).map(([k,v])=>[k,new Set(v.words.flatMap(w=>smartTokens(w)))]));
+let SHARED_CONFIG_STATE='loading';
+async function loadSharedConfig(){
+  const note=document.getElementById('sharedConfigNote');
+  const finish=(text,kind)=>{SHARED_CONFIG_STATE=kind;if(note){note.textContent=text;note.className='shared-config-note '+kind}};
+  try{
+    const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2500),res=await fetch(new URL('shared-config.json',document.baseURI),{cache:'no-store',signal:ctl.signal});clearTimeout(timer);
+    if(!res.ok)throw Error('HTTP '+res.status);
+    const cfg=await res.json(),cats=cfg&&typeof cfg.categories==='object'?cfg.categories:{};
+    let added=0;
+    for(const[k,v]of Object.entries(cats)){
+      const key=String(k||'').trim(),label=String(v?.label||'').trim(),words=Array.isArray(v?.words)?v.words.map(String).map(x=>x.trim()).filter(Boolean):[];
+      if(!/^[a-z0-9_\u0621-\u064A-]{2,48}$/i.test(key)||!label||!words.length||CATEGORY_DEFS[key])continue;
+      CATEGORY_DEFS[key]={label,words};CATEGORY_GROUP[key]='Custom';added++;
+    }
+    const folders=cfg&&typeof cfg.folderCategories==='object'?cfg.folderCategories:{};
+    for(const[k,v]of Object.entries(folders)){
+      const key=String(k||'').trim(),label=String(v?.label||'').trim(),words=Array.isArray(v?.words)?v.words.map(String).map(x=>x.trim()).filter(Boolean):[];
+      if(!/^fld_[a-z0-9_\u0621-\u064A-]{2,48}$/i.test(key)||!label||!words.length||CATEGORY_DEFS[key])continue;
+      FOLDER_CATEGORY_DEFS[key]={label,words};CATEGORY_DEFS[key]={label,words};CATEGORY_GROUP[key]='Folders';added++;
+    }
+    if(cfg&&cfg.autoConfirm&&typeof cfg.autoConfirm==='object')for(const[k,v]of Object.entries(cfg.autoConfirm))if(!(k in AUTO_CONFIRM)&&Number.isFinite(Number(v)))AUTO_CONFIRM[k]=Math.max(.8,Math.min(1,Number(v)));
+    if(!localStorage.getItem('tif_auto_cat_v1')&&cfg?.settings&&typeof cfg.settings.autoEnabled==='boolean')AUTO_CFG.enabled=cfg.settings.autoEnabled;
+    if(Array.isArray(cfg?.covers?.types)&&typeof COVER_TYPES!=='undefined'){
+      const types=cfg.covers.types.map(v=>[String(v?.key||'').trim(),String(v?.label||'').trim()]).filter(([k,l])=>/^[a-z0-9_-]{2,32}$/i.test(k)&&l);
+      if(types.length)COVER_TYPES.splice(0,COVER_TYPES.length,...types);
+    }
+    rebuildCategoryWords();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();
+    finish('Shared configuration loaded'+(added?' · '+added+' shared categor'+(added===1?'y':'ies'):'')+' · local changes stay on this device.','loaded');
+  }catch(e){finish('Local configuration only · shared file unavailable offline.','local')}
+}
 function renderCustomCategories(){
   const box=document.getElementById('customCategoriesList');if(!box)return;
   const items=Object.entries(CUSTOM_CATEGORY_DEFS);
@@ -5106,7 +5138,7 @@ async function bootSession(){
   }catch(e){console.warn('[session] boot failed',e)}
   renderSessionBar();
 }
-document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();renderWorkspaceOptions();bootSession()});
+document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();renderWorkspaceOptions();bootSession();loadSharedConfig()});
 </script>
 <script>
 (function () {
