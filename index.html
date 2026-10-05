@@ -240,6 +240,9 @@ textarea::placeholder{color:var(--mu)}
 .req-prev input{cursor:pointer}
 .rqcnt.clear{color:var(--gn);background:#dcfce7;border-color:#86efac}
 .rtb h2{font-size:.97rem;font-weight:800;flex:1;min-width:70px;color:var(--tx)}
+.bulk-actions,.workspace-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.workspace-actions{margin-left:auto}
+.bulk-actions .btn,.workspace-actions .btn{white-space:nowrap}
 .rcnt{font-size:.78rem;color:var(--mu);font-weight:400}
 .fi-{background:var(--sur);border:1.5px solid var(--bd);border-radius:var(--rx);color:var(--tx);padding:6px 10px;font-size:.78rem;outline:none;width:150px;transition:border-color .2s}
 .fi-:focus{border-color:var(--or)}
@@ -611,6 +614,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
 .rtb h2{flex:1 0 100%;margin-bottom:2px}
 .rtb .fi-,.rtb .fsel{height:30px}
 .rtb .bulk-ok{margin-left:auto}
+.rtb .bulk-actions,.rtb .workspace-actions{margin-left:0}
 .req-prev{font-size:.68rem;color:var(--tx2);display:flex;align-items:center;gap:6px;
   background:var(--sur2);border:1px solid var(--bd);border-radius:999px;padding:4px 10px}
 /* suggestions + rules */
@@ -877,6 +881,17 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
         <option value="review">⚡ Needs review first</option>
         <option value="conf">🏆 Most confident first</option>
       </select>
+      <select class="fsel" id="fconf" onchange="doFilter()" title="Minimum match confidence">
+        <option value="0">Any confidence</option>
+        <option value="0.8">80%+ confidence</option>
+        <option value="0.9">90%+ confidence</option>
+        <option value="0.95">95%+ confidence</option>
+      </select>
+      <select class="fsel" id="fsize" onchange="doFilter()" title="Filter by image file size">
+        <option value="all">Any file size</option>
+        <option value="small">Under 250 KB</option>
+        <option value="large">Over 5 MB</option>
+      </select>
       <span class="rqcnt" id="rqcnt" title="Items still needing a decision"></span>
       <span class="persist-warn" id="persistWarn" style="display:none" role="alert"></span>
       <button class="btn bs bsm bulk-ok" id="bulkConfirmBtn" onclick="confirmAllTop()"
@@ -884,6 +899,17 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
         ⚡ Confirm all confident</button>
       <label class="req-prev" title="When on, an item must be opened in the preview before it can be confirmed">
         <input type="checkbox" id="requirePreview"/> Require preview first</label>
+      <div class="bulk-actions" aria-label="Bulk review actions">
+        <button class="btn bs bsm" onclick="bulkReviewAction('confirm')" title="Confirm all currently visible matches">✅ Confirm visible</button>
+        <button class="btn bs bsm" onclick="bulkReviewAction('reject')" title="Set aside all currently visible matches">⏭ Set aside visible</button>
+        <button class="btn bs bsm" onclick="bulkReviewAction('clear')" title="Clear decisions on currently visible matches">↺ Clear visible</button>
+      </div>
+      <div class="workspace-actions" aria-label="Saved workspaces">
+        <button class="btn bs bsm" onclick="saveWorkspacePrompt()" title="Save menu, matches, filters, and review decisions">💾 Save workspace</button>
+        <select class="fsel" id="workspaceSelect" onchange="loadWorkspace(this.value)" title="Load a saved workspace">
+          <option value="">Load workspace…</option>
+        </select>
+      </div>
 
     </div>
     <div id="grid"></div>
@@ -3096,7 +3122,7 @@ function importMemoryBackup(e){
     persistCustomCategories();persistFolderCategories();saveLearnedCats();saveAutoCfg();initAutoCatUI();rebuildCategoryWords();saveCategoryMemory();saveLearned();saveLibraryPicks();renderCustomCategories();renderCategoryChoices();for(const img of IMAGES)if(img.file)img.categories=imageCategoriesForFile(img.file);restoreLibraryPicks();updateStats();renderLibraryCategorySummary();renderResults();refreshModal();document.getElementById('smartStatus').textContent='✅ Memory CSV imported · '+applied+' rules applied'+(skipped?' · '+skipped+' rows skipped':'');toast('Memory CSV imported and merged.','s',7000);
   }).catch(err=>{document.getElementById('smartStatus').textContent='❌ Memory CSV import failed · '+err.message;toast('Memory CSV import failed: '+err.message,'e',7000)}).finally(()=>{e.target.value=''})
 }
-function imageCategoryKeys(file){const name=String(file?.name||'').toLowerCase(),size=file?.size||0,rel=String(file?.webkitRelativePath||file?.name||'').toLowerCase();return rel===name?[name+'|'+size]:[rel+'|'+size,name+'|'+size]}
+function imageCategoryKeys(file){const name=String(file?.name||'').toLowerCase(),size=file?.size||0,rel=String(file?.webkitRelativePath||file?.name||'').toLowerCase(),fp=file?.__fingerprint||'';return [...(fp?['sha256:'+fp]:[]),...(rel===name?[name+'|'+size]:[rel+'|'+size,name+'|'+size])]}
 function imageManualCategory(img){if(!img||!img.file)return'';for(const k of imageCategoryKeys(img.file))if(MANUAL_IMAGE_CATS[k])return MANUAL_IMAGE_CATS[k];return''}
 
 /* ── resolution order, everywhere in the app: MANUAL → AUTO → none ──
@@ -3404,6 +3430,28 @@ async function readIndexCache(){try{const db=await idbOpen();return await new Pr
 async function writeIndexCache(items){try{const db=await idbOpen(),tx=db.transaction('meta','readwrite'),st=tx.objectStore('meta');for(const x of items)st.put(x);return new Promise(res=>{tx.oncomplete=res;tx.onerror=res})}catch(e){}}
 function fileKey(f){return f.name+'|'+f.size+'|'+(f.lastModified||0)}
 function libraryDuplicateCount(files){const m=new Map();for(const f of files){const k=f.name.toLowerCase();m.set(k,(m.get(k)||0)+1)}let n=0;for(const v of m.values())if(v>1)n+=v-1;return n}
+let FINGERPRINT_WORKER=null;
+function ensureFingerprintWorker(){
+  if(FINGERPRINT_WORKER||typeof Worker==='undefined'||typeof crypto?.subtle==='undefined')return FINGERPRINT_WORKER;
+  const src=`self.onmessage=async e=>{try{const h=await crypto.subtle.digest('SHA-256',e.data.buf);const a=new Uint8Array(h);self.postMessage({i:e.data.i,hash:[...a].map(x=>x.toString(16).padStart(2,'0')).join('')})}catch(err){self.postMessage({i:e.data.i,error:String(err)})}}`;
+  try{FINGERPRINT_WORKER=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})))}catch(e){FINGERPRINT_WORKER=null}
+  return FINGERPRINT_WORKER;
+}
+async function fingerprintLibrary(){
+  const w=ensureFingerprintWorker();if(!w||!IMAGES.length)return;
+  let done=0;
+  for(let i=0;i<IMAGES.length;i++){
+    const img=IMAGES[i];if(!img?.file||img.file.__fingerprint)continue;
+    try{
+      const buf=await img.file.arrayBuffer();
+      const hash=await new Promise(res=>{const fn=e=>{w.removeEventListener('message',fn);res(e.data||{})};w.addEventListener('message',fn);w.postMessage({i,buf},[buf])});
+      if(hash.hash){try{Object.defineProperty(img.file,'__fingerprint',{value:hash.hash,enumerable:false,configurable:true})}catch(e){img.file.__fingerprint=hash.hash}img.fingerprint=hash.hash}
+    }catch(e){}
+    done++;if(done%24===0){setSt('🔐 Fingerprinting '+done.toLocaleString()+'/'+IMAGES.length.toLocaleString()+' images in the background…','run');await yieldToBrowser()}
+  }
+  const records=[];for(const img of IMAGES){const meta={name:img.name,normalized:img.normalized,allV:img.allV,categories:img.categories};for(const key of new Set([fileKey(img.file),...imageCategoryKeys(img.file)]))records.push({key,...meta})}await writeIndexCache(records);
+  setSt('✅ '+IMAGES.length.toLocaleString()+' images ready · content fingerprints updated','ok');
+}
 
 
 function isImg(f){
@@ -3578,6 +3626,7 @@ async function loadFiles(files,folderName){
   if(restoredPicks)toast('Restored '+restoredPicks.toLocaleString()+' image'+(restoredPicks!==1?'s':'')+' you had selected for the ZIP.','i',7000);
   setSt('✅ '+IMAGES.length.toLocaleString()+' images ready · '+reused.toLocaleString()+' reused · '+newlyIndexed.toLocaleString()+' new','ok');
   toast('Library loaded: '+reused.toLocaleString()+' reused, '+newlyIndexed.toLocaleString()+' newly indexed.','s');
+  void fingerprintLibrary();
 }
 function resetFolder(){
   clearThumbCache();
@@ -3736,6 +3785,28 @@ function renderQuickCategoryFilter(){
   sel.value=[...sel.options].some(o=>o.value===current)?current:'all';
 }
 function matchesManualCategory(r,key){if(key==='all')return true;const keys=resultCategoryKeys(r);if(key==='__uncat__')return !keys.size;return keys.has(key)}
+function visibleResultIndices(){
+  const ft=(document.getElementById('ftxt')?.value||'').toLowerCase().trim();
+  const fs=document.getElementById('fsel')?.value||'all',fc=document.getElementById('fcat')?.value||'all';
+  const minConf=Number(document.getElementById('fconf')?.value||0),size=document.getElementById('fsize')?.value||'all';
+  const vis=[];
+  for(let gi=0;gi<RESULTS.length;gi++){
+    const r=RESULTS[gi],img=r.bestIdx>=0?IMAGES[r.bestIdx]:null;
+    if(ft&&!((r.menuItem+' '+r.bestName+' '+(img?.relPath||'')).toLowerCase().includes(ft)))continue;
+    if(fs==='c'&&!(r.confirmed>=0))continue;
+    if(fs==='r'&&!(r.confirmed<0&&r.bestIdx>=0))continue;
+    if(fs==='n'&&r.bestIdx>=0)continue;
+    if(minConf&&r.score<minConf)continue;
+    if(size==='small'&&(!img?.file||img.file.size>=250*1024))continue;
+    if(size==='large'&&(!img?.file||img.file.size<=5*1024*1024))continue;
+    if(!matchesManualCategory(r,fc))continue;
+    vis.push(gi);
+  }
+  const sortMode=document.getElementById('fsort')?.value||'sheet';
+  if(sortMode==='review')vis.sort((a,b)=>{const ra=reviewRank(a),rb=reviewRank(b);return ra[0]-rb[0]||ra[1]-rb[1]||a-b});
+  else if(sortMode==='conf')vis.sort((a,b)=>(RESULTS[b].score-RESULTS[a].score)||a-b);
+  return vis;
+}
 
 function renderResults(){
   const grid=document.getElementById('grid');
@@ -3743,7 +3814,6 @@ function renderResults(){
   if(!RESULTS.length){wrap.style.display='none';return}
   wrap.style.display='block';
   renderQuickCategoryFilter();
-  const ft=(document.getElementById('ftxt')?.value||'').toLowerCase().trim();
   const fs=document.getElementById('fsel')?.value||'all';
   const fc=document.getElementById('fcat')?.value||'all';
   const dups=getDups();
@@ -3753,19 +3823,7 @@ function renderResults(){
      index — a linear scan per card, so rendering 240 cards over a
      2,000-row sheet cost ~480,000 comparisons, on every single
      checkbox tick. The index is free here. */
-  let vis=[];
-  for(let gi=0;gi<RESULTS.length;gi++){
-    const r=RESULTS[gi];
-    if(ft){
-      const hay=(r.menuItem+' '+r.bestName).toLowerCase();
-      if(!hay.includes(ft))continue;
-    }
-    if(fs==='c'){if(!(r.confirmed>=0))continue}
-    else if(fs==='r'){if(!(r.confirmed<0&&r.bestIdx>=0))continue}
-    else if(fs==='n'&&r.bestIdx>=0)continue;
-    if(!matchesManualCategory(r,fc))continue;
-    vis.push(gi);
-  }
+  let vis=visibleResultIndices();
 
   /* Order the queue. Sorting happens here, at full-render time, and
      deliberately NOT when a single row is ticked: an item that jumps
@@ -3773,13 +3831,6 @@ function renderResults(){
      lose your place in a 2,000-row sheet. The queue re-sorts when the
      operator changes filter or sort, which is when they expect it. */
   const sortMode=document.getElementById('fsort')?.value||'sheet';
-  if(sortMode==='review'){
-    vis.sort((a,b)=>{const ra=reviewRank(a),rb=reviewRank(b);
-      return ra[0]-rb[0]||ra[1]-rb[1]||a-b;});
-  }else if(sortMode==='conf'){
-    vis.sort((a,b)=>(RESULTS[b].score-RESULTS[a].score)||a-b);
-  }
-
   document.getElementById('rcnt').textContent='('+vis.length+'/'+RESULTS.length+')';
   renderReviewCount();
 
@@ -3791,6 +3842,15 @@ function renderResults(){
   const shown=vis.slice(0,RENDER_LIMIT);
   grid.innerHTML=shown.map(gi=>resultCardHtml(gi,dups)).join('')+(vis.length>shown.length?`<div class=more-results><span>Showing ${shown.length.toLocaleString()} of ${vis.length.toLocaleString()} filtered results</span><button class="btn bs bsm" onclick="renderMoreResults()">Load next ${Math.min(240,vis.length-shown.length).toLocaleString()}</button></div>`:'');
   requestAnimationFrame(()=>hookThumbs(grid));
+  observeResultWindow(grid);
+}
+let RESULT_WINDOW_OBS=null;
+function observeResultWindow(root){
+  if(RESULT_WINDOW_OBS)RESULT_WINDOW_OBS.disconnect();
+  const more=root.querySelector('.more-results');
+  if(!more||typeof IntersectionObserver==='undefined')return;
+  RESULT_WINDOW_OBS=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){RESULT_WINDOW_OBS.disconnect();renderMoreResults()}},{rootMargin:'500px'});
+  RESULT_WINDOW_OBS.observe(more);
 }
 
 /* One result card. Split out of renderResults() so a single checkbox
@@ -4246,7 +4306,18 @@ function renderReviewCount(){
   renderRail(st);
 }
 function renderMoreResults(){RENDER_LIMIT+=240;renderResults()}
-function doFilter(){RENDER_LIMIT=240;renderResults()}
+function doFilter(){RENDER_LIMIT=240;renderResults();saveSessionSoon()}
+function bulkReviewAction(action){
+  const ids=visibleResultIndices();if(!ids.length){toast('No visible results to update.','i');return}
+  let changed=0;
+  for(const i of ids){const r=RESULTS[i];if(!r)continue;
+    if(action==='confirm'&&r.bestIdx>=0){EXCLUDED_RESULTS.delete(i);r.confirmed=r.bestIdx;r.useMenuName=true;r.exportName=san(r.menuItem);rememberMatch(r.menuItem,r.bestIdx);changed++}
+    else if(action==='reject'&&r.bestIdx>=0){r.confirmed=-1;EXCLUDED_RESULTS.add(i);changed++}
+    else if(action==='clear'){r.confirmed=-1;EXCLUDED_RESULTS.delete(i);changed++}
+  }
+  invalidateImageResultMap();renderResults();updateStats();saveSessionSoon();
+  toast((action==='confirm'?'Confirmed ':action==='reject'?'Set aside ':'Cleared ')+changed.toLocaleString()+' visible result'+(changed===1?'':'s')+'.','s');
+}
 
 /* ═══════════════════════════════════════
    ACTIONS
@@ -4755,6 +4826,32 @@ function saveSessionSoon(){
     }catch(e){console.warn('[session] save failed',e)}
   },900);
 }
+const WORKSPACES_KEY='tif_workspaces_v1';
+function readWorkspaces(){try{return JSON.parse(localStorage.getItem(WORKSPACES_KEY)||'{}')||{}}catch(e){return{}}}
+function renderWorkspaceOptions(){
+  const sel=document.getElementById('workspaceSelect');if(!sel)return;
+  const cur=sel.value,ws=readWorkspaces();
+  sel.innerHTML='<option value="">Load workspace…</option>'+Object.keys(ws).sort().map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  if(cur&&ws[cur])sel.value=cur;
+}
+function saveWorkspacePrompt(){
+  if(!IMAGES.length){toast('Load an image folder before saving a workspace.','e');return}
+  const name=prompt('Workspace name:',document.getElementById('fldName')?.textContent?.trim()||'My workspace');
+  if(!name||!name.trim())return;
+  const ws=readWorkspaces(),snap=sessionSnapshot();
+  snap.filters={text:document.getElementById('ftxt')?.value||'',status:document.getElementById('fsel')?.value||'all',category:document.getElementById('fcat')?.value||'all',sort:document.getElementById('fsort')?.value||'sheet',confidence:document.getElementById('fconf')?.value||'0',size:document.getElementById('fsize')?.value||'all'};
+  ws[name.trim()]=snap;
+  try{localStorage.setItem(WORKSPACES_KEY,JSON.stringify(ws));renderWorkspaceOptions();document.getElementById('workspaceSelect').value=name.trim();toast('Workspace saved: '+name.trim(),'s')}catch(e){toast('Could not save workspace in this browser.','e')}
+}
+function loadWorkspace(name){
+  if(!name)return;const snap=readWorkspaces()[name];if(!snap)return;
+  if(!IMAGES.length){toast('Load the matching image folder first, then load this workspace.','i');return}
+  const ta=document.getElementById('menuTA');if(ta)ta.value=snap.menuText||'';
+  const f=snap.filters||{};for(const [id,key] of [['ftxt','text'],['fsel','status'],['fcat','category'],['fsort','sort'],['fconf','confidence'],['fsize','size']]){const el=document.getElementById(id);if(el&&f[key]!=null)el.value=f[key]}
+  const sm=document.getElementById('scopeMode');if(sm&&snap.scope?.mode)sm.value=snap.scope.mode;
+  const iu=document.getElementById('includeUncat');if(iu&&snap.scope)iu.checked=snap.scope.unc!==false;
+  countItems();const restored=restoreSessionInto(snap);if(!restored)toast('This workspace does not match the currently loaded folder.','e');else toast('Workspace loaded: '+name,'s');
+}
 function restoreSessionInto(session){
   if(!session||!session.results||!session.results.length||!IMAGES.length)return 0;
   const byKey=new Map();
@@ -4868,7 +4965,7 @@ async function bootSession(){
   }catch(e){console.warn('[session] boot failed',e)}
   renderSessionBar();
 }
-document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();bootSession()});
+document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();renderWorkspaceOptions();bootSession()});
 </script>
 <script>
 (function () {

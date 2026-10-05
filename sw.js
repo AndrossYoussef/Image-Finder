@@ -12,7 +12,7 @@
    what pushes the update to users.
    ============================================================ */
 
-const VERSION = 'finder-v24-exact-category-previews-20261006';
+const VERSION = 'finder-v25-workspaces-filters-fingerprints-20261006';
 
 const APP_SHELL_CACHE = `app-shell-${VERSION}`;
 const RUNTIME_CACHE   = `runtime-${VERSION}`;
