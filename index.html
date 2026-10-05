@@ -257,16 +257,16 @@ textarea::placeholder{color:var(--mu)}
 .rcard.c5{border-left:4px solid var(--re);opacity:.6}
 
 /* ── THUMBNAIL AREA ── */
-.tarea{display:flex;flex-direction:column;align-items:center;gap:6px;width:132px;flex-shrink:0;position:relative}.tarea.selected-download .thumb{border:3px solid var(--gn);box-shadow:0 0 0 2px var(--gn),0 4px 14px rgba(22,163,74,.28)}.download-confirm{position:absolute;top:6px;left:5px;right:5px;background:var(--gn);color:#fff;border-radius:6px;padding:3px 4px;text-align:center;font-size:.62rem;font-weight:800;line-height:1.2;pointer-events:none}
-.thumb{width:132px;height:132px;border-radius:10px;object-fit:cover;border:2px solid var(--bd);cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;background:var(--sur2);display:block}
+.tarea{display:flex;flex-direction:column;align-items:center;gap:6px;width:156px;flex-shrink:0;position:relative}.tarea.selected-download .thumb{border:3px solid var(--gn);box-shadow:0 0 0 2px var(--gn),0 4px 14px rgba(22,163,74,.28)}.download-confirm{position:absolute;top:6px;left:5px;right:5px;background:var(--gn);color:#fff;border-radius:6px;padding:3px 4px;text-align:center;font-size:.62rem;font-weight:800;line-height:1.2;pointer-events:none}
+.thumb{width:156px;height:104px;border-radius:10px;object-fit:contain;background:#fff;border:2px solid var(--bd);cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;background:var(--sur2);display:block}
 .thumb:hover{transform:scale(1.06);border-color:var(--or);box-shadow:0 4px 14px rgba(255,98,0,.22)}
-.nothumb{width:132px;height:132px;border-radius:10px;background:var(--sur2);border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--mu)}
+.nothumb{width:156px;height:104px;border-radius:10px;background:var(--sur2);border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--mu)}
 .img-name{font-size:.7rem;color:var(--mu);text-align:center;width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
 
 /* ALT THUMBS */
 .alts-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;align-items:flex-start}
 .alt-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:150px}
-.alt-t{width:64px;height:64px;border-radius:7px;object-fit:cover;border:2px solid var(--bd);transition:all .16s;background:var(--sur2)}
+.alt-t{width:78px;height:52px;border-radius:7px;object-fit:contain;border:2px solid var(--bd);transition:all .16s;background:#fff}
 .alt-t:hover{border-color:var(--or);transform:scale(1.09)}
 .alt-t.asel{border-color:var(--gn);box-shadow:0 0 0 2px var(--gn)}
 .alt-n{font-size:.68rem;color:var(--tx2);width:150px;overflow-wrap:anywhere;word-break:normal;white-space:normal;text-align:center;line-height:1.35}
@@ -475,7 +475,7 @@ textarea::placeholder{color:var(--mu)}
 .cat-thumb-btn{padding:0;border:0;background:none;cursor:zoom-in;border-radius:var(--rx);
   overflow:hidden;line-height:0}
 .cat-thumb-btn:focus-visible{outline:2px solid var(--or);outline-offset:2px}
-.cat-thumb{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;background:var(--sur);
+.cat-thumb{width:100%;aspect-ratio:3/2;object-fit:contain;display:block;background:#fff;
   border-radius:var(--rx)}
 .cat-thumb.nothumb{display:flex;align-items:center;justify-content:center;font-size:1.5rem;
   line-height:1;color:var(--mu)}
@@ -757,7 +757,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
     <div class="brow">
       <button class="btn bp" id="searchBtn" onclick="startSearch()">🔍 Search Images</button>
       <button class="btn bs" id="stopBtn" style="display:none" onclick="stopSearch()">⛔ Stop</button>
-      <button class="btn bd- bsm" onclick="clearAll()">🗑️ Clear</button>
+      <button class="btn bd- bsm" onclick="clearMenuItems()">🗑️ Clear items</button>
     </div>
     <div class="prog" id="searchProg">
       <div class="pt"><span id="sLbl">Matching…</span><span class="pp" id="sPct">0%</span></div>
@@ -1172,7 +1172,7 @@ const SYN=[
   ['americano','امريكانو','أمريكانو'],
   ['mocha','موكا','موكها'],
   ['frappe','فرابيه','فرابي','فرابيتشينو','frappuccino'],
-  ['tea','شاي'],['hibiscus','كركديه'],['water','ماء','مياه'],
+  ['tea','شاي','شاى','shay'],['water','ماء','مياه','maya'],
   ['cake','كيك','تورته','تورتة'],
   ['cheesecake','تشيز كيك','تشيزكيك'],
   ['brownie','براوني'],['waffle','وافل','وافلز'],
@@ -1186,7 +1186,7 @@ const SYN=[
   ['biryani','برياني','بريانى'],
   ['kabsa','كبسه','كبسة'],['mandi','مندي'],
   ['molokhia','ملوخيه','ملوخية'],['koshari','كشري','كشرى'],
-  ['fries','بطاطس','بطاطا','فريز','فرايز'],
+  ['fries','بطاطس','بطاطا','فريز','فرايز','french fries','فرنش فرايز','بطاطس محمره','بطاطس محمرة','محمره','محمرة','batates','potato','potatoes'],
   ['rice','ارز','رز'],['bread','خبز','خبزه','خبزة','عيش'],
   ['cheese','جبنه','جبنة','جبن','mozzarella','موزاريلا','موزريلا','موتزاريلا','موتزريلا','roumy','رومي','رومى','romi','roomy','roumy cheese'],
   ['tomato','طماطم','طماطه','بندوره'],
@@ -1198,7 +1198,6 @@ const SYN=[
   ['crispy','كريسبي','مقرمش'],
   ['spicy','حاره','حارة','حار'],
   ['garlic','ثوم'],['onion','بصل'],
-  ['potato','بطاطس','بطاطا'],
   ['mango','مانجو'],['strawberry','فراوله','فراولة'],
   ['banana','موز'],['orange','برتقال'],['lemon','ليمون'],
   ['pineapple','اناناس'],['watermelon','بطيخ'],
@@ -1207,6 +1206,116 @@ const SYN=[
   ['om ali','ام علي','ام على'],
   ['basbousa','بسبوسه','بسبوسة'],
   ['luqaimat','لقيمات'],
+  /* --- franco-Arabic filename spellings --- */
+  ['chicken','farkha','farkh','firakh','frakh','ferakh','dgag','dajaj'],
+  ['lamb','dany','danny','daany','ضانى'],
+  ['ribs','riyash','reyash','ryash','ريش ضاني','ريش ضانى'],
+  ['kofta','kofta mashwya','kufta','كفتة مشوية','كفته مشويه'],
+  ['shawarma','shawerma','shawerma farkha','شاورما فراخ'],
+  ['falafel','ta3meya','taameya','tameya','طعميه','طعمية'],
+  ['foul','فول','ful','fool','foul medames','فول مدمس','فول بالزيت','foul bezeit'],
+  ['hawawshi','حواوشي','حواوشى','hawawshy'],
+  ['feteer','فطير','فطير مشلتت','fiteer'],
+  ['mahshi','محشي','محشى','mahshy'],
+  ['molokhia','molokheya','ملوخيه بالفراخ'],
+  ['koshari','koshary','kushari','كشرى'],
+  ['sogok','سجق','sogo2','suguk','sausage','سوسيس'],
+  ['basterma','بسطرمه','بسطرمة','pastirma'],
+  ['liver','كبده','كبدة','kebda','كبدة اسكندراني'],
+  ['sobia','سوبيا','سوبيه'],['sahlab','سحلب','sahlab bel mokasarat'],
+  ['karkade','كركديه','hibiscus','كركدية','karkadeh','كركديه مثلج','iced karkade'],
+  ['erksos','عرقسوس'],['tamr hindi','تمر هندي','تمرهندي'],
+  ['asab','قصب','عصير قصب','cane','sugarcane','cane juice','sugar cane'],
+  ['bolty','بلطي','بلطى','tilapia'],
+  ['gambari','جمبري مقلي'],
+  /* --- plain English words that had no Arabic partner --- */
+  ['omelette','omlet','omelet','اومليت','أومليت','عجة','عجه'],
+  ['eggs','egg','بيض','بيضه','بيضة','بيض مقلي'],
+  ['caesar','سيزر','سيزار','قيصر'],
+  ['onion rings','انيون رينجز','أنيون رينجز','اونيون رينجز','حلقات بصل','onion ring'],
+  ['mixed','مشكل','مشكله','مشكلة','مشكل مشاوي','متنوع','assorted','variety'],
+  ['mixed grill','مشاوي مشكلة','مشاوى مشكلة','مشاوي مشكل','grill platter','مشويات مشكلة','مشاوي','مشويات'],
+  ['double','دوبل','دابل'],
+  ['cheese','تشيز','تشيدر','cheddar','شيدر'],
+  ['margherita','مارجريتا','مارغريتا','مارجيريتا'],
+  ['pepperoni','بيبروني','ببروني','بيبيروني'],
+  ['vegetarian','vegetariana','خضار','نباتي','veggie','veg'],
+  ['ranch','رانش'],['bbq','باربكيو','باربيكيو','باربكيو صوص'],
+  ['alfredo','الفريدو','ألفريدو'],
+  ['bechamel','بشاميل','بشامل'],
+  ['mac and cheese','ماك اند تشيز','مكرونه بالجبنه','macaroni cheese'],
+  ['tahina','طحينه','طحينة','tahini'],
+  ['baba ghanoush','بابا غنوج','متبل'],
+  ['green salad','سلطه خضرا','سلطة خضراء','سلطة خضرا'],
+  ['coleslaw','كول سلو','كولسلو'],
+  ['wedges','ودجز','بطاطس ودجز'],
+  ['nuggets','ناجتس','ناجتز'],
+  ['strips','ستربس','استربس'],
+  ['wings','وينجز','اجنحة','جوانح'],
+  ['shish tawook','شيش طاووق','شيش طاوق','طاووق','tawook','tawouk','shish taouk'],
+  ['grilled fish','سمك مشوي','سمك مشوى','samak mashwy'],
+  ['tagen','طاجن','طاچن','tagine','tajine'],
+  ['hot chocolate','هوت شوكليت','شوكولاته ساخنة','سحلب بالشوكولاتة'],
+  ['iced coffee','ايس كوفي','آيس كوفي','قهوة مثلجة'],
+  ['iced latte','ايس لاتيه','آيس لاتيه','لاتيه بارد'],
+  ['milkshake','ميلك شيك فراولة','شيك فراوله'],
+  ['soft drink','مشروب غازي','صودا','soda','كولا','cola','pepsi','بيبسي','coca cola','كوكا كولا'],
+  ['water','مياه معدنية','مياه معدنيه'],
+  ['brownie','براونيز','brownies'],
+  ['molten cake','مولتن','مولتن كيك'],
+  ['rice pudding','رز بلبن','ارز بلبن','روزبلبن'],
+  ['mahalabia','مهلبيه','مهلبية'],
+  ['konafa nutella','كنافه بالنوتيلا'],
+  ['mango','مانجه','مانجة','manga'],
+  ['onion','انيون','أنيون','اونيون','بصله','بصلة'],
+  ['rings','رينجز','رينج','حلقات','ring'],
+  ['cheese','cheesy','تشيزي','بالجبنه','بالجبنة','جبنه','بالجبن'],
+  ['crispy','crunchy','مقرمشه','مقرمشة'],
+  ['creamy','بالقشطه','بالقشطة','قشطه','قشطة','cream'],
+  ['chocolate','بالشوكولاته','بالشوكولاتة','شيكولاته','شيكولاتة'],
+  ['strawberry','بالفراوله','بالفراولة'],
+  ['mango','بالمانجو','بالمانجه'],
+  ['meat','باللحمه','باللحمة','لحمه','لحمة','لحم'],
+  ['chicken','بالفراخ','بالدجاج'],
+  ['honey','عسل','بالعسل','عسل ابيض','عسل أبيض'],
+  ['yogurt','زبادي','زبادى','yoghurt','laban zabady'],
+  ['milk','لبن','حليب','laban','بلبن','pudding','بودينج','روزبلبن'],
+  ['nuts','مكسرات','بالمكسرات','مكسرات مشكلة','mixed nuts'],
+  ['pistachio','فستق','بالفستق'],['coconut','جوز هند','كوكونت'],
+  ['zaatar','زعتر','بالزعتر','thyme'],
+  ['okra','بامية','باميه','bamya','bamia'],
+  ['eggplant','باذنجان','بتنجان','batengan','betengan','aubergine'],
+  ['moussaka','مسقعة','مسقعه','musaqaa','mesa2a3a'],
+  ['vine leaves','ورق عنب','warak enab','warak 3enab','mahshy warak'],
+  ['pigeon','حمام','hamam','حمام محشي'],
+  ['rabbit','ارانب','أرانب','ارنب','rabbits'],
+  ['fatta','فتة','فته','fatta','fata'],
+  ['escalope','اسكالوب','إسكالوب','سكالوب'],
+  ['pane','بانيه','بانية','panne','breaded'],
+  ['alexandrian','اسكندراني','إسكندراني','اسكندرانى','eskandarani','skandarani'],
+  ['qatayef','قطايف','قطايف بالمكسرات','katayef'],
+  ['zalabya','زلابية','زلابيه','lo2met el2adi'],
+  ['balah elsham','بلح الشام','balah el sham'],
+  ['petit four','بيتي فور','بيتى فور','petitfour','بيتيفور'],
+  ['croissant','كرواسون','كرواسان'],
+  ['cinnamon','قرفة','قرفه','سينامون'],
+  ['anise','ينسون','yansoon','yansoun'],
+  ['turkish','تركي','تركى','turky'],
+  ['bedouin','بدوية','بدويه','بدوي','bedwy'],
+  ['halawa','حلاوة','حلاوه','حلاوة طحينية','halawa tahinia'],
+  ['shakshuka','شكشوكة','شكشوكه','shakshoka'],
+  ['crab','كابوريا','كابوريه','kaboria'],
+  ['pickles','مخلل','مخللات','طرشي','torshi','turshi'],
+  ['cocktail','كوكتيل','كوكتيل فواكه'],
+  ['fruits','فواكه','فاكهة','فاكهه','fawakeh'],
+  ['mint','نعناع','بالنعناع','na3na3'],
+  ['kids','اطفال','أطفال','للاطفال','للأطفال','kids meal','وجبة اطفال'],
+  ['mini','ميني','صغيرة الحجم'],
+  ['stuffed','محشي','محشى','محشو','mahshi','mahshy'],
+  ['pancake','بان كيك','بانكيك','pancakes'],
+  ['meat','lahma','lahm','lahme','lahmah','بلحمه','بلحمة'],
+  ['grilled','mashwy','mashwya','mashwyat','mashwi','mashwiyat','meshwy'],
+  ['rice','roz','rozz','ruz'],
 ];
 const SYNMAP=(()=>{const m=new Map();SYN.forEach((cl,i)=>cl.forEach(w=>m.set(normWord(w),i)));return m;})();
 
@@ -2574,8 +2683,24 @@ function folderDemotion(folderTokens){
 /* ---- ① canonical token pipeline -------------------------- */
 /* normalise -> defranco -> AR->EN -> synonym canon -> phonetic
    -> strip noise. Query and filename meet in the SAME space.  */
+const SYN_PHRASES=(()=>{
+  const out=[];
+  SYN.forEach(cl=>{const canon=norm(cl[0]);
+    cl.forEach(w=>{const n=norm(w);
+      if(!n||n.indexOf(' ')<0)return;
+      /* folding 2 words into 1 would delete a discriminator */
+      if(canon.split(' ').length<n.split(' ').length)return;
+      out.push([' '+n+' ',' '+canon+' '])})});
+  out.sort((a,b)=>b[0].length-a[0].length);   /* longest phrase wins */
+  return out;
+})();
+function foldPhrases(str){
+  let s=' '+str+' ';
+  for(const [ph,canon] of SYN_PHRASES)if(s.indexOf(ph)>=0)s=s.split(ph).join(canon);
+  return s.trim();
+}
 function canonTokens(text){
-  let toks=norm(defranco(String(text||''))).split(' ').filter(Boolean);
+  let toks=foldPhrases(norm(defranco(String(text||'')))).split(' ').filter(Boolean);
   toks=toks.map(w=>NORM_AR_EN[normWord(w)]||w);
   toks=toks.reduce((a,w)=>a.concat(norm(w).split(' ')),[]).filter(Boolean);
   toks=toks.map(w=>{
@@ -2592,7 +2717,14 @@ function canonTokens(text){
 /* arPhon drops short vowels: كبده -> "kbdh", but the operator types
    "Kebda". Edit distance can never bridge that; skeletons can.    */
 function skeleton(w){
-  return String(w).replace(/[aeiou]/g,'').replace(/(.)\1+/g,'$1').replace(/h$/,'');
+  return String(w).toLowerCase()
+    .replace(/ph/g,'f').replace(/ck/g,'k').replace(/ch/g,'sh')
+    .replace(/kh/g,'k').replace(/gh/g,'g').replace(/th/g,'t')
+    .replace(/ee|ea|oo|ou|ai|ay|ei|ie/g,'a')   /* franco vowel digraphs */
+    .replace(/[jg]/g,'g')                      /* gebna == jebna      */
+    .replace(/[qkc]/g,'k')                     /* qatayef == katayef  */
+    .replace(/[aeiouwy]/g,'')                  /* و/ي are semi-vowels */
+    .replace(/(.)\1+/g,'$1').replace(/h$/,'');
 }
 function synEqV2(a,b){
   if(a===b)return true;
@@ -2607,7 +2739,8 @@ function fuzzyEq(a,b){
   const sim=1-editDist(a,b)/ml;
   if(sim>=.8)return sim*.9;
   const sa=skeleton(a),sb=skeleton(b);
-  if(sa.length>=3&&sa===sb)return .88;
+  const ratio=Math.min(a.length,b.length)/Math.max(a.length,b.length);
+  if(sa.length>=3&&sa===sb&&ratio>=.6)return .88;
   if(sa.length>=4&&sb.length>=4){
     const sm=Math.max(sa.length,sb.length);
     if(1-editDist(sa,sb)/sm>=.8)return .80;
@@ -2630,7 +2763,16 @@ function buildIdf(){
   }
   for(const [t,d] of df)IDF.set(t,Math.log(1+N/(1+d)));
 }
-const idfOf=t=>IDF.has(t)?IDF.get(t):IDF_FALLBACK;
+const GENERIC_W=new Set(['sandwich','sandwiches','ساندوتش','ساندويتش','سندوتش','ساندويش',
+  'plate','platter','طبق','اطباق','dish','meal','وجبة','وجبه','combo','كومبو','offer','عرض',
+  'piece','pieces','قطعة','قطعه','حته','حتة','حبة','حبه','cup','كوب','علبة','علبه','box',
+  'order','طلب','size','حجم','large','lrg','كبير','كبيره','small','صغير','صغيره','medium','وسط',
+  'fresh','فريش','طازج','special','سبيشال','new','جديد','classic','كلاسيك','original','اوريجينال',
+  'with','و','مع','بال','من','the','a','of','and']);
+const _rawIdf=t=>IDF.has(t)?IDF.get(t):IDF_FALLBACK;
+/* A structural word must never out-weigh the dish it is attached to,
+   however rare it happens to be on this particular disk. */
+const idfOf=t=>GENERIC_W.has(t)?Math.min(_rawIdf(t),0.35):_rawIdf(t);
 
 /* ---- IDF-weighted soft F1 -------------------------------- */
 function weightedF1(qTok,iTok){
@@ -3547,6 +3689,24 @@ function stopSearch(){
   toast('Stopped.','i');
 }
 
+function clearMenuItems(){
+  const ta=document.getElementById('menuTA');
+  const had=(ta&&ta.value.trim())?ta.value.trim().split(/\r?\n/).filter(x=>x.trim()).length:0;
+  const hadRes=RESULTS.length;
+  if(!had&&!hadRes){toast('The menu box is already empty.','i');return}
+  if(ta){ta.value='';}
+  RESULTS=[];PREVIEWED.clear();EXCLUDED_RESULTS.clear();RENDER_LIMIT=240;
+  document.getElementById('resWrap').style.display='none';
+  document.getElementById('dlCard').classList.remove('show');
+  document.getElementById('dlLog').innerHTML='';
+  document.getElementById('dlLog').classList.remove('show');
+  const dw=document.getElementById('dupWarn');if(dw)dw.textContent='';
+  countItems();renderResults();updateStats();updateScopeEstimate();
+  try{saveSessionSoon()}catch(e){}
+  setSt(IMAGES.length?'✅ '+IMAGES.length+' images still loaded · menu items cleared.':'Ready.','');
+  toast(had?('Cleared '+had+' menu item'+(had===1?'':'s')+'.'):'Cleared the results.','s');
+  if(ta)ta.focus();
+}
 function clearAll(){
   RESULTS=[];PREVIEWED.clear();RENDER_LIMIT=240;renderResults();updateStats();
   document.getElementById('dlCard').classList.remove('show');
@@ -3642,27 +3802,51 @@ function renderResults(){
    makes a scroll stutter. So: one 320 px JPEG per image, built on demand
    when the card comes near the viewport, cached, and reused everywhere.
    The modal and the ZIP always keep the untouched original. */
+addEventListener('DOMContentLoaded',()=>showSandboxNotice());
 function showSandboxNotice(){
-  const el=document.getElementById('sandboxWarn');if(!el)return;
-  let store=true;
-  try{localStorage.setItem('tif_probe','1');localStorage.removeItem('tif_probe')}catch(e){store=false}
-  el.style.cssText='display:block;background:#2A1B10;color:#FFD9C2;border-bottom:2px solid #FF5A00;'+
-    'padding:10px 16px;font:600 .82rem/1.5 "Segoe UI",system-ui,sans-serif;text-align:center';
-  el.innerHTML='⚠️ <b>Preview mode</b> — this page is inside a sandboxed frame, so the browser blocks '+
-    'image previews'+(store?'':' and saving')+'. Everything still works: <b>download this file and open it '+
-    'in your browser</b> (or open the preview in its own tab) to see the pictures'+
-    (store?'':' and keep your categories')+'.';
+  const run=()=>{
+    const el=document.getElementById('sandboxWarn');if(!el)return;
+    let store=true;
+    try{localStorage.setItem('tif_probe','1');localStorage.removeItem('tif_probe')}catch(e){store=false}
+    if(store)return;      /* pictures already fall back on their own; nothing to warn about */
+    el.style.cssText='display:block;background:#2A1B10;color:#FFD9C2;border-bottom:2px solid #FF5A00;'+
+      'padding:10px 16px;font:600 .82rem/1.5 "Segoe UI",system-ui,sans-serif;text-align:center';
+    el.innerHTML='⚠️ <b>Preview mode</b> — this page is running inside a sandboxed frame, so the browser '+
+      'blocks saving and the ZIP download. Matching and categories still work here. '+
+      '<b>Download this file and open it in your browser</b> (or open the preview in its own tab) '+
+      'to keep your work and export.';
+  };
+  if(document.readyState==='loading')addEventListener('DOMContentLoaded',run);else run();
 }
-/* an opaque origin can create a blob URL but can never load it back */
-const BLOB_OK=(()=>{
+/* A sandboxed frame can create a blob URL but never load it back, while a
+   file:// page produces the same "blob:null/…" string and loads it fine —
+   so the only honest test is to load one. Start optimistic and correct
+   ourselves a few milliseconds later if the picture never arrives. */
+let BLOB_OK=true;
+/* deferred by a tick: this runs before THUMB_CACHE and friends exist */
+setTimeout(function probeBlob(){
+  let u='';
   try{
-    const u=URL.createObjectURL(new Blob(['t']));
-    const ok=!String(u).startsWith('blob:null');
-    URL.revokeObjectURL(u);
-    return ok;
-  }catch(e){return false}
-})();
-if(!BLOB_OK)addEventListener('DOMContentLoaded',showSandboxNotice);
+    const png=Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='),c=>c.charCodeAt(0));
+    u=URL.createObjectURL(new Blob([png],{type:'image/png'}));
+  }catch(e){onBlobBlocked();return}
+  const img=new Image();
+  const done=ok=>{try{URL.revokeObjectURL(u)}catch(e){}; if(!ok)onBlobBlocked()};
+  img.onload=()=>done(true);
+  img.onerror=()=>done(false);
+  img.src=u;
+  setTimeout(()=>{if(!img.complete)done(false)},2500);
+},0);
+function onBlobBlocked(){
+  if(!BLOB_OK)return;
+  BLOB_OK=false;
+  try{THUMB_CACHE.clear()}catch(e){}    /* every cached blob src is dead here */
+  try{if(typeof RESULTS!=='undefined'&&RESULTS.length)renderResults()}catch(e){}
+  try{renderLibraryCategorySummary()}catch(e){}
+  try{scheduleTick()}catch(e){}
+  showSandboxNotice();
+}
+
 const DATA_CACHE=new Map();           /* i -> data: URL, capped */
 function blobToDataURL(blob){
   return new Promise((res,rej)=>{
@@ -4769,5 +4953,5 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45b6ef42a8fe1d8',t:'MTc5MTE5Mjg5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45c2cec2fb2c8e8',t:'MTc5MTIwMDY3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
