@@ -469,6 +469,7 @@ textarea::placeholder{color:var(--mu)}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:10px;
   max-height:min(58vh,520px);overflow-y:auto;overscroll-behavior:contain;
   padding:2px 6px 2px 2px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+.cat-more-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .cat-tile{margin:0;min-width:0;background:var(--sur2);border:1px solid var(--bd);
   border-radius:var(--rx);padding:7px;display:flex;flex-direction:column;gap:6px}
 .cat-thumb-btn{padding:0;border:0;background:none;cursor:zoom-in;border-radius:var(--rx);
@@ -651,6 +652,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
 </style>
 </head>
 <body>
+<div id="sandboxWarn" style="display:none"></div>
 
 <!-- HERO -->
 <div class="app">
@@ -1991,6 +1993,7 @@ function toggleCategoryBrowser(key){
   if(OPEN_CATEGORY){
     const el=document.getElementById('categoryBrowser');
     if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    setTimeout(scheduleTick,350);setTimeout(scheduleTick,900);
   }
 }
 function closeCategoryBrowser(){OPEN_CATEGORY=null;CAT_FILTER='';renderLibraryCategorySummary()}
@@ -1998,8 +2001,74 @@ function catFilter(v){
   CAT_FILTER=String(v||'').toLowerCase();CAT_PAGE=60;
   renderCategoryBrowser(true);
 }
-function catShowMore(){CAT_PAGE+=60;renderCategoryBrowser()}
+/* load the rest of a category in chunks — 2,000 tiles at once would lock
+   the tab for a second, 200 at a time never does */
+let CAT_ALL_RUN=false;
+function catShowAll(){
+  if(CAT_ALL_RUN||!OPEN_CATEGORY)return;
+  const total=catBrowserList().length;
+  CAT_ALL_RUN=true;
+  const btn=document.getElementById('catAllBtn');
+  const step=()=>{
+    if(!OPEN_CATEGORY){CAT_ALL_RUN=false;return}
+    const list=catBrowserList();
+    if(CAT_PAGE>=list.length){
+      CAT_ALL_RUN=false;
+      toast('All '+list.length.toLocaleString()+' images in this category are loaded.','s');
+      return;
+    }
+    CAT_PAGE+=200;catShowMore2();
+    const b=document.getElementById('catAllBtn');
+    if(b)b.textContent='⤓ Loading '+Math.min(CAT_PAGE,list.length).toLocaleString()+' of '+total.toLocaleString()+'…';
+    requestAnimationFrame(()=>setTimeout(step,0));
+  };
+  if(btn)btn.textContent='⤓ Loading…';
+  step();
+}
+function catShowMore(){CAT_PAGE+=120;catShowMore2()}
+function catShowMore2(){
+  const box=document.getElementById('categoryBrowser');
+  const grid=box&&box.querySelector('.cat-grid');
+  if(!grid||!OPEN_CATEGORY){renderCategoryBrowser();return}
+  const list=catBrowserList();
+  const from=grid.querySelectorAll('.cat-tile').length;
+  const add=list.slice(from,CAT_PAGE);
+  if(!add.length){renderCategoryBrowser();return}
+  const resDups=getDups(),libDups=getLibDups();
+  grid.insertAdjacentHTML('beforeend',add.map(e=>catTileHtml(e,resDups,libDups)).join(''));
+  const shownCount=Math.min(CAT_PAGE,list.length);
+  const foot=box.querySelector('#catFootWrap');
+  if(foot)foot.innerHTML=catFootHtml(list,shownCount);
+  CAT_HAS_MORE=list.length>shownCount;
+  hookThumbs(grid);scheduleTick();catAutoLoad();
+}
 
+/* the visible contents of the open category, after the search box and the
+   "selected only" switch — shared by the first paint and by every page
+   appended after it */
+function catBrowserList(){
+  if(!OPEN_CATEGORY)return[];
+  let list=categoryImageList(OPEN_CATEGORY);
+  if(CAT_FILTER)list=list.filter(({img,i})=>
+    (img.name||'').toLowerCase().includes(CAT_FILTER)||
+    (img.relPath||'').toLowerCase().includes(CAT_FILTER)||
+    (resultForImage(i)?.r.menuItem||'').toLowerCase().includes(CAT_FILTER));
+  if(CAT_PICKED_ONLY)list=list.filter(({i})=>imageIsPicked(i));
+  return list;
+}
+function catFootHtml(list,shownCount){
+  const left=list.length-shownCount;
+  return left>0
+    ? `<div class="cat-more-row">
+         <button type="button" class="btn bs cat-more" onclick="catShowMore()">
+           Show ${Math.min(120,left)} more · ${shownCount.toLocaleString()} of ${list.length.toLocaleString()}
+         </button>
+         ${left>120?`<button type="button" class="btn bs cat-more" id="catAllBtn" onclick="catShowAll()">
+           ⤓ Show all ${list.length.toLocaleString()}
+         </button>`:''}
+       </div>`
+    : `<div class="cat-foot">Showing all ${list.length.toLocaleString()}${CAT_FILTER?' matching':''} image${list.length===1?'':'s'}.</div>`;
+}
 function renderCategoryBrowser(keepFocus){
   const box=document.getElementById('categoryBrowser');if(!box)return;
   invalidateImageResultMap();
@@ -2007,13 +2076,8 @@ function renderCategoryBrowser(keepFocus){
   box.classList.add('open');
 
   const label=categoryLabelOf(OPEN_CATEGORY);
-  let list=categoryImageList(OPEN_CATEGORY);
-  const total=list.length;
-  if(CAT_FILTER)list=list.filter(({img,i})=>
-    (img.name||'').toLowerCase().includes(CAT_FILTER)||
-    (img.relPath||'').toLowerCase().includes(CAT_FILTER)||
-    (resultForImage(i)?.r.menuItem||'').toLowerCase().includes(CAT_FILTER));
-  if(CAT_PICKED_ONLY)list=list.filter(({i})=>imageIsPicked(i));
+  const list=catBrowserList();
+  const total=categoryImageList(OPEN_CATEGORY).length;
   const pickedInCat=categoryImageList(OPEN_CATEGORY).filter(({i})=>imageIsPicked(i)).length;
   const shown=list.slice(0,CAT_PAGE);
 
@@ -2048,7 +2112,16 @@ function renderCategoryBrowser(keepFocus){
   }
 
   const resDups=getDups(),libDups=getLibDups();
-  const tiles=shown.map(({img,i})=>{
+  const tiles=shown.map(e=>catTileHtml(e,resDups,libDups)).join('');
+  const more=catFootHtml(list,shown.length);
+  box.innerHTML=head+`<div class="cat-grid">${tiles}</div><div id="catFootWrap">${more}</div>`;
+  if(keepFocus)focusCatSearch();
+  hookThumbs(box);
+  requestAnimationFrame(()=>{hookThumbs(box);scheduleTick();catAutoLoad()});
+  CAT_HAS_MORE=list.length>shown.length;
+}
+function catTileHtml({img,i},resDups,libDups){
+  {
     const sel=imageManualCategory(img)||'';
     const sub=String(img.relPath||img.name||'');
     const link=resultForImage(i);
@@ -2089,7 +2162,7 @@ function renderCategoryBrowser(keepFocus){
         <span>${picked?'Selected for ZIP':'Select for ZIP'}</span></label>
       <button type="button" class="cat-thumb-btn" onclick="catLightbox(${i})"
         title="Open a larger preview of ${esc(img.name)}">
-        ${img.objectUrl?`<img class="cat-thumb" src="${esc(thumbSrc(i))}" data-ti="${i}" loading="lazy" decoding="async" alt="${esc(img.name)}"
+        ${hasPreview(img)?`<img class="cat-thumb" src="${esc(thumbSrc(i))}" data-ti="${i}" loading="lazy" decoding="async" alt="${esc(img.name)}"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'cat-thumb nothumb',textContent:'🖼️'}))"/>`
           :`<div class="cat-thumb nothumb">🖼️</div>`}
       </button>
@@ -2100,17 +2173,33 @@ function renderCategoryBrowser(keepFocus){
       <select class="cat-tile-sel" aria-label="Category for ${esc(img.name)}"
         onchange="saveImageCategory(${i},this.value)">${categoryOptions(sel)}</select>
     </figure>`;
-  }).join('');
-
-  const more=list.length>shown.length
-    ? `<button type="button" class="btn bs cat-more" onclick="catShowMore()">
-         Show ${Math.min(60,list.length-shown.length)} more · ${shown.length.toLocaleString()} of ${list.length.toLocaleString()}
-       </button>`
-    : `<div class="cat-foot">Showing all ${list.length.toLocaleString()}${CAT_FILTER?' matching':''} image${list.length===1?'':'s'}.</div>`;
-
-  box.innerHTML=head+`<div class="cat-grid">${tiles}</div>`+more;
-  if(keepFocus)focusCatSearch();
+  }
 }
+/* keep filling a big category while the user scrolls through it */
+let CAT_HAS_MORE=false,CAT_AUTOLOAD=0,CAT_LAST_LOAD=0;
+function catAutoLoad(){
+  if(!OPEN_CATEGORY||!CAT_HAS_MORE)return;
+  const box=document.getElementById('categoryBrowser');if(!box)return;
+  const r=box.getBoundingClientRect();
+  const h=window.innerHeight||800;
+  if(CAT_ALL_RUN)return;
+  if(r.bottom<h+300&&r.bottom>-200){       /* the end of the panel is in sight */
+    const now=performance.now();
+    if(now-CAT_LAST_LOAD<500){              /* one page per half second, but
+      keep the chain alive: at the very bottom of the page no further scroll
+      event will ever arrive to restart it */
+      clearTimeout(CAT_AUTOLOAD);
+      CAT_AUTOLOAD=setTimeout(catAutoLoad,530-(now-CAT_LAST_LOAD));
+      return;
+    }
+    clearTimeout(CAT_AUTOLOAD);
+    CAT_AUTOLOAD=setTimeout(()=>{
+      if(!CAT_HAS_MORE||!OPEN_CATEGORY)return;
+      CAT_LAST_LOAD=performance.now();catShowMore();
+    },120);
+  }
+}
+addEventListener('scroll',catAutoLoad,{passive:true});
 /* what this image will be called inside the ZIP */
 function catSavesAs(i){
   const link=resultForImage(i);
@@ -2214,11 +2303,12 @@ function catLightbox(i){
   ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label',img.name||'Image preview');
   ov.innerHTML=`<div class="cat-lb-box">
       <button type="button" class="cat-lb-x" aria-label="Close preview">✕</button>
-      <img src="${esc(img.objectUrl||'')}" alt="${esc(img.name||'')}"/>
+      <img src="${esc(BLOB_OK?(img.objectUrl||''):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} alt="${esc(img.name||'')}"/>
       <div class="cat-lb-cap" dir="auto">${esc(img.relPath||img.name||'')}</div>
     </div>`;
   ov.addEventListener('click',e=>{if(e.target===ov||e.target.classList.contains('cat-lb-x'))closeCatLightbox()});
   document.body.appendChild(ov);
+  hookFulls(ov);
   document.addEventListener('keydown',catLbKey);
   ov.querySelector('.cat-lb-x').focus();
 }
@@ -3552,6 +3642,59 @@ function renderResults(){
    makes a scroll stutter. So: one 320 px JPEG per image, built on demand
    when the card comes near the viewport, cached, and reused everywhere.
    The modal and the ZIP always keep the untouched original. */
+function showSandboxNotice(){
+  const el=document.getElementById('sandboxWarn');if(!el)return;
+  let store=true;
+  try{localStorage.setItem('tif_probe','1');localStorage.removeItem('tif_probe')}catch(e){store=false}
+  el.style.cssText='display:block;background:#2A1B10;color:#FFD9C2;border-bottom:2px solid #FF5A00;'+
+    'padding:10px 16px;font:600 .82rem/1.5 "Segoe UI",system-ui,sans-serif;text-align:center';
+  el.innerHTML='⚠️ <b>Preview mode</b> — this page is inside a sandboxed frame, so the browser blocks '+
+    'image previews'+(store?'':' and saving')+'. Everything still works: <b>download this file and open it '+
+    'in your browser</b> (or open the preview in its own tab) to see the pictures'+
+    (store?'':' and keep your categories')+'.';
+}
+/* an opaque origin can create a blob URL but can never load it back */
+const BLOB_OK=(()=>{
+  try{
+    const u=URL.createObjectURL(new Blob(['t']));
+    const ok=!String(u).startsWith('blob:null');
+    URL.revokeObjectURL(u);
+    return ok;
+  }catch(e){return false}
+})();
+if(!BLOB_OK)addEventListener('DOMContentLoaded',showSandboxNotice);
+const DATA_CACHE=new Map();           /* i -> data: URL, capped */
+function blobToDataURL(blob){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>res(String(fr.result||''));
+    fr.onerror=()=>rej(fr.error||new Error('read failed'));
+    fr.readAsDataURL(blob);
+  });
+}
+function cacheData(i,url){
+  DATA_CACHE.set(i,url);
+  if(DATA_CACHE.size>150){const k=DATA_CACHE.keys().next().value;DATA_CACHE.delete(k)}
+  return url;
+}
+/* the full-size picture, however this browser is allowed to give it to us */
+async function fullSrc(i){
+  const img=IMAGES[i];
+  if(!img||!img.file)return'';
+  if(BLOB_OK)return img.objectUrl||'';
+  if(DATA_CACHE.has(i))return DATA_CACHE.get(i);
+  try{return cacheData(i,await blobToDataURL(img.file))}catch(e){return''}
+}
+function hasPreview(img){return !!(img&&img.file)}
+/* <img data-fi="N"> gets its full-size source filled in asynchronously */
+function hookFulls(root){
+  const list=(root||document).querySelectorAll?(root||document).querySelectorAll('img[data-fi]'):[];
+  for(const el of list){
+    const i=+el.getAttribute('data-fi');
+    el.removeAttribute('data-fi');
+    fullSrc(i).then(u=>{if(u&&el.isConnected)el.src=u});
+  }
+}
 const THUMB_CACHE=new Map();
 const THUMB_PX=320;
 const THUMB_OK=(typeof createImageBitmap==='function')&&(typeof OffscreenCanvas==='function');
@@ -3560,33 +3703,62 @@ let THUMB_OBS=null,THUMB_Q=[],THUMB_BUSY=0;
 function thumbSrc(i){
   const u=THUMB_CACHE.get(i);
   if(u)return u;
+  if(!BLOB_OK)return DATA_CACHE.get(i)||THUMB_BLANK;   /* filled in by the tick */
   return THUMB_OK?THUMB_BLANK:(IMAGES[i]?.objectUrl||'');
 }
 async function buildThumb(i){
   if(THUMB_CACHE.has(i))return THUMB_CACHE.get(i);
   const img=IMAGES[i];
   if(!img||!img.file)return'';
-  if(!THUMB_OK)return img.objectUrl||'';
+  if(!THUMB_OK)return BLOB_OK?(img.objectUrl||''):fullSrc(i);
   try{
     const bmp=await createImageBitmap(img.file,{resizeWidth:THUMB_PX,resizeQuality:'medium'});
     const cv=new OffscreenCanvas(bmp.width,bmp.height);
     cv.getContext('2d',{alpha:false}).drawImage(bmp,0,0);
     if(bmp.close)bmp.close();
     const blob=await cv.convertToBlob({type:'image/jpeg',quality:.82});
-    const url=URL.createObjectURL(blob);
+    const url=BLOB_OK?URL.createObjectURL(blob):await blobToDataURL(blob);
     THUMB_CACHE.set(i,url);
     return url;
-  }catch(e){return img.objectUrl||''}
+  }catch(e){return BLOB_OK?(img.objectUrl||''):fullSrc(i)}
 }
-function thumbStopgap(el){
-  if(!el||!el.isConnected||!el.hasAttribute('data-ti'))return;   /* already done */
-  const r=el.getBoundingClientRect(),h=window.innerHeight||800;
-  if(r.bottom<-200||r.top>h+200)return;        /* not on screen: leave it light */
-  const src=el.getAttribute('src')||'';
-  if(src&&!src.startsWith('data:image/svg'))return;
-  const u=IMAGES[+el.getAttribute('data-ti')]?.objectUrl;
-  if(u)el.src=u;                 /* the thumb still replaces this when ready */
+/* One tick drives everything the user can actually see. Per-element timers
+   could not keep up: a big library queues hundreds of off-screen thumbs, the
+   four workers stay busy on them, and the tiles on screen waited seconds. */
+let THUMB_TICK=0;
+function thumbTick(){
+  THUMB_TICK=0;
+  const pend=document.querySelectorAll('img[data-ti]');
+  if(!pend.length)return;
+  const h=window.innerHeight||800,now=performance.now();
+  let near=0;
+  for(const el of pend){
+    const r=el.getBoundingClientRect();
+    if(r.width===0||r.bottom<-150||r.top>h+150){el._tSeen=0;continue}
+    near++;
+    if(!el._tSeen){
+      el._tSeen=now;
+      if(THUMB_OBS)THUMB_OBS.unobserve(el);
+      THUMB_Q.push(el);pumpThumbs();      /* on screen: jump the whole queue */
+      continue;
+    }
+    /* still waiting after a moment of being looked at — show the full image
+       now and let the small one replace it. Fast scrolling never gets here,
+       so the heavy decode only happens for what someone is really reading. */
+    if(now-el._tSeen>120){
+      const src=el.getAttribute('src')||'';
+      if(!src||src.startsWith('data:image/svg')){
+        const i=+el.getAttribute('data-ti');
+        if(BLOB_OK){const u=IMAGES[i]?.objectUrl;if(u)el.src=u}
+        else fullSrc(i).then(u=>{if(u&&el.isConnected&&(el.getAttribute('src')||'').startsWith('data:image/svg'))el.src=u});
+      }
+    }
+  }
+  /* only keep ticking while something on screen is still waiting: left
+     running it forces a layout every interval for the whole library */
+  if(near)THUMB_TICK=setTimeout(thumbTick,120);
 }
+function scheduleTick(){if(!THUMB_TICK)THUMB_TICK=setTimeout(thumbTick,40)}
 function pumpThumbs(){
   while(THUMB_BUSY<4&&THUMB_Q.length){
     /* newest first: what the user is looking at right now beats what they
@@ -3601,14 +3773,13 @@ function pumpThumbs(){
       if(!el.isConnected)return;
       /* only ever replace one picture with another — if the downscale failed,
          fall back to the full image rather than blanking the card */
-      if(u)el.src=u; else{const f=IMAGES[i]?.objectUrl;if(f)el.src=f}
+      if(u)el.src=u; else if(BLOB_OK){const f=IMAGES[i]?.objectUrl;if(f)el.src=f}
       el.removeAttribute('data-ti');
     }).catch(()=>{}).then(()=>{THUMB_BUSY--;pumpThumbs()});
   }
 }
 function queueThumb(el){
   THUMB_Q.push(el);
-  setTimeout(()=>thumbStopgap(el),400);
   if(THUMB_Q.length>400){
     /* hand the overflow back to the observer instead of dropping it, so an
        image can never be left blank just because the user scrolled fast */
@@ -3630,28 +3801,11 @@ function hookThumbs(root){
     }
   },{rootMargin:'800px 0px'});
   list.forEach(el=>THUMB_OBS.observe(el));
-  /* build the whole rendered page in the background as well: the observer
-     decides the order, this makes sure nothing waits for a scroll event */
-  requestIdleCallback?requestIdleCallback(()=>list.forEach(queueThumb),{timeout:1200})
-                     :setTimeout(()=>list.forEach(queueThumb),300);
-  scheduleHeal();
+  scheduleTick();          /* never wait for a scroll event to start */
 }
-let THUMB_HEAL=0;
-function healThumbs(){
-  const pend=document.querySelectorAll('img[data-ti]');
-  if(!pend.length)return;
-  const h=window.innerHeight||800;
-  for(const el of pend){
-    const r=el.getBoundingClientRect();
-    if(r.bottom<-800||r.top>h+800)continue;
-    if(THUMB_OBS)THUMB_OBS.unobserve(el);
-    queueThumb(el);
-    thumbStopgap(el);
-  }
-}
-function scheduleHeal(){clearTimeout(THUMB_HEAL);THUMB_HEAL=setTimeout(healThumbs,400)}
-addEventListener('scroll',scheduleHeal,{passive:true});
-addEventListener('resize',scheduleHeal,{passive:true});
+function healThumbs(){scheduleTick()}
+addEventListener('scroll',scheduleTick,{passive:true});
+addEventListener('resize',scheduleTick,{passive:true});
 function clearThumbCache(){
   for(const u of THUMB_CACHE.values()){try{URL.revokeObjectURL(u)}catch(e){}}
   THUMB_CACHE.clear();THUMB_Q=[];
@@ -3662,7 +3816,7 @@ function resultCardHtml(gi,dups){
     const pct=Math.round(r.score*100);
     const tm=TM[r.tier]||TM[5];
     const isDup=dups.has(gi);
-    const thumbUrl=r.bestIdx>=0?IMAGES[r.bestIdx]?.objectUrl:'';
+    const thumbUrl=r.bestIdx>=0&&hasPreview(IMAGES[r.bestIdx])?'y':'';
     const imgFileName=r.bestIdx>=0?IMAGES[r.bestIdx]?.name:'';
     const previewFn=buildFn(r);
     const excluded=EXCLUDED_RESULTS.has(gi);
@@ -3701,7 +3855,7 @@ function resultCardHtml(gi,dups){
           </div>
           <div class="alts-row">
             ${r.alts.slice(0,2).map((a,ai)=>{
-              const au=IMAGES[a.idx]?.objectUrl||'';
+              const au=hasPreview(IMAGES[a.idx])?'y':'';
               const an=IMAGES[a.idx]?.name||'';
               if(!au)return'';
               return`<div class="alt-wrap" onclick="openModalAlt(${gi},${ai})"
@@ -4003,7 +4157,8 @@ function refreshModal(){
   syncModalCategoryControls(r,img);
 
   /* Image */
-  const mi=document.getElementById('mImg');mi.src=img.objectUrl;mi.alt='Preview of '+img.name;
+  const mi=document.getElementById('mImg');mi.alt='Preview of '+img.name;
+  if(BLOB_OK)mi.src=img.objectUrl||''; else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
   document.getElementById('mSelectBtn').textContent='✅ Use this image for download';
 
   /* Info */
@@ -4027,7 +4182,8 @@ function openModalAlt(ri,ai){
   const wm=RESULTS.filter(x=>x.bestIdx>=0);
   const pos=wm.indexOf(r)+1;
   document.getElementById('mPos').textContent=pos+' / '+wm.length;
-  const mi=document.getElementById('mImg');mi.src=img.objectUrl;mi.alt='Preview of '+img.name;
+  const mi=document.getElementById('mImg');mi.alt='Preview of '+img.name;
+  if(BLOB_OK)mi.src=img.objectUrl||''; else{mi.removeAttribute('src');fullSrc(IMAGES.indexOf(img)).then(u=>{if(u)mi.src=u})}
   document.getElementById('mSelectBtn').textContent='✅ Select this alternative for download';
   const tm=TM[getTier(alt.score)]||TM[5];
   document.getElementById('mScore').textContent=Math.round(alt.score*100)+'%';
@@ -4613,5 +4769,5 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45b085c4a40bb20',t:'MTc5MTE4ODY5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45b6ef42a8fe1d8',t:'MTc5MTE5Mjg5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
