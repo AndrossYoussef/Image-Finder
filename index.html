@@ -909,6 +909,9 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
         <select class="fsel" id="workspaceSelect" onchange="loadWorkspace(this.value)" title="Load a saved workspace">
           <option value="">Load workspace…</option>
         </select>
+        <button class="btn bs bsm" onclick="exportWorkspace()" title="Download the selected workspace as a shareable JSON file">⬇ Export</button>
+        <button class="btn bs bsm" onclick="document.getElementById('workspaceImportInput').click()" title="Import a workspace JSON file">⬆ Import</button>
+        <input id="workspaceImportInput" type="file" accept="application/json,.json" hidden onchange="importWorkspaceFile(event)"/>
       </div>
 
     </div>
@@ -4842,6 +4845,39 @@ function saveWorkspacePrompt(){
   snap.filters={text:document.getElementById('ftxt')?.value||'',status:document.getElementById('fsel')?.value||'all',category:document.getElementById('fcat')?.value||'all',sort:document.getElementById('fsort')?.value||'sheet',confidence:document.getElementById('fconf')?.value||'0',size:document.getElementById('fsize')?.value||'all'};
   ws[name.trim()]=snap;
   try{localStorage.setItem(WORKSPACES_KEY,JSON.stringify(ws));renderWorkspaceOptions();document.getElementById('workspaceSelect').value=name.trim();toast('Workspace saved: '+name.trim(),'s')}catch(e){toast('Could not save workspace in this browser.','e')}
+}
+function workspaceFileName(name){return san(name||'image-finder-workspace').replace(/\s+/g,'-').replace(/-+/g,'-').toLowerCase()||'image-finder-workspace'}
+function validWorkspaceSnapshot(s){
+  return !!(s&&typeof s==='object'&&typeof s.menuText==='string'&&Array.isArray(s.results)&&s.results.length<=100000&&(!s.scope||typeof s.scope==='object'));
+}
+function exportWorkspace(){
+  const sel=document.getElementById('workspaceSelect'),selected=sel?.value||'';
+  const stored=selected?readWorkspaces()[selected]:null;
+  const name=selected||document.getElementById('fldName')?.textContent?.trim()||'Current workspace';
+  const snapshot=stored||sessionSnapshot();
+  if(!validWorkspaceSnapshot(snapshot)){toast('There is no workspace data to export yet.','i');return}
+  const payload={format:'talabat-image-finder-workspace',version:1,name,exportedAt:new Date().toISOString(),snapshot};
+  try{
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=workspaceFileName(name)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast('Workspace exported: '+name,'s');
+  }catch(e){toast('Workspace export failed in this browser.','e')}
+}
+async function importWorkspaceFile(event){
+  const input=event?.target,file=input?.files?.[0];if(!file)return;
+  try{
+    if(file.size>12*1024*1024)throw Error('The workspace file is larger than 12 MB');
+    const raw=JSON.parse(await file.text());
+    const snapshot=raw?.format==='talabat-image-finder-workspace'?raw.snapshot:raw;
+    if(!validWorkspaceSnapshot(snapshot))throw Error('This is not a valid Image Finder workspace file');
+    const suggested=String(raw?.name||file.name.replace(/\.json$/i,'')||'Imported workspace').trim().slice(0,80)||'Imported workspace';
+    const name=prompt('Name this imported workspace:',suggested);if(!name||!name.trim())return;
+    const clean=name.trim(),ws=readWorkspaces();
+    if(ws[clean]&&!confirm('A workspace named "'+clean+'" already exists. Replace it?'))return;
+    ws[clean]=snapshot;localStorage.setItem(WORKSPACES_KEY,JSON.stringify(ws));renderWorkspaceOptions();document.getElementById('workspaceSelect').value=clean;
+    toast('Workspace imported: '+clean+'. Load it when the matching image folder is open.','s',7000);
+  }catch(e){toast('Workspace import failed: '+(e.message||'invalid JSON'),'e',7000)}
+  if(input)input.value='';
 }
 function loadWorkspace(name){
   if(!name)return;const snap=readWorkspaces()[name];if(!snap)return;
