@@ -15,11 +15,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* talabat orange on a dark blue-black deck, dark grey panels */
-  --or:#FF6B10;--or2:#FF8C42;--orl:rgba(255,107,16,.12);--mar:#B23A0C;--mar2:#8E2D08;
-  --bg:#0A101C;--sur:#121A28;--sur2:#1A2434;
-  --bd:#26334A;--bd2:#394A66;
-  --tx:#EDF1F8;--tx2:#A9B6CA;--mu:#76859D;
+  /* black deck, dark grey panels, talabat orange */
+  --or:#FF5A00;--or2:#FF7A29;--orl:rgba(255,90,0,.13);--mar:#C2410C;--mar2:#9A3412;
+  --bg:#0A0A0B;--sur:#151517;--sur2:#1E1E21;
+  --bd:#2B2B2F;--bd2:#3C3C42;
+  --tx:#F4F4F5;--tx2:#B5B6BA;--mu:#86878D;
   --sh:0 2px 14px rgba(0,0,0,.45);
   --shl:0 12px 38px rgba(0,0,0,.6);
   --sho:0 6px 22px rgba(255,107,16,.3);
@@ -42,16 +42,16 @@
   color-scheme:light;
 }
 [data-theme="dark"]{
-  --bg:#0A101C;--sur:#121A28;--sur2:#1A2434;
-  --bd:#26334A;--bd2:#394A66;
-  --tx:#EDF1F8;--tx2:#A9B6CA;--mu:#76859D;
+  --bg:#0A0A0B;--sur:#151517;--sur2:#1E1E21;
+  --bd:#2B2B2F;--bd2:#3C3C42;
+  --tx:#F4F4F5;--tx2:#B5B6BA;--mu:#86878D;
   --sh:0 2px 12px rgba(0,0,0,.28);
   --shl:0 8px 32px rgba(0,0,0,.38);
   --sho:0 4px 20px rgba(255,98,0,.28);
   --gn:#22C55E;--gnb:rgba(34,197,94,.09);--gnbd:rgba(34,197,94,.22);
   --ye:#F59E0B;--yeb:rgba(245,158,11,.09);--yebd:rgba(245,158,11,.22);
   --re:#EF4444;--reb:rgba(239,68,68,.09);--rebd:rgba(239,68,68,.22);
-  --orl:rgba(255,107,16,.12);--mar:#B23A0C;--mar2:#8E2D08;
+  --or:#FF5A00;--or2:#FF7A29;--orl:rgba(255,90,0,.13);--mar:#C2410C;--mar2:#9A3412;
   color-scheme:dark;
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .3s,color .3s}
@@ -68,7 +68,7 @@ textarea{direction:auto;text-align:start;line-height:2;word-break:normal;overflo
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--sur2)}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:99px}
 
 /* ── HERO ── */
-.hero{position:relative;overflow:hidden;background:linear-gradient(110deg,#0A101C 0%,#132038 45%,#1B2B49 72%,#24344F 100%);border-bottom:2px solid var(--or);height:84px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.hero{position:relative;overflow:hidden;background:linear-gradient(110deg,#0A0A0B 0%,#1A1A1D 45%,#242428 72%,#2E2E33 100%);border-bottom:2px solid var(--or);height:84px;display:flex;align-items:center;justify-content:center;isolation:isolate}
 .hero::before{content:'';position:absolute;inset:-45%;z-index:-1;background:radial-gradient(ellipse at 18% 30%,rgba(255,255,255,.22) 0 8%,transparent 28%),radial-gradient(ellipse at 78% 25%,rgba(255,220,120,.28) 0 7%,transparent 25%),radial-gradient(ellipse at 52% 110%,rgba(224,54,0,.24) 0 12%,transparent 36%);filter:blur(10px);animation:heroGlow 11s ease-in-out infinite alternate}
 .hero::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.14) 48%,transparent 61%);background-size:220% 100%;animation:heroShine 7s ease-in-out infinite;pointer-events:none}
 @keyframes heroGlow{0%{transform:translate3d(-4%,2%,0) rotate(-2deg) scale(1)}50%{transform:translate3d(5%,-3%,0) rotate(3deg) scale(1.06)}100%{transform:translate3d(-2%,5%,0) rotate(-1deg) scale(1.02)}}
@@ -251,9 +251,9 @@ textarea::placeholder{color:var(--mu)}
 .rcard{content-visibility:auto;contain-intrinsic-size:auto 320px;contain:layout paint style;background:var(--sur);border:1.5px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-bottom:9px;box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s,transform .14s;cursor:default}
 .more-results{display:flex;justify-content:center;align-items:center;gap:10px;padding:18px;color:var(--tx2);font-size:.75rem}.rcard:hover{border-color:var(--bd2);box-shadow:var(--shl);transform:translateY(-1px)}
 .rcard.c1{border-left:4px solid var(--gn)}
-.rcard.c2{border-left:4px solid #2563EB}
+.rcard.c2{border-left:4px solid var(--or)}
 .rcard.c3{border-left:4px solid var(--ye)}
-.rcard.c4{border-left:4px solid #7C3AED}
+.rcard.c4{border-left:4px solid var(--mu)}
 .rcard.c5{border-left:4px solid var(--re);opacity:.6}
 
 /* ── THUMBNAIL AREA ── */
@@ -278,26 +278,26 @@ textarea::placeholder{color:var(--mu)}
 .mname{font-weight:700;font-size:1.02rem;color:var(--tx);writing-mode:horizontal-tb;white-space:normal;overflow-wrap:break-word}.name-label{color:var(--or);font-size:.72em;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:.69rem;font-weight:700;border:1px solid}
 .b1{background:var(--gnb);color:var(--gn);border-color:var(--gnbd)}
-.b2{background:#EFF6FF;color:#2563EB;border-color:#BFDBFE}
+.b2{background:var(--orl);color:var(--or2);border-color:rgba(255,90,0,.28)}
 .b3{background:var(--yeb);color:var(--ye);border-color:var(--yebd)}
-.b4{background:#F5F3FF;color:#7C3AED;border-color:#DDD6FE}
+.b4{background:var(--sur2);color:var(--tx2);border-color:var(--bd2)}
 .b5{background:var(--reb);color:var(--re);border-color:var(--rebd)}
-[data-theme="dark"] .b2{background:rgba(96,165,250,.09);color:#60A5FA;border-color:rgba(96,165,250,.22)}
-[data-theme="dark"] .b4{background:rgba(167,139,250,.09);color:#A78BFA;border-color:rgba(167,139,250,.22)}
+[data-theme="light"] .b2{background:#FFF3EA;color:#C2410C;border-color:#FFD9C2}
+[data-theme="light"] .b4{background:#F3F4F6;color:#5B6472;border-color:#DCE0E6}
 .mchip{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:700;border:1px solid}
 .ce{background:var(--gnb);color:var(--gn);border-color:var(--gnbd)}
-.cs{background:#EFF6FF;color:#2563EB;border-color:#BFDBFE}
-.cp{background:#F5F3FF;color:#7C3AED;border-color:#DDD6FE}
+.cs{background:var(--orl);color:var(--or2);border-color:rgba(255,90,0,.28)}
+.cp{background:var(--sur2);color:var(--tx2);border-color:var(--bd2)}
 .cf{background:var(--yeb);color:var(--ye);border-color:var(--yebd)}
-[data-theme="dark"] .cs{background:rgba(96,165,250,.09);color:#60A5FA;border-color:rgba(96,165,250,.22)}
-[data-theme="dark"] .cp{background:rgba(167,139,250,.09);color:#A78BFA;border-color:rgba(167,139,250,.22)}
+[data-theme="light"] .cs{background:#FFF3EA;color:#C2410C;border-color:#FFD9C2}
+[data-theme="light"] .cp{background:#F3F4F6;color:#5B6472;border-color:#DCE0E6}
 .srow{display:flex;align-items:center;gap:7px;margin-top:1px}
 .sbg{height:4px;flex:0 0 90px;background:var(--bd);border-radius:99px;overflow:hidden}
 .sbf{height:100%;border-radius:99px;transition:width .35s ease}
 .sf1{background:linear-gradient(90deg,var(--gn),#4ade80)}
-.sf2{background:linear-gradient(90deg,#2563EB,#60a5fa)}
+.sf2{background:linear-gradient(90deg,var(--or),var(--or2))}
 .sf3{background:linear-gradient(90deg,var(--ye),#fbbf24)}
-.sf4{background:linear-gradient(90deg,#7C3AED,#a78bfa)}
+.sf4{background:linear-gradient(90deg,var(--mu),var(--tx2))}
 .sf5{background:var(--re)}
 .sfile{font-size:.78rem;color:var(--tx2);white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5;flex:1;min-width:0}
 .rcard.excluded{opacity:.68;border-style:dashed}.rcard.excluded .thumb{filter:grayscale(.6)}
@@ -328,12 +328,12 @@ textarea::placeholder{color:var(--mu)}
 .dls .dn{font-size:1.5rem;font-weight:800;line-height:1}
 .dls .dl{font-size:.64rem;color:var(--tx2);margin-top:3px}
 .dg{border-color:var(--gnbd);background:var(--gnb)}.dg .dn{color:var(--gn)}
-.db{border-color:#BFDBFE;background:#EFF6FF}.db .dn{color:#2563EB}
+.db{border-color:rgba(255,90,0,.28);background:var(--orl)}.db .dn{color:var(--or2)}
 .dy{border-color:var(--yebd);background:var(--yeb)}.dy .dn{color:var(--ye)}
-.dp{border-color:#DDD6FE;background:#F5F3FF}.dp .dn{color:#7C3AED}
+.dp{border-color:var(--bd2);background:var(--sur2)}.dp .dn{color:var(--tx2)}
 .dr{border-color:var(--rebd);background:var(--reb)}.dr .dn{color:var(--re)}
-[data-theme="dark"] .db{border-color:rgba(96,165,250,.22);background:rgba(96,165,250,.09)}.db .dn{color:#60A5FA}
-[data-theme="dark"] .dp{border-color:rgba(167,139,250,.22);background:rgba(167,139,250,.09)}.dp .dn{color:#A78BFA}
+[data-theme="light"] .db{border-color:#FFD9C2;background:#FFF3EA}[data-theme="light"] .db .dn{color:#C2410C}
+[data-theme="light"] .dp{border-color:#DCE0E6;background:#F3F4F6}[data-theme="light"] .dp .dn{color:#5B6472}
 .log{background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:10px 12px;margin-top:10px;font-size:.74rem;font-family:monospace;max-height:170px;overflow-y:auto;display:none;line-height:1.8;color:var(--tx2)}
 .log.show{display:block}
 .lok{color:var(--gn);font-weight:600}.ler{color:var(--re);font-weight:600}.li{color:var(--or);font-weight:600}
@@ -1258,20 +1258,20 @@ loadDictionary();
 const AUTO_TAXONOMY={
 /* ── MAINS ─────────────────────────────────────────────────────── */
 pizza:{g:'Mains',weight:1.02,label:'🍕 Pizza',s:['pizza','بيتزا','بيتزه','بتزا','بيزا','margherita','مارجريتا','مارغريتا','pepperoni','بيبروني','calzone','كالزوني','بيتزا ايطالي','pizza slice'],w:['سوبريم','supreme','four cheese','فور تشيز','مشكل بيتزا','ranch pizza','veggie pizza','مكس بيتزا','سجق بيتزا']},
-pasta:{g:'Mains',label:'🍝 Pasta',s:['pasta','باستا','مكرونه','معكرونه','spaghetti','سباجيتي','اسباجيتي','lasagna','لازانيا','penne','بيني','fettuccine','فيتوتشيني','alfredo','الفريدو','بشاميل','bechamel','ravioli','رافيولي','mac and cheese','ماك اند تشيز','نودلز بالباستا','gnocchi','tortellini','كانيلوني','صينيه مكرونه'],w:['اربياتا','arrabbiata','pesto','بيستو','بولونيز','bolognese','كريمي باستا','cream pasta','red sauce','صوص احمر']},
-rice_meals:{g:'Mains',label:'🍛 Rice & Main Meals',s:['rice','ارز','رز','biryani','برياني','kabsa','كبسه','mandi','مندي','فته','fattah','ريزو','risotto','مقلوبه','maqluba','صياديه','طاجن','tagine','مكرونه بشاميل صينيه','رز بخاري','رز معمر','فريك','freekeh','برغل','bulgur','كسكسي','couscous','quinoa','كينوا','وجبه رز','طبق رز'],w:['bowl','بول','plate','طبق','صينيه','مع الرز','with rice','باسمتي','basmati']},
-grills:{g:'Mains',weight:1.02,label:'🍢 Grills & BBQ',s:['grill','grilled','مشوي','مشويات','مشويه','kofta','كفته','كفتة','tawook','طاووق','طاووك','shish','شيش','kebab','كباب','ريش','ribs','skewer','سيخ','مكس جريل','mixed grill','bbq','باربكيو','شواء','charcoal','فحم','فراخ مشويه','لحمه مشويه','kebab halabi','كباب حله'],w:['اوزي','ouzi','عرق','lamb chops','ضاني','mutton','صاج','saj']},
+pasta:{g:'Mains',label:'🍝 Pasta',s:['pasta','باستا','مكرونه','معكرونه','makarona','makaroni','macaroni','ماكاروني','مكرونه بشاميل','spaghetti','سباجيتي','اسباجيتي','lasagna','لازانيا','penne','بيني','fettuccine','فيتوتشيني','alfredo','الفريدو','بشاميل','bechamel','ravioli','رافيولي','mac and cheese','ماك اند تشيز','نودلز بالباستا','gnocchi','tortellini','كانيلوني','صينيه مكرونه'],w:['اربياتا','arrabbiata','pesto','بيستو','بولونيز','bolognese','كريمي باستا','cream pasta','red sauce','صوص احمر']},
+rice_meals:{g:'Mains',label:'🍛 Rice & Main Meals',s:['صينيه فراخ','صينيه بطاطس','اوزي رز','rice','ارز','رز','برياني','kabsa','كبسه','mandi','مندي','فته','fattah','ريزو','risotto','مقلوبه','maqluba','صياديه','طاجن','tagine','مكرونه بشاميل صينيه','رز بخاري','رز معمر','فريك','freekeh','برغل','bulgur','كسكسي','couscous','quinoa','كينوا','وجبه رز','طبق رز'],w:['bowl','بول','plate','طبق','صينيه','مع الرز','with rice','باسمتي','basmati']},
+grills:{g:'Mains',weight:1.02,label:'🍢 Grills & BBQ',s:['mashwi','mashwy','mashwya','mashweya','firakh mashwya','grill','grilled','مشوي','مشويات','مشويه','kofta','كفته','كفتة','tawook','طاووق','طاووك','shish','شيش','kebab','كباب','ريش','ribs','skewer','سيخ','مكس جريل','mixed grill','bbq','باربكيو','شواء','charcoal','فحم','فراخ مشويه','لحمه مشويه','kebab halabi','كباب حله'],w:['اوزي','ouzi','عرق','lamb chops','ضاني','mutton','صاج','saj']},
 roast_chicken:{g:'Mains',label:'🍗 Roast & Grilled Chicken',s:['rotisserie','روستو','فرخه','فراخ','نص فرخه','ربع فرخه','half chicken','quarter chicken','whole chicken','فرخه كامله','chicken meal','دجاج مشوي','فراخ بانيه? ','chicken plate','حله فراخ','شواية فراخ'],w:['chicken','دجاج','شيش فراخ','lemon chicken','فراخ بالفرن','oven chicken']},
 fried_chicken:{g:'Mains',weight:1.03,label:'🍗 Fried Chicken',s:['fried chicken','دجاج مقلي','فراخ مقليه','broasted','بروستد','بروست','strips','استربس','ستربس','nuggets','ناجتس','ناجتز','wings','وينجز','اجنحه','بانيه','panee','crispy chicken','كرسبي','zinger','زنجر','popcorn chicken','بوب كورن تشيكن','drumstick','دبوس','tenders','تندرز','باكت دجاج','bucket','chicken bucket'],w:['fillet','فيليه','hot and spicy','سبايسي','crunchy','كرانشي']},
 steaks_meat:{g:'Mains',label:'🥩 Steaks & Meat Dishes',s:['steak','ستيك','escalope','اسكالوب','روست بيف','roast beef','لحمه بالفرن','ستروجانوف','stroganoff','shish tawook? ','picanha','بيكانيا','t bone','تي بون','ribeye','ريب اي','lamb','ضاني','veal','بتلو','شرائح لحم','meat plate','طبق لحمه','فاهيتا لحم? '],w:['beef','لحمه','لحم','bacon','بسطرمه','pastrami','sausage','سوسيس','hot dog sausage']},
 seafood:{g:'Mains',label:'🐟 Seafood',s:['fish','سمك','سمكه','shrimp','جمبري','calamari','كاليماري','سي فود','seafood','salmon','سلمون','tuna','تونه','crab','كابوريا','سبيط','squid','فيليه سمك','fish fillet','بلطي','tilapia','بوري','mullet','مكرونه بالسي فود','سمك مقلي','fried fish','صياديه سمك','lobster','استاكوزا','oyster','محار','سردين','sardine'],w:['grilled fish','سمك مشوي','فيليه مقلي','بانيه سمك']},
-sushi_asian:{g:'Mains',label:'🍣 Sushi & Asian',s:['sushi','سوشي','maki','ماكي','nigiri','ramen','رامن','noodles','نودلز','نودلس','teriyaki','ترياكي','sweet and sour','حلو حامض','chinese','صيني','thai','تايلاندي','dim sum','ديم سام','spring roll','سبرينج رول','wok','ووك','yakhne? ','pad thai','باد تاي','bao','باو','gyoza','تمبورا','tempura','sashimi','ساشيمي','poke','بوكي'],w:['soy sauce','صويا','ستير فراي','stir fry','rice bowl asian']},
-indian:{g:'Mains',label:'🇮🇳 Indian & Curry',s:['curry','كاري','tikka','تكا','masala','ماسالا','مسالا','butter chicken','بتر تشيكن','naan','نان','tandoori','تندوري','samosa','سمبوسه هندي','paneer','بانير','vindaloo','korma','كورما','daal','دال','chapati','شباتي'],w:['spicy indian','هندي']},
+sushi_asian:{g:'Mains',label:'🍣 Sushi & Asian',s:['sushi','سوشي','maki','ماكي','nigiri','ramen','رامن','noodles','نودلز','نودلس','teriyaki','ترياكي','sweet and sour','حلو حامض','chinese','صيني','thai','تايلاندي','dim sum','ديم سام','spring roll','spring rolls','سبرينج رول','ربيع رول','wok','ووك','yakhne? ','pad thai','باد تاي','bao','باو','gyoza','تمبورا','tempura','sashimi','ساشيمي','poke','بوكي'],w:['soy sauce','صويا','ستير فراي','stir fry','rice bowl asian']},
+indian:{g:'Mains',label:'🇮🇳 Indian & Curry',s:['برياني','biryani','برياني لحم','برياني دجاج','curry','كاري','tikka','تكا','masala','ماسالا','مسالا','butter chicken','بتر تشيكن','naan','نان','tandoori','تندوري','samosa','سمبوسه هندي','paneer','بانير','vindaloo','korma','كورما','daal','دال','chapati','شباتي'],w:['spicy indian','هندي']},
 mexican:{g:'Mains',label:'🌮 Mexican & Tex-Mex',s:['taco','تاكو','burrito','بوريتو','nachos','ناتشوز','ناتشوس','quesadilla','كساديا','كاساديا','fajita','فاهيتا','guacamole','جواكامولي','enchilada','انشيلادا','chimichanga','تورتيلا','tortilla','mexican','مكسيكي'],w:['salsa','سالسا','jalapeno','هالوبينو','chili','تشيلي']},
-egyptian:{g:'Mains',weight:1.03,label:'🇪🇬 Egyptian Classics',s:['koshary','كشري','koshari','ملوخيه','molokhia','محشي','mahshi','بامية','باميه','okra','مسقعه','moussaka','طاجن','صينيه بطاطس','فته','hamam','حمام','حمام محشي','بسله','ويكه','قلقاس','شوربه لسان عصفور','رقاق','roqaq','ورق عنب','vine leaves','عكاوي','كوارع','فتير? '],w:['بلدي','baladi','مصري','egyptian','home food','اكل بيتي']},
+egyptian:{g:'Mains',weight:1.03,label:'🇪🇬 Egyptian Classics',s:['mahshy','محشي ورق عنب','tagen? ','koshary','كشري','koshari','ملوخيه','molokhia','محشي','mahshi','بامية','باميه','okra','مسقعه','moussaka','طاجن','صينيه بطاطس','فته','hamam','حمام','حمام محشي','بسله','ويكه','قلقاس','رقاق','roqaq','ورق عنب','vine leaves','عكاوي','كوارع','فتير? '],w:['بلدي','baladi','مصري','egyptian','home food','اكل بيتي']},
 offal_street:{g:'Mains',label:'🥘 Kebda, Sogo2 & Hawawshi',s:['كبده','كبدة','liver','kebda','سجق','sogo2','sogok','سوجق','ممبار','mombar','حواوشي','hawawshi','مخ','brain','كوارع','طرب','شكمجي','كبده اسكندراني','فشه'],w:['اسكندراني','alexandrian','صاج كبده']},
 foul_falafel:{g:'Mains',weight:1.02,label:'🫘 Foul & Ta3meya',s:['فول','foul','ful','طعميه','ta3meya','taameya','falafel','فلافل','بصاره','bessara','فول بالزيت','فول اسكندراني','طعميه بالبيض','قرص طعميه','فول مدمس'],w:['breakfast plate','صحن فول','عيش بلدي فول']},
-soups:{g:'Mains',label:'🍲 Soups',s:['soup','شوربه','شوربات','حساء','lentil soup','شوربه عدس','cream soup','كريم سوب','mushroom soup','شوربه مشروم','chicken soup','شوربه فراخ','broth','مرقه','شوربه خضار','vegetable soup','شوربه سي فود','حمص الشام'],w:['لسان عصفور','vermicelli','hot soup']},
+soups:{g:'Mains',weight:1.04,label:'🍲 Soups',s:['شوربه لسان عصفور','shorba','شوربه كوارع','soup','شوربه','شوربات','حساء','lentil soup','شوربه عدس','cream soup','كريم سوب','mushroom soup','شوربه مشروم','chicken soup','شوربه فراخ','broth','مرقه','شوربه خضار','vegetable soup','شوربه سي فود','حمص الشام'],w:['لسان عصفور','vermicelli','hot soup']},
 salads:{g:'Sides',label:'🥗 Salads',s:['salad','سلطه','سلطات','caesar','سيزر','coleslaw','كول سلو','كولسلو','tabbouleh','تبوله','فتوش','fattoush','greek salad','سلطه يوناني','green salad','سلطه خضرا','سلطه بلدي','tuna salad','سلطه تونه','chicken salad','سلطه سيزر','rocca','جرجير','قيصر'],w:['dressing','صوص سلطه','خضار','veggies']},
 healthy_bowls:{g:'Mains',label:'🥙 Healthy & Diet',s:['healthy','صحي','دايت','diet','keto','كيتو','protein bowl','بروتين','low carb','لو كارب','fitness','فتنس','جيم','gim meal','وجبه صحيه','calories','سعرات','grilled diet','sugar free','خالي السكر','جلوتين'],w:['bowl','بول','light','لايت','fresh bowl']},
 
@@ -1284,14 +1284,14 @@ feteer:{g:'Sandwiches',label:'🫓 Feteer & Manakish',s:['فطير','feteer','ف
 
 /* ── SIDES & STARTERS ──────────────────────────────────────────── */
 appetizers:{g:'Sides',label:'🫓 Appetizers & Mezza',s:['appetizer','مقبلات','starter','مازه','mezza','hummus','حمص','بابا غنوج','baba ganoush','طحينه','tahina','سمبوسك','sambousek','متبل','motabal','mutabal','لبنه','labneh','mozzarella sticks','اصابع موتزاريلا','cheese balls','كرات الجبن','onion rings? ','بطاطس بالجبنه','dips','dip','jalapeno poppers','فلافل بول? ','مقبلات شرقي','cold mezza','hot mezza'],w:['platter','بلاتر','تشكيله','mix starter']},
-sides_fries:{g:'Sides',weight:0.96,label:'🍟 Fries & Sides',s:['fries','فرايز','بطاطس','french fries','potato wedges','ودجز','wedges','onion rings','حلقات بصل','curly fries','hash brown','هاش براون','بطاطا','sweet potato','بطاطس محمره','بطاطس بالجبنه? ','mashed potato','بوريه','side order'],w:['side','اضافه جانبيه','طلب جانبي','small fries','large fries']},
+sides_fries:{g:'Sides',weight:0.96,label:'🍟 Fries & Sides',s:['batates','mahammara','batates mahammara','fries','فرايز','بطاطس','french fries','potato wedges','ودجز','wedges','onion rings','حلقات بصل','curly fries','hash brown','هاش براون','بطاطا','sweet potato','بطاطس محمره','بطاطس بالجبنه? ','mashed potato','بوريه','side order'],w:['side','اضافه جانبيه','طلب جانبي','small fries','large fries']},
 sauces_extras:{g:'Extras',weight:0.9,label:'🧂 Sauces & Extras',s:['sauce','صوص','ketchup','كاتشب','mayonnaise','مايونيز','mayo','ثوميه','garlic sauce','tahina sauce','دبس','رانش','ranch','باربكيو صوص','hot sauce','شطه','chili sauce','extra','اضافه','اضافات','topping','توبينج','مخلل','pickles','زيتون','olives','توابل','spices','دريسنج'],w:['dip sauce','صوص جانبي','cheese sauce']},
 bread:{g:'Bakery',label:'🍞 Bread',s:['bread','خبز','عيش','عيش بلدي','عيش فينو','توست','toast','بيجل','bagel','بريوش','brioche','pita','صامولي','sourdough','خبز سن','رغيف','buns','خبز برجر'],w:['loaf','بان','baked bread']},
 
 /* ── BAKERY & SWEETS ───────────────────────────────────────────── */
 pastry:{g:'Bakery',label:'🥐 Pastry & Croissant',s:['croissant','كرواسون','كرواسان','danish','دانش','muffin','مافن','cinnamon roll','سينابون','pain au chocolat','بان او شوكولا','puff','بف باستري','باتيه','pattie','pastry','معجنات','مخبوزات','scone','بريتزل','pretzel','tart','تارت','quiche','كيش','ميني فطاير'],w:['bakery','مخبز','فرن','butter pastry']},
 cakes:{g:'Sweets',label:'🍰 Cakes & Gateaux',s:['cake','كيك','كيكه','تورته','gateau','جاتوه','cheesecake','تشيز كيك','cupcake','كب كيك','red velvet','ريد فيلفيت','swiss roll','سويس رول','سويسرول','black forest','بلاك فورست','تريليتشا','tres leches','carrot cake','كيكه جزر','birthday cake','تورته عيد ميلاد','باوند كيك','pound cake','mini cake'],w:['frosting','كريمه','slice','شريحه','sponge']},
-western_desserts:{g:'Sweets',label:'🍮 Desserts (Western)',s:['dessert','حلويات','desserts','brownie','براوني','tiramisu','تيراميسو','molten','مولتن','pudding','بودينج','mousse','موس','panna cotta','بانا كوتا','souffle','سوفليه','cookies','كوكيز','بسكويت','donut','دونات','دونتس','churros','تشوروز','waffle? ','trifle','cheesecake? ','ice cream cake? ','pancake? ','eclair','اكلير','profiterole','بروفيترول','فوندو','fondue'],w:['chocolate dessert','نوتيلا','nutella','lotus','لوتس','oreo','اوريو','caramel','كراميل']},
+western_desserts:{g:'Sweets',label:'🍮 Desserts (Western)',s:['كريم كراميل','creme caramel','موس شوكولاته','dessert','حلويات','desserts','brownie','براوني','tiramisu','تيراميسو','molten','مولتن','pudding','بودينج','mousse','موس','panna cotta','بانا كوتا','souffle','سوفليه','cookies','كوكيز','بسكويت','donut','دونات','دونتس','churros','تشوروز','waffle? ','trifle','cheesecake? ','ice cream cake? ','pancake? ','eclair','اكلير','profiterole','بروفيترول','فوندو','fondue'],w:['chocolate dessert','نوتيلا','nutella','lotus','لوتس','oreo','اوريو','caramel','كراميل']},
 oriental_sweets:{g:'Sweets',weight:1.02,label:'🍯 Oriental Sweets',s:['كنافه','kunafa','konafa','بسبوسه','basbousa','بقلاوه','baklava','ام علي','om ali','رز بلبن','rice pudding','مهلبيه','mahalabia','قطايف','kataief','زلابيه','zalabya','لقمه القاضي','بلح الشام','balah el sham','حلويات شرقي','oriental sweets','عيش السرايا','غريبه','كحك','kahk','معمول','maamoul','هريسه','نموره','حلاوه طحينيه','مشبك'],w:['شيره','syrup','قشطه','cream oriental','فستق حلويات']},
 ice_cream:{g:'Sweets',weight:1.04,label:'🍨 Ice Cream',s:['ice cream','icecream','ايس كريم','ايسكريم','جيلاتو','gelato','مثلجات','sundae','صنداي','soft serve','سوفت ايس','popsicle','بوظه','frozen yogurt','فروزن يوجرت','مكعبات ايس كريم','scoop','كوره ايس كريم','cone','كورنيتو','ice cream cake'],w:['frozen','مجمد','vanilla scoop']},
 chocolate_candy:{g:'Sweets',label:'🍫 Chocolate & Candy',s:['chocolate bar','لوح شوكولاته','candy','حلوى','جيلي','jelly','مارشميلو','marshmallow','lollipop','لولي بوب','علكه','chewing gum','توفي','toffee','بونبون','ملبن','حلقوم','نوجا','truffle','ترافل','شوكولاته مغلفه','كيندر','kinder','galaxy','جالاكسي','snickers','سنيكرز','m and m'],w:['chocolate','شوكولاته','دارك','dark','milk chocolate','white chocolate']},
@@ -1301,13 +1301,13 @@ nuts:{g:'Extras',weight:0.95,label:'🥜 Nuts & Seeds',s:['مكسرات','nuts',
 
 /* ── DRINKS ────────────────────────────────────────────────────── */
 hot_coffee:{g:'Drinks',label:'☕ Coffee (Hot)',s:['coffee','قهوه','قهوة','espresso','اسبريسو','latte','لاتيه','لاتية','cappuccino','كابتشينو','كابوتشينو','americano','امريكانو','mocha','موكا','macchiato','ماكياتو','flat white','فلات وايت','cortado','كورتادو','turkish coffee','قهوه تركي','قهوه فرنساوي','nescafe','نسكافيه','v60','في 60','filter coffee','قهوه مختصه','ristretto','قهوه عربي','arabic coffee'],w:['hot coffee','single','double shot','بن']},
-hot_tea:{g:'Drinks',label:'🍵 Tea & Herbal (Hot)',s:['tea','شاي','شاي بالنعناع','green tea','شاي اخضر','ينسون','anise','كركديه','hibiscus','قرفه','cinnamon','زهورات','حلبه','سحلب','sahlab','سوبيا','نعناع','mint tea','ginger','جنزبيل','زنجبيل','يانسون','مشروب ساخن','hot drinks','تيلو','chamomile','بابونج','matcha','ماتشا'],w:['herbal','اعشاب','hot','ساخن','بالحليب','with milk']},
+hot_tea:{g:'Drinks',label:'🍵 Tea & Herbal (Hot)',s:['shay','na3na3','tea with mint','tea','شاي','شاي بالنعناع','green tea','شاي اخضر','ينسون','anise','كركديه','hibiscus','قرفه','cinnamon','زهورات','حلبه','سحلب','sahlab','سوبيا','نعناع','mint tea','ginger','جنزبيل','زنجبيل','يانسون','مشروب ساخن','hot drinks','تيلو','chamomile','بابونج','matcha','ماتشا'],w:['herbal','اعشاب','hot','ساخن','بالحليب','with milk']},
 hot_chocolate:{g:'Drinks',label:'🍫 Hot Chocolate',s:['hot chocolate','هوت شوكليت','شوكولاته ساخنه','كاكاو ساخن','hot cocoa','شوكولاته بالحليب ساخنه'],w:['chocolate drink','مشروب شوكولاته']},
 iced_coffee:{g:'Drinks',weight:1.04,label:'🧊 Iced Coffee',s:['iced coffee','ice coffee','ايس كوفي','ايسد كوفي','frappe','فرابيه','فراب','frappuccino','فرابتشينو','cold brew','كولد برو','ice latte','iced latte','ايس لاتيه','iced cappuccino','ايس كابتشينو','iced americano','ايس امريكانو','iced mocha','ايس موكا','affogato','ابوجاتو','قهوه مثلجه','shakerato'],w:['iced','مثلج','cold coffee','بارد']},
 cold_drinks:{g:'Drinks',label:'🧊 Cold & Iced Drinks',s:['iced tea','ايس تي','شاي مثلج','lemonade','ليمونادة','ليموناضه','mojito','موهيتو','slush','سلاش','granita','جرانيتا','مشروب بارد','cold drink','مشروبات باردة','ice lemon mint','ليمون بالنعناع','كركديه بارد','تمر هندي','سوبيا بارده','iced matcha'],w:['cold','بارد','مثلج','ice','ثلج','refresher']},
-juices:{g:'Drinks',weight:1.03,label:'🧃 Fresh Juices',s:['juice','عصير','عصاير','عصائر','fresh juice','عصير فريش','cocktail','كوكتيل','قصب','sugarcane','عصير قصب','عصير برتقال','orange juice','عصير مانجو','mango juice','عصير فراوله','عصير جوافه','guava','عصير ليمون','lemon juice','عصير رمان','بلح باللبن','سوبيا عصير'],w:['fresh','فريش','طازج','natural','طبيعي','pulp','مكس عصاير']},
+juices:{g:'Drinks',weight:1.03,label:'🧃 Fresh Juices',s:['asir','3asir','aseer','asir laymoon','laymoon','lamoon','3asir mango','juice','عصير','عصاير','عصائر','fresh juice','عصير فريش','cocktail','كوكتيل','قصب','sugarcane','عصير قصب','عصير برتقال','orange juice','عصير مانجو','mango juice','عصير فراوله','عصير جوافه','guava','عصير ليمون','lemon juice','عصير رمان','بلح باللبن','سوبيا عصير'],w:['fresh','فريش','طازج','natural','طبيعي','pulp','مكس عصاير']},
 shakes:{g:'Drinks',weight:1.03,label:'🥤 Shakes & Smoothies',s:['milkshake','milk shake','ميلك شيك','ميلكشيك','shake','شيك','smoothie','سموذي','سموثي','frozen yogurt drink','بوبا','bubble tea','شيك اوريو','oreo shake','nutella shake','شيك فراوله','protein shake','بروتين شيك'],w:['blended','مخفوق','whipped','كريمه شانتيه','ice blended']},
-soft_drinks:{g:'Drinks',label:'🥫 Soft Drinks',s:['pepsi','بيبسي','cola','كولا','coca','كوكا','coke','sprite','سبرايت','fanta','فانتا','mirinda','ميرندا','7up','سفن اب','schweppes','شويبس','soda','صودا','مشروب غازي','soft drink','غازيه','birell','بيريل','تفاح غازي','مياه غازيه','dew','ديو','vimto','فيمتو'],w:['can','كانز','علبه','bottle','زجاجه','diet','دايت','zero','زيرو','330','500']},
+soft_drinks:{g:'Drinks',label:'🥫 Soft Drinks',s:['pepsi','بيبسي','cola','كولا','coca','كوكا','كوكاكولا','كوكا كولا','coca cola','cocacola','pepsi cola','coke','sprite','سبرايت','fanta','فانتا','mirinda','ميرندا','7up','سفن اب','schweppes','شويبس','soda','صودا','مشروب غازي','soft drink','غازيه','birell','بيريل','تفاح غازي','مياه غازيه','dew','ديو','vimto','فيمتو'],w:['can','كانز','علبه','bottle','زجاجه','diet','دايت','zero','زيرو','330','500']},
 water:{g:'Drinks',label:'💧 Water',s:['water','مياه','ماء','مياه معدنيه','mineral water','aquafina','اكوافينا','nestle water','نستله','baraka','بركه','دسني','dasani','sparkling water','مياه فواره','مياه غازيه معدنيه','زجاجه مياه'],w:['500 ml','1 5 l','لتر','small water','large water']},
 energy_drinks:{g:'Drinks',label:'⚡ Energy Drinks',s:['energy drink','مشروب طاقه','red bull','ريد بول','power horse','باور هورس','monster','مونستر','hype','هايب','sting','ستينج','xl energy','بريزه? '],w:['taurine','كافيين','energy']},
 dairy_drinks:{g:'Drinks',weight:0.95,label:'🥛 Milk, Laban & Yogurt',s:['yogurt','yoghurt','زبادي','laban','لبن رايب','عيران','ayran','رايب','بوظه لبن? ','milkshake? ','قشطه','buttermilk','كفير','kefir','lassi','لاسي'],w:['milk','لبن','حليب','dairy','البان','جبنه','cheese']},
@@ -1366,7 +1366,17 @@ const BUILTIN_CATEGORY_KEYS=new Set(Object.keys(CATEGORY_DEFS));
 for(const[k,v]of Object.entries(FOLDER_CATEGORY_DEFS))if(v&&v.label){CATEGORY_DEFS[k]={label:v.label,words:v.words||[]};CATEGORY_GROUP[k]='Folders'}
 let CUSTOM_CATEGORY_DEFS={};
 try{CUSTOM_CATEGORY_DEFS=JSON.parse(localStorage.getItem('tif_custom_categories_v1')||'{}')}catch(e){CUSTOM_CATEGORY_DEFS={}}
-function categorySlug(label){return norm(label).replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'').slice(0,36)}
+function categorySlug(label){
+  /* Arabic letters are part of a category name here, not noise to strip.
+     An Arabic-only name used to slug down to '' and the category was
+     refused as "already exists or not valid". */
+  const base=norm(label).replace(/\s+/g,'_').replace(/[^a-z0-9_\u0621-\u064A]/g,'').slice(0,36)
+    .replace(/^_+|_+$/g,'');
+  if(base)return base;
+  let h=0;const t=String(label||'');
+  for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;
+  return 'cat_'+h.toString(36);
+}
 const GROUP_ORDER=['Mains','Sandwiches','Sides','Bakery','Sweets','Drinks','Extras','Folders','Custom','Fallback','Other'];
 function groupOf(k){return CATEGORY_GROUP[k]||(FOLDER_CATEGORY_DEFS[k]?'Folders':(CUSTOM_CATEGORY_DEFS[k]?'Custom':'Other'))}
 function categoryEntriesGrouped(){
@@ -1384,7 +1394,8 @@ function catKeywordTable(){
     const n=norm(defranco(String(p||'')));
     if(!n)return null;
     const multi=n.includes(' ');
-    return{p:n,multi,w:Math.min(.98,base+(multi?.1:0)+(n.length>=9?.03:0))};
+    const ar=!multi&&n.length>=4&&/^[\u0621-\u064A]+$/.test(n);
+    return{p:n,multi,ar,w:Math.min(.98,base+(multi?.1:0)+(n.length>=9?.03:0))};
   }).filter(Boolean);
   CAT_KW_CACHE=Object.entries(CATEGORY_DEFS).map(([k,v])=>{
     const def=AUTO_TAXONOMY[k]||FALLBACK_TAXONOMY[k];
@@ -1406,14 +1417,32 @@ function catPrep(text){
   const t=norm(defranco(String(text||'').replace(/\.[a-z0-9]{2,5}$/i,'')));
   if(!t)return{str:' ',set:new Set()};
   const toks=t.split(' ').filter(Boolean).map(w=>(/^ال[\u0621-\u064A]{3,}$/.test(w)?w.slice(2):w));
-  const set=new Set();
+  const set=new Set();const sing=[];
+  const fold=w=>{
+    if(w.length>4&&w.endsWith('ies'))return w.slice(0,-3)+'y';
+    if(w.length>4&&w.endsWith('es'))return w.slice(0,-2);
+    if(w.length>3&&w.endsWith('s'))return w.slice(0,-1);
+    return w;
+  };
   for(const w of toks){
     set.add(w);
-    if(w.length>3&&w.endsWith('s'))set.add(w.slice(0,-1));
-    if(w.length>4&&w.endsWith('es'))set.add(w.slice(0,-2));
-    if(w.length>4&&w.endsWith('ies'))set.add(w.slice(0,-3)+'y');
+    const f=fold(w);if(f!==w)set.add(f);
+    sing.push(f);
   }
-  return{str:' '+toks.join(' ')+' ',set};
+  /* multi-word patterns are matched against the singular-folded copy too,
+     otherwise "spring rolls" never contains the keyword "spring roll" */
+  /* Arabic clitics only ever attach at the edges (والبيتزا، بالكولا، للفراخ),
+     so an inner match must still line up with the start of the word —
+     otherwise "شوكولاته" would match the keyword "كولا" sitting inside it. */
+  const arx=kw=>{
+    /* prefixes only (وال، بال، لل، ك…): Arabic suffixes change the word
+       itself, and allowing them made "صينيه" match "صيني" */
+    if(kw.length<4)return false;
+    const re=new RegExp('^(?:و|ف)?(?:ب|ل|ك)?(?:ال)?'+kw+'$');
+    for(const w of toks)if(re.test(w))return true;
+    return false;
+  };
+  return{str:' '+toks.join(' ')+' ',strS:' '+sing.join(' ')+' ',set,arx};
 }
 /* ---- the classifier ---- */
 function classifyPrepared(P,opts){
@@ -1427,10 +1456,14 @@ function classifyPrepared(P,opts){
     if(blocked)continue;
     let best=0,hits=0,last=-1;const why=[];
     for(const kw of c.pos){
-      const hit=kw.multi?P.str.includes(' '+kw.p+' '):P.set.has(kw.p);
+      let hit=kw.multi?(P.str.includes(' '+kw.p+' ')||(P.strS||P.str).includes(' '+kw.p+' ')):P.set.has(kw.p);
+      let w=kw.w;
+      /* Arabic writes the article and prepositions onto the word itself,
+         so an inner match is still a real match — just worth a little less */
+      if(!hit&&kw.ar&&P.arx&&P.arx(kw.p)){hit=true;w=kw.w*.93}
       if(!hit)continue;
       hits++;why.push(kw.p);
-      if(kw.w>best)best=kw.w;
+      if(w>best)best=w;
       const at=P.str.indexOf(' '+kw.p);
       if(at>last)last=at;
     }
@@ -1448,6 +1481,28 @@ function classifyPrepared(P,opts){
   rows.sort((a,b)=>(b.score-a.score)||(b.last-a.last)||(b.hits-a.hits));
   return rows;
 }
+/* ---- what kind of word won the match ----------------------------------
+   form   (2) names the dish itself      : pizza, wrap, sushi, cake, عصير
+   ingr   (1) names what is inside it     : chicken, salmon, cheese, سجق
+   method (0) names only how it was cooked: grilled, fried, مشوي
+   Menu text almost always combines them ("grilled salmon", "راب فراخ"),
+   and the more specific word is the one that should pick the category. */
+const ING_WORDS=new Set(['chicken','فراخ','دجاج','فرخه','beef','لحمه','لحم','meat','veal','بتلو','lamb','ضاني','kebda? ','salmon','سلمون','tuna','تونه','shrimp','جمبري','fish','سمك','cheese','جبنه','جبن','chocolate','شوكولاته','شيكولاته','strawberry','فراوله','mango','مانجو','vanilla','فانيليا','caramel','كراميل','honey','عسل','sausage','سجق','بسطرمه','pastrami','egg','بيض','mushroom','مشروم','nutella','نوتيلا','lotus','لوتس','oreo','اوريو','spinach','سبانخ','خضار','vegetables','veggie','sauce','صوص','ranch','رانش','mayo','مايونيز','garlic','توم','ثوم','onion','بصل','tomato','طماطم','spicy','حار','tahina','طحينه','shrimp','جمبري','firakh','laymoon','mango','nuggets']);
+const METHOD_WORDS=new Set(['skewer','skewers','سيخ','اسياخ','mashwi','mashwy','mashwya','grill','grilled','مشوي','مشويه','مشويات','شواء','charcoal','فحم','bbq','باربكيو','fried','fry','مقلي','مقليه','roasted','roast','oven','فرن','crispy','كرسبي','crunchy','كرانشي','smoked','مدخن','steamed','مسلوق','boiled','محمر','مقرمش']);
+function wordRole(p){
+  const toks=String(p).split(' ').filter(Boolean);
+  let r=0,seen=false;
+  for(const t of toks){
+    const v=METHOD_WORDS.has(t)?0:(ING_WORDS.has(t)?1:2);
+    if(!seen||v>r){r=v;seen=true}
+  }
+  return seen?r:2;
+}
+function rowRole(row){let r=0;for(const w of row.why||[]){const v=wordRole(w);if(v>r)r=v}return r}
+/* An explicit offer word describes the package rather than the food, but
+   only when it comes last — "bucket deal" is a deal, "عرض بيتزا" is pizza. */
+const DEAL_MARKS=['deal','ديل','offer','عرض','combo','كومبو','bundle','باقه','sharing box','family box','بوكس عائلي'];
+
 /* A drink keyword decides WHAT it is; the temperature word decides WHICH
    shelf it lives on. "Iced latte" is a cold drink even though every one of
    its keywords lives in the hot list. */
@@ -1463,19 +1518,46 @@ function classifyText(text,opts){
   const P=catPrep(text);
   const rows=classifyPrepared(P,opts);
   if(!rows.length)return{key:'',score:0,why:[],alt:'',rows};
+  /* role resolution, only between genuinely close candidates — a weak
+     far-behind row must never steal the result */
+  let roleWin=false;
+  if(rows.length>1){
+    const lim=rows[0].score-.2;
+    const near=rows.filter(r=>r.score>=lim);
+    if(near.length>1){
+      let best=near[0],bestR=rowRole(near[0]);
+      for(const r of near.slice(1)){
+        const rr=rowRole(r);
+        if(rr>bestR){best=r;bestR=rr}
+      }
+      if(best!==rows[0]&&bestR>rowRole(rows[0])){
+        rows.splice(rows.indexOf(best),1);rows.unshift(best);roleWin=true;
+      }
+    }
+  }
   const top=rows[0],second=rows[1]||null;
   let score=top.conf!==undefined?top.conf:top.score;
   /* two categories neck and neck = genuinely ambiguous, lower the confidence
      so it falls under the threshold instead of guessing */
   /* calibrated penalty: a real coin-flip is thrown out, a near miss only
      loses a little — the 80% floor does the rest of the filtering */
-  if(second){
+  if(second&&!roleWin&&rowRole(top)===rowRole(second)){
+    /* only penalise a real coin-flip: if one side matched the dish word and
+       the other only an ingredient, the evidence is not actually ambiguous */
     const gap=top.score-second.score;
     const gapC=(top.conf||top.score)-(second.conf||second.score);
     if(gap<.02&&gapC<.02)score*=.8;
     else if(gap<.1)score*=.94;
   }
-  const key=temperatureOverride(top.key,P);
+  let key=temperatureOverride(top.key,P);
+  const KID_MARKS=['kids','kid','اطفال','طفل','children','junior','هابي ميل'];
+  if(key!=='kids'&&rows.some(r=>r.key==='kids')&&KID_MARKS.some(w=>P.set.has(norm(w)))){
+    key='kids';score=Math.max(score,.88);
+  }
+  const dealAt=DEAL_MARKS.map(d=>P.str.lastIndexOf(' '+norm(d))).reduce((a,b)=>Math.max(a,b),-1);
+  if(dealAt>=0&&key!=='combos'&&dealAt>(top.last||0)&&rows.some(r=>r.key==='combos')){
+    key='combos';score=Math.max(score,.88);
+  }
   return{key,score:Math.min(1,score),why:top.why,alt:second?second.key:'',rows};
 }
 
@@ -1660,16 +1742,22 @@ function applyFolderMajority(){
   if(!AUTO_CFG.folderMajority)return 0;
   const by=new Map();
   for(const img of IMAGES){
-    if(!img.file||!img.catKey)continue;
-    if(!(img.catSrc==='manual'||(img.catConf||0)>=.6))continue;
+    if(!img.file)continue;
     const p=folderPathOf(img.file);if(!p)continue;
-    const m=by.get(p)||new Map();m.set(img.catKey,(m.get(img.catKey)||0)+1);by.set(p,m);
+    const rec=by.get(p)||{m:new Map(),total:0};
+    rec.total++;                                   /* every image in the folder counts */
+    if(img.catKey&&(img.catSrc==='manual'||(img.catConf||0)>=.6))
+      rec.m.set(img.catKey,(rec.m.get(img.catKey)||0)+1);
+    by.set(p,rec);
   }
   const top=new Map();
-  for(const[p,m]of by){
-    let bk='',bn=0,tot=0;
-    for(const[k,n]of m){tot+=n;if(n>bn){bn=n;bk=k}}
-    if(bk&&bn>=4&&bn/tot>=.7)top.set(p,{key:bk,share:bn/tot});
+  for(const[p,rec]of by){
+    let bk='',bn=0;
+    for(const[k,n]of rec.m)if(n>bn){bn=n;bk=k}
+    /* a real majority of the WHOLE folder, not of the part we happened to
+       recognise — otherwise 16 known files out of 35 claim the other 19 */
+    const share=bn/Math.max(1,rec.total);
+    if(bk&&bn>=4&&share>=.7)top.set(p,{key:bk,share});
   }
   let n=0;
   for(const img of IMAGES){
@@ -3490,6 +3578,15 @@ async function buildThumb(i){
     return url;
   }catch(e){return img.objectUrl||''}
 }
+function thumbStopgap(el){
+  if(!el||!el.isConnected||!el.hasAttribute('data-ti'))return;   /* already done */
+  const r=el.getBoundingClientRect(),h=window.innerHeight||800;
+  if(r.bottom<-200||r.top>h+200)return;        /* not on screen: leave it light */
+  const src=el.getAttribute('src')||'';
+  if(src&&!src.startsWith('data:image/svg'))return;
+  const u=IMAGES[+el.getAttribute('data-ti')]?.objectUrl;
+  if(u)el.src=u;                 /* the thumb still replaces this when ready */
+}
 function pumpThumbs(){
   while(THUMB_BUSY<4&&THUMB_Q.length){
     /* newest first: what the user is looking at right now beats what they
@@ -3501,16 +3598,21 @@ function pumpThumbs(){
     if(!(i>=0)){continue}
     THUMB_BUSY++;
     buildThumb(i).then(u=>{
-      if(u&&el.isConnected){el.src=u;el.removeAttribute('data-ti')}
+      if(!el.isConnected)return;
+      /* only ever replace one picture with another — if the downscale failed,
+         fall back to the full image rather than blanking the card */
+      if(u)el.src=u; else{const f=IMAGES[i]?.objectUrl;if(f)el.src=f}
+      el.removeAttribute('data-ti');
     }).catch(()=>{}).then(()=>{THUMB_BUSY--;pumpThumbs()});
   }
 }
 function queueThumb(el){
   THUMB_Q.push(el);
-  if(THUMB_Q.length>160){
+  setTimeout(()=>thumbStopgap(el),400);
+  if(THUMB_Q.length>400){
     /* hand the overflow back to the observer instead of dropping it, so an
        image can never be left blank just because the user scrolled fast */
-    const drop=THUMB_Q.splice(0,THUMB_Q.length-160);
+    const drop=THUMB_Q.splice(0,THUMB_Q.length-400);
     if(THUMB_OBS)for(const d of drop){try{if(d.isConnected&&d.hasAttribute('data-ti'))THUMB_OBS.observe(d)}catch(e){}}
   }
   pumpThumbs();
@@ -3528,7 +3630,28 @@ function hookThumbs(root){
     }
   },{rootMargin:'800px 0px'});
   list.forEach(el=>THUMB_OBS.observe(el));
+  /* build the whole rendered page in the background as well: the observer
+     decides the order, this makes sure nothing waits for a scroll event */
+  requestIdleCallback?requestIdleCallback(()=>list.forEach(queueThumb),{timeout:1200})
+                     :setTimeout(()=>list.forEach(queueThumb),300);
+  scheduleHeal();
 }
+let THUMB_HEAL=0;
+function healThumbs(){
+  const pend=document.querySelectorAll('img[data-ti]');
+  if(!pend.length)return;
+  const h=window.innerHeight||800;
+  for(const el of pend){
+    const r=el.getBoundingClientRect();
+    if(r.bottom<-800||r.top>h+800)continue;
+    if(THUMB_OBS)THUMB_OBS.unobserve(el);
+    queueThumb(el);
+    thumbStopgap(el);
+  }
+}
+function scheduleHeal(){clearTimeout(THUMB_HEAL);THUMB_HEAL=setTimeout(healThumbs,400)}
+addEventListener('scroll',scheduleHeal,{passive:true});
+addEventListener('resize',scheduleHeal,{passive:true});
 function clearThumbCache(){
   for(const u of THUMB_CACHE.values()){try{URL.revokeObjectURL(u)}catch(e){}}
   THUMB_CACHE.clear();THUMB_Q=[];
@@ -4490,5 +4613,5 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45a591cfe46e195',t:'MTc5MTE4MTUxNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45b085c4a40bb20',t:'MTc5MTE4ODY5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
