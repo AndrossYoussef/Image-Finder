@@ -491,6 +491,7 @@ textarea::placeholder{color:var(--mu)}
 .covers-cat-btn{border:1px solid var(--bd);background:var(--sur);color:var(--tx2);border-radius:999px;padding:7px 11px;font:700 .7rem inherit;cursor:pointer}
 .covers-cat-btn:hover,.covers-cat-btn.active{border-color:var(--or);color:var(--or);background:var(--orl)}
 .covers-browser{margin-top:10px;padding:12px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs)}
+.covers-search-row{display:flex;gap:8px;margin-top:10px}.covers-search-row input{width:100%;background:var(--sur2);color:var(--tx);border:1px solid var(--bd);border-radius:var(--rx);padding:9px 11px;font:inherit;font-size:.75rem}.covers-search-row input:focus{outline:2px solid var(--or);outline-offset:-1px;border-color:var(--or)}
 .covers-browser-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--tx)}
 .covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .cover-tile{min-width:0;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:7px}
@@ -778,6 +779,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
       <button class="btn bs bsm" style="margin-left:auto" onclick="resetCovers()">Change Covers folder</button>
     </div>
     <div id="coversCategorySummary" class="covers-category-summary" style="display:none"></div>
+    <div id="coversSearchRow" class="covers-search-row" style="display:none"><input id="coversSearch" type="search" placeholder="Search Covers by file name, folder, or category…" oninput="COVERS_QUERY=this.value;renderCovers()" aria-label="Search Covers by file name, folder, or category"/></div>
     <div id="coversBrowser" class="covers-browser" style="display:none"></div>
   </div>
 
@@ -3677,7 +3679,7 @@ function resetFolder(){
 /* ═══════════════════════════════════════
    COVERS — intentionally separate from IMAGES/results
 ═══════════════════════════════════════ */
-let COVERS=[],COVERS_ACTIVE='all';
+let COVERS=[],COVERS_ACTIVE='all',COVERS_QUERY='';
 const COVER_TYPES=[
   ['burger','Burger Covers'],['chicken','Chicken Covers'],['beef','Beef Covers'],
   ['pizza','Pizza Covers'],['pasta','Pasta Covers'],['seafood','Seafood Covers'],
@@ -3714,8 +3716,9 @@ function coverTypeOf(file){
 function loadCovers(files,folderName){
   resetCovers(false);
   COVERS=files.map(file=>({file,name:file.name,relPath:file.__relPath||file.webkitRelativePath||file.name,type:coverTypeOf(file),url:URL.createObjectURL(file)}));
-  COVERS_ACTIVE='all';
+  COVERS_ACTIVE='all';COVERS_QUERY='';
   document.getElementById('coversDz').style.display='none';document.getElementById('coversLoaded').style.display='flex';
+  document.getElementById('coversSearchRow').style.display='flex';document.getElementById('coversSearch').value='';
   document.getElementById('coversFolderName').textContent=folderName||'Covers';
   document.getElementById('coversStats').textContent=COVERS.length.toLocaleString()+' cover images loaded locally';
   document.getElementById('navCovers').textContent=COVERS.length.toLocaleString();
@@ -3723,16 +3726,18 @@ function loadCovers(files,folderName){
 }
 function resetCovers(showDrop=true){
   for(const c of COVERS){try{URL.revokeObjectURL(c.url)}catch(e){}}
-  COVERS=[];COVERS_ACTIVE='all';
-  const loaded=document.getElementById('coversLoaded'),summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser');
+  COVERS=[];COVERS_ACTIVE='all';COVERS_QUERY='';
+  const loaded=document.getElementById('coversLoaded'),summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser'),searchRow=document.getElementById('coversSearchRow'),search=document.getElementById('coversSearch');
   if(loaded)loaded.style.display='none';if(summary){summary.style.display='none';summary.innerHTML=''}if(browser){browser.style.display='none';browser.innerHTML=''}
+  if(searchRow)searchRow.style.display='none';if(search)search.value='';
   const dz=document.getElementById('coversDz');if(dz&&showDrop)dz.style.display='block';const nav=document.getElementById('navCovers');if(nav)nav.textContent='—';
 }
 function renderCovers(){
   const summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser');if(!summary||!browser)return;
   const counts={};for(const c of COVERS)counts[c.type]=(counts[c.type]||0)+1;
   const types=Object.keys(counts).sort();summary.style.display='flex';summary.innerHTML='<strong style="font-size:.75rem;color:var(--tx);width:100%">Cover categories</strong><button class="covers-cat-btn '+(COVERS_ACTIVE==='all'?'active':'')+'" onclick="selectCoversCategory(\'all\')">All Covers ('+COVERS.length+')</button>'+types.map(t=>'<button class="covers-cat-btn '+(COVERS_ACTIVE===t?'active':'')+'" onclick="selectCoversCategory(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+' ('+counts[t]+')</button>').join('');
-  const list=COVERS_ACTIVE==='all'?COVERS:COVERS.filter(c=>c.type===COVERS_ACTIVE);browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>'<div class="cover-tile"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>').join('')+'</div>':'<div class="covers-empty">No covers in this category.</div>');
+  const scoped=COVERS_ACTIVE==='all'?COVERS:COVERS.filter(c=>c.type===COVERS_ACTIVE),query=COVERS_QUERY.trim().toLowerCase(),list=query?scoped.filter(c=>(c.name+' '+c.relPath+' '+c.type).toLowerCase().includes(query)):scoped;
+  browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+(query?' of '+scoped.length.toLocaleString():'')+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>'<div class="cover-tile"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>').join('')+'</div>':'<div class="covers-empty">No covers match “'+esc(COVERS_QUERY)+'”.</div>');
 }
 function selectCoversCategory(type){COVERS_ACTIVE=type;renderCovers()}
 
