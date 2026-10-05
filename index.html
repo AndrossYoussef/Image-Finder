@@ -2149,7 +2149,7 @@ function catShowMore2(){
   const foot=box.querySelector('#catFootWrap');
   if(foot)foot.innerHTML=catFootHtml(list,shownCount);
   CAT_HAS_MORE=list.length>shownCount;
-  hookThumbs(grid);scheduleTick();catAutoLoad();
+  hookFulls(grid);catAutoLoad();
 }
 
 /* the visible contents of the open category, after the search box and the
@@ -2225,8 +2225,8 @@ function renderCategoryBrowser(keepFocus){
   const more=catFootHtml(list,shown.length);
   box.innerHTML=head+`<div class="cat-grid">${tiles}</div><div id="catFootWrap">${more}</div>`;
   if(keepFocus)focusCatSearch();
-  hookThumbs(box);
-  requestAnimationFrame(()=>{hookThumbs(box);scheduleTick();catAutoLoad()});
+  hookFulls(box);
+  requestAnimationFrame(()=>{hookFulls(box);catAutoLoad()});
   CAT_HAS_MORE=list.length>shown.length;
 }
 function catTileHtml({img,i},resDups,libDups){
@@ -2271,7 +2271,7 @@ function catTileHtml({img,i},resDups,libDups){
         <span>${picked?'Selected for ZIP':'Select for ZIP'}</span></label>
       <button type="button" class="cat-thumb-btn" onclick="catLightbox(${i})"
         title="Open a larger preview of ${esc(img.name)}">
-        ${hasPreview(img)?`<img class="cat-thumb" src="${esc(thumbSrc(i))}" data-ti="${i}" loading="lazy" decoding="async" alt="${esc(img.name)}"
+        ${hasPreview(img)?`<img class="cat-thumb" src="${esc(BLOB_OK?(img.objectUrl||''):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} loading="lazy" decoding="async" alt="${esc(img.name)}"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'cat-thumb nothumb',textContent:'🖼️'}))"/>`
           :`<div class="cat-thumb nothumb">🖼️</div>`}
       </button>
