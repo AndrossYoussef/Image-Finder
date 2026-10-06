@@ -43,5 +43,7 @@ GitHub Pages is read-only from browser JavaScript. To change the shared baseline
 
 For true simultaneous multi-user editing, a writable backend or API is required; a static GitHub Pages site cannot safely accept browser writes.
 
+See [TEAM-CONFIGURATION.md](TEAM-CONFIGURATION.md) for the team workflow, configuration precedence, privacy model, and troubleshooting guidance.
+
 ## Updating
 When publishing a future version, change `VERSION` near the top of `sw.js` so returning users receive the new cache. Do not reuse an old service-worker version string.
