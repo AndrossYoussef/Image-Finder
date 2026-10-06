@@ -501,7 +501,10 @@ textarea::placeholder{color:var(--mu)}
 .covers-browser-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--tx)}
 .covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .cover-tile{min-width:0;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:7px}
-.cover-tile img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:7px;display:block;margin-bottom:6px}
+.cover-thumb-btn{display:block;width:100%;padding:0;border:0;background:none;border-radius:7px;cursor:zoom-in;line-height:0}
+.cover-thumb-btn:focus-visible{outline:2px solid var(--or);outline-offset:3px}
+.cover-tile img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:7px;display:block;margin-bottom:6px;transition:transform .18s ease,filter .18s ease}
+.cover-thumb-btn:hover img{transform:scale(1.02);filter:brightness(1.06)}
 .cover-tile-name{font-size:.68rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:auto}
 .covers-empty{padding:16px;text-align:center;color:var(--mu);font-size:.75rem}
 .cat-foot,.cat-empty{font-size:.68rem;color:var(--mu);margin-top:10px}
@@ -2521,6 +2524,22 @@ function catLightbox(i){
   document.addEventListener('keydown',catLbKey);
   ov.querySelector('.cat-lb-x').focus();
 }
+function coverLightbox(i){
+  const cover=COVERS[i];if(!cover)return;
+  closeCatLightbox();
+  const ov=document.createElement('div');
+  ov.className='cat-lb';ov.id='catLb';ov.setAttribute('role','dialog');
+  ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label',cover.name||'Cover preview');
+  ov.innerHTML=`<div class="cat-lb-box">
+      <button type="button" class="cat-lb-x" aria-label="Close cover preview">✕</button>
+      <img src="${esc(cover.url)}" alt="${esc(cover.name||'Cover preview')}" decoding="async"/>
+      <div class="cat-lb-cap" dir="auto">${esc(cover.relPath||cover.name||'')}</div>
+    </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov||e.target.classList.contains('cat-lb-x'))closeCatLightbox()});
+  document.body.appendChild(ov);
+  document.addEventListener('keydown',catLbKey);
+  ov.querySelector('.cat-lb-x').focus();
+}
 function catLbKey(e){if(e.key==='Escape'){e.preventDefault();closeCatLightbox()}}
 function closeCatLightbox(){
   const el=document.getElementById('catLb');
@@ -3762,6 +3781,7 @@ function loadCovers(files,folderName){
   renderCovers();toast('Loaded '+COVERS.length.toLocaleString()+' cover image'+(COVERS.length===1?'':'s')+'.','s');
 }
 function resetCovers(showDrop=true){
+  closeCatLightbox();
   for(const c of COVERS){try{URL.revokeObjectURL(c.url)}catch(e){}}
   COVERS=[];COVERS_ACTIVE='all';COVERS_QUERY='';
   const loaded=document.getElementById('coversLoaded'),summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser'),searchRow=document.getElementById('coversSearchRow'),search=document.getElementById('coversSearch');
@@ -3774,7 +3794,7 @@ function renderCovers(){
   const counts={};for(const c of COVERS)counts[c.type]=(counts[c.type]||0)+1;
   const types=Object.keys(counts).sort();summary.style.display='flex';summary.innerHTML='<strong style="font-size:.75rem;color:var(--tx);width:100%">Cover categories</strong><button class="covers-cat-btn '+(COVERS_ACTIVE==='all'?'active':'')+'" onclick="selectCoversCategory(\'all\')">All Covers ('+COVERS.length+')</button>'+types.map(t=>'<button class="covers-cat-btn '+(COVERS_ACTIVE===t?'active':'')+'" onclick="selectCoversCategory(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+' ('+counts[t]+')</button>').join('');
   const scoped=COVERS_ACTIVE==='all'?COVERS:COVERS.filter(c=>c.type===COVERS_ACTIVE),query=COVERS_QUERY.trim().toLowerCase(),list=query?scoped.filter(c=>(c.name+' '+c.relPath+' '+c.type).toLowerCase().includes(query)):scoped;
-  browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+(query?' of '+scoped.length.toLocaleString():'')+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>'<div class="cover-tile"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>').join('')+'</div>':'<div class="covers-empty">No covers match “'+esc(COVERS_QUERY)+'”.</div>');
+  browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+(query?' of '+scoped.length.toLocaleString():'')+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>{const i=COVERS.indexOf(c);return '<div class="cover-tile"><button type="button" class="cover-thumb-btn" onclick="coverLightbox('+i+')" aria-label="Open '+esc(c.name)+' in a larger preview" title="Click to zoom"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"></button><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>'}).join('')+'</div>':'<div class="covers-empty">No covers match “'+esc(COVERS_QUERY)+'”.</div>');
 }
 function selectCoversCategory(type){COVERS_ACTIVE=type;renderCovers()}
 
