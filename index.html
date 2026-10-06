@@ -123,11 +123,6 @@ textarea{direction:auto;text-align:start;line-height:2;word-break:normal;overflo
 .dz:hover,.dz.over{border-color:var(--or);background:var(--orl)}
 .dz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
 .dz-icon{font-size:2.5rem;margin-bottom:8px;display:block}
-.covers-drop-icon{position:relative;width:58px;height:48px;margin:0 auto 10px;display:block;filter:drop-shadow(0 5px 5px rgba(0,0,0,.24))}
-.covers-drop-icon i{position:absolute;display:block;width:37px;height:43px;border-radius:5px;border:2px solid rgba(255,255,255,.72);box-shadow:0 3px 0 rgba(0,0,0,.18)}
-.covers-drop-icon i:first-child{left:2px;top:4px;transform:rotate(-13deg);background:linear-gradient(145deg,#ffb347,#ff6a00)}
-.covers-drop-icon i:nth-child(2){left:18px;top:1px;transform:rotate(11deg);background:linear-gradient(145deg,#ff7b54,#c92b65)}
-.covers-drop-icon b{position:absolute;left:14px;top:12px;width:29px;height:25px;border-radius:4px;background:linear-gradient(145deg,#ffd56a,#ff7a00);border:2px solid #fff;color:#7a2c0b;font-size:1rem;line-height:21px;text-align:center;font-weight:900}
 .dz h3{font-size:.94rem;font-weight:700;margin-bottom:4px;color:var(--tx)}
 .dz p{font-size:.78rem;color:var(--mu);line-height:1.55}
 .ob{color:var(--or);font-weight:600}
@@ -492,21 +487,43 @@ textarea::placeholder{color:var(--mu)}
 .cat-tile-sel{width:100%;font:inherit;font-size:.64rem;padding:4px 5px;border-radius:var(--rx);
   border:1px solid var(--bd2);background:var(--sur);color:var(--tx);min-width:0}
 .cat-more{margin-top:11px;width:100%}
-.covers-category-summary{margin-top:10px;padding:12px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.covers-cat-btn{border:1px solid var(--bd);background:var(--sur);color:var(--tx2);border-radius:999px;padding:7px 11px;font:700 .7rem inherit;cursor:pointer}
-.covers-cat-btn:hover,.covers-cat-btn.active{border-color:var(--or);color:var(--or);background:var(--orl)}
-.covers-browser{margin-top:10px;padding:12px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs)}
-.covers-search-row{display:flex;gap:8px;margin-top:10px}.covers-search-row input{width:100%;background:var(--sur2);color:var(--tx);border:1px solid var(--bd);border-radius:var(--rx);padding:9px 11px;font:inherit;font-size:.75rem}.covers-search-row input:focus{outline:2px solid var(--or);outline-offset:-1px;border-color:var(--or)}
+/* ── Covers Section (750x300 Covers - Library Mode) ── */
+.covers-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:12px 0 10px 0;padding:10px 14px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs)}
+.covers-summary{font-size:.78rem;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:6px}
+.covers-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.covers-filter-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.covers-filter-pill{font-size:.72rem;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid var(--bd2);background:var(--sur);color:var(--tx2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;user-select:none}
+.covers-filter-pill:hover{border-color:var(--or);color:var(--tx);transform:translateY(-1px)}
+.covers-filter-pill.active{background:var(--orl);border-color:var(--or);color:var(--or);box-shadow:0 0 0 1.5px var(--or)}
+.cover-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:14px 0}
+.cover-cat-card{background:var(--sur);border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;box-shadow:var(--sh);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;display:flex;flex-direction:column;position:relative}
+.cover-cat-card:hover{transform:translateY(-4px);box-shadow:var(--shl);border-color:var(--or)}
+.cover-cat-thumb{position:relative;width:100%;aspect-ratio:750/300;background:var(--sur2);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.cover-cat-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.cover-cat-card:hover .cover-cat-thumb img{transform:scale(1.04)}
+.cover-cat-count-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.78);color:#fff;font-size:.65rem;font-weight:800;padding:3px 9px;border-radius:999px;backdrop-filter:blur(6px);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.cover-cat-body{padding:12px 14px;display:flex;flex-direction:column;gap:5px;flex:1}
+.cover-cat-name{font-size:.9rem;font-weight:800;color:var(--tx);display:flex;align-items:center;justify-content:space-between}
+.cover-cat-sub{font-size:.68rem;color:var(--tx2);display:flex;align-items:center;gap:6px}
+.cover-cat-open-btn{margin-top:auto;padding-top:8px;font-size:.72rem;font-weight:800;color:var(--or);display:inline-flex;align-items:center;gap:4px}
+.cover-detail-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bd);border-radius:10px;margin:10px 0 14px 0}
+.covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:14px 0}
+.cover-card{background:var(--sur);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s,border-color .15s}
+.cover-card:hover{transform:translateY(-2px);box-shadow:var(--shl);border-color:var(--or2)}
+.cover-card.selected-cover{border-color:var(--or);box-shadow:0 0 0 2px rgba(255,98,0,.25)}
+.cover-thumb-wrap{position:relative;width:100%;aspect-ratio:750/300;background:var(--sur2);overflow:hidden;cursor:pointer}
+.cover-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
+.cover-thumb-wrap:hover .cover-thumb{transform:scale(1.03)}
+.cover-badge{position:absolute;top:6px;left:6px;font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;backdrop-filter:blur(4px);max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cover-check{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.94);border-radius:5px;padding:4px;display:flex;align-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.cover-check input{cursor:pointer;width:16px;height:16px;accent-color:var(--or)}
+.cover-body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cover-name-input{font:inherit;font-size:.76rem;font-weight:700;color:var(--tx);background:transparent;border:1px dashed transparent;border-radius:var(--rx);padding:3px 6px;width:100%;transition:border-color .15s,background .15s}
+.cover-name-input:hover,.cover-name-input:focus{border-color:var(--bd2);background:var(--sur2);outline:none}
+.cover-card-dl-btn{width:100%;justify-content:center;font-size:.74rem;font-weight:700;padding:6px 10px;border-radius:6px}
+.cover-meta{display:flex;justify-content:space-between;align-items:center;font-size:.64rem;color:var(--mu);margin-top:auto;padding-top:4px}
+.cover-dl-box{margin-top:16px;padding:16px;background:var(--sur2);border:1px solid var(--bd);border-radius:12px}
 .shared-config-note{margin:7px 0 2px;color:var(--mu);font-size:.67rem}.shared-config-note.loaded{color:var(--gn)}.shared-config-note.local{color:var(--tx2)}
-.covers-browser-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--tx)}
-.covers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
-.cover-tile{min-width:0;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rx);padding:7px}
-.cover-thumb-btn{display:block;width:100%;padding:0;border:0;background:none;border-radius:7px;cursor:zoom-in;line-height:0}
-.cover-thumb-btn:focus-visible{outline:2px solid var(--or);outline-offset:3px}
-.cover-tile img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-radius:7px;display:block;margin-bottom:6px;transition:transform .18s ease,filter .18s ease}
-.cover-thumb-btn:hover img{transform:scale(1.02);filter:brightness(1.06)}
-.cover-tile-name{font-size:.68rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:auto}
-.covers-empty{padding:16px;text-align:center;color:var(--mu);font-size:.75rem}
 .cat-foot,.cat-empty{font-size:.68rem;color:var(--mu);margin-top:10px}
 .cat-empty{margin-top:0;padding:14px;text-align:center;background:var(--sur2);
   border:1px dashed var(--bd2);border-radius:var(--rx)}
@@ -773,24 +790,74 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
     </div>
   </div>
 
-  <!-- COVERS: intentionally independent from the normal image library -->
+  <!-- ══════════ COVERS SECTION ══════════ -->
   <div class="card covers-card" id="coversStep">
-    <div class="ctitle"><div class="snum">C</div>Covers</div>
-    <div class="csub">Add cover images here separately. Covers never mix with the normal image library.</div>
-    <div class="dz covers-dz" id="coversDz" onclick="chooseCoversFolder(event)" ondragover="coversDragOver(event)" ondragleave="coversDragLeave()" ondrop="coversDrop(event)">
-      <input type="file" id="coversFolderInput" webkitdirectory multiple accept="image/*" onchange="onCoversPicked(event)"/>
-      <span class="covers-drop-icon" aria-hidden="true"><i></i><i></i><b>✦</b></span>
-      <h3>Drop your Covers folder here</h3>
-      <p><span class="ob">Drag and drop cover images or a cover folder here</span> · separate from Image library</p>
-      <p class="dz-alt">or <button class="btn bs bsm" onclick="event.stopPropagation();document.getElementById('coversFolderInput').click()">📂 Add Covers folder</button></p>
+    <div class="ctitle"><div class="snum">🖼️</div>Cover Images Library (750 × 300)</div>
+    <div class="csub">Drop your covers folder to browse by category · Click any category to view covers · Download any cover directly as a 750×300 JPG, or select multiple for a ZIP.</div>
+    
+    <!-- DROPZONE (Folder Only) -->
+    <div class="dz" id="coverDz" onclick="chooseCoverFolder(event)" ondragover="onCoverDragOver(event)" ondragleave="onCoverDragLeave()" ondrop="onCoverDrop(event)">
+      <input type="file" id="coverFolderInput" webkitdirectory multiple accept="image/*" onchange="onCoverFolderPicked(event)" style="display:none"/>
+      <span class="dz-icon">🖼️</span>
+      <h3>Drop your cover images folder here</h3>
+      <p><span class="ob">Drag and drop your covers folder here</span> · Sub-folders supported · JPG · PNG · WEBP · GIF · BMP · HEIC</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap" onclick="event.stopPropagation()">
+        <button class="btn bp bsm" onclick="document.getElementById('coverFolderInput').click()">📁 Choose Covers Folder</button>
+      </div>
     </div>
-    <div class="fl" id="coversLoaded" style="display:none">
-      <div class="fi">✅</div><div class="fd"><strong id="coversFolderName">Covers</strong><span id="coversStats">—</span></div>
-      <button class="btn bs bsm" style="margin-left:auto" onclick="resetCovers()">Change Covers folder</button>
+
+    <!-- TOOLBAR (Shown when covers are loaded) -->
+    <div class="covers-toolbar" id="coverToolbar" style="display:none">
+      <div class="covers-summary" id="coverSummaryText">📁 0 cover images</div>
+      <div class="covers-actions">
+        <input class="fi-" style="padding:4px 8px;font-size:.72rem;min-width:170px;margin:0" id="coverSearchInput" placeholder="🔍 Search covers or categories…" oninput="setCoverSearch(this.value)"/>
+        <button class="btn bs bsm" onclick="document.getElementById('coverFolderInput').click()">📁 Change / Add folder</button>
+        <button class="btn bd- bsm" onclick="clearAllCovers()">🗑️ Clear library</button>
+      </div>
     </div>
-    <div id="coversCategorySummary" class="covers-category-summary" style="display:none"></div>
-    <div id="coversSearchRow" class="covers-search-row" style="display:none"><input id="coversSearch" type="search" placeholder="Search Covers by file name, folder, or category…" oninput="COVERS_QUERY=this.value;renderCovers()" aria-label="Search Covers by file name, folder, or category"/></div>
-    <div id="coversBrowser" class="covers-browser" style="display:none"></div>
+
+    <!-- CATEGORY FILTER PILLS -->
+    <div class="covers-filter-row" id="coverCatPills" style="margin-top:10px"></div>
+
+    <!-- MAIN COVERS CONTENT (Category Folders or Category Details) -->
+    <div id="coversMainContent"></div>
+
+    <!-- COVERS DOWNLOAD BOX (For Batch ZIP & Multi-Select) -->
+    <div class="cover-dl-box" id="coverDlCard" style="display:none">
+      <div class="dlst" style="margin-bottom:12px">
+        <div class="dls dg"><div class="dn" id="coverDlSelected">0</div><div class="dl">🟢 Selected Covers for ZIP</div></div>
+        <div class="dls dr"><div class="dn" id="coverDlIgnored">0</div><div class="dl">⬜ Unselected</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button class="btn bp" id="coverZipBtn" onclick="doCoverZip()" style="font-size:.85rem;padding:9px 18px" disabled>📦 Download Selected Covers</button>
+        <button class="btn bs bsm" onclick="deselectAllCoversGlobal()" id="coverDeselectAllBtn" style="display:none">⬜ Deselect all</button>
+        <span style="font-size:.72rem;color:var(--mu)" id="coverDlHint">Tip: You can also click <strong>📥 Download</strong> directly on any cover card above without selecting.</span>
+      </div>
+      <div class="prog" id="coverZipProg">
+        <div class="pt"><span id="coverZLbl">Packing…</span><span class="pp" id="coverZPct">0%</span></div>
+        <div class="pb"><div class="pf" id="coverZFill"></div></div>
+        <div class="pm" id="coverZMsg"></div>
+      </div>
+      <div class="log" id="coverDlLog" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- COVER PREVIEW LIGHTBOX -->
+  <div class="ov" id="coverPreviewModal" onclick="if(event.target===this)closeCoverPreview()">
+    <div class="modal" style="max-width:840px;text-align:center" role="dialog" aria-modal="true" tabindex="-1">
+      <button class="mcl" onclick="closeCoverPreview()" aria-label="Close preview (Esc)" title="Close (Esc)">✕</button>
+      <div class="m-item-name" style="margin-bottom:4px"><span class="m-label">Cover:</span> <span id="coverPrevTitle">—</span></div>
+      <div class="m-img-name" style="margin-bottom:12px"><span class="m-label">File:</span> <span id="coverPrevFile">—</span> · <span style="color:var(--or);font-weight:700">750 × 300 JPG</span></div>
+      <div style="background:var(--sur2);border-radius:var(--rs);overflow:hidden;border:1.5px solid var(--bd);max-height:65vh;display:flex;align-items:center;justify-content:center">
+        <img id="coverPrevImg" src="" alt="Cover preview" style="max-width:100%;max-height:65vh;object-fit:contain"/>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <button class="btn bp" id="coverModalDlBtn" onclick="downloadCurrentCoverFromModal()" style="padding:8px 20px;font-size:.84rem;font-weight:800">
+          📥 Download This Cover (750 × 300 JPG)
+        </button>
+        <button class="btn bs bsm" onclick="closeCoverPreview()">Close preview (Esc)</button>
+      </div>
+    </div>
   </div>
 
   <!-- STEP 2 -->
@@ -2524,22 +2591,6 @@ function catLightbox(i){
   document.addEventListener('keydown',catLbKey);
   ov.querySelector('.cat-lb-x').focus();
 }
-function coverLightbox(i){
-  const cover=COVERS[i];if(!cover)return;
-  closeCatLightbox();
-  const ov=document.createElement('div');
-  ov.className='cat-lb';ov.id='catLb';ov.setAttribute('role','dialog');
-  ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label',cover.name||'Cover preview');
-  ov.innerHTML=`<div class="cat-lb-box">
-      <button type="button" class="cat-lb-x" aria-label="Close cover preview">✕</button>
-      <img src="${esc(cover.url)}" alt="${esc(cover.name||'Cover preview')}" decoding="async"/>
-      <div class="cat-lb-cap" dir="auto">${esc(cover.relPath||cover.name||'')}</div>
-    </div>`;
-  ov.addEventListener('click',e=>{if(e.target===ov||e.target.classList.contains('cat-lb-x'))closeCatLightbox()});
-  document.body.appendChild(ov);
-  document.addEventListener('keydown',catLbKey);
-  ov.querySelector('.cat-lb-x').focus();
-}
 function catLbKey(e){if(e.key==='Escape'){e.preventDefault();closeCatLightbox()}}
 function closeCatLightbox(){
   const el=document.getElementById('catLb');
@@ -3732,71 +3783,674 @@ function resetFolder(){
   setSt('Ready — drop your image folder.');
 }
 
-/* ═══════════════════════════════════════
-   COVERS — intentionally separate from IMAGES/results
-═══════════════════════════════════════ */
-let COVERS=[],COVERS_ACTIVE='all',COVERS_QUERY='';
-const COVER_TYPES=[
-  ['burger','Burger Covers'],['chicken','Chicken Covers'],['beef','Beef Covers'],
-  ['pizza','Pizza Covers'],['pasta','Pasta Covers'],['seafood','Seafood Covers'],
-  ['shawarma','Shawarma Covers'],['drink','Drinks Covers'],['dessert','Dessert Covers']
-];
-function chooseCoversFolder(){document.getElementById('coversFolderInput')?.click()}
-function coversDragOver(e){e.preventDefault();document.getElementById('coversDz')?.classList.add('over')}
-function coversDragLeave(){document.getElementById('coversDz')?.classList.remove('over')}
-function coversDrop(e){
-  e.preventDefault();coversDragLeave();
-  const entries=[...(e.dataTransfer?.items||[])].map(i=>i.webkitGetAsEntry?.()).filter(Boolean);
-  if(entries.length){collectCoversEntries(entries).then(files=>{if(files.length)loadCovers(files,'Covers');else toast('No image files found in the Covers drop.','e')});return}
-  const files=[...(e.dataTransfer?.files||[])].filter(isImg);if(files.length)loadCovers(files,'Covers');else toast('No image files found.','e');
+/* ═══════════════════════════════════════════════════════════════════
+   🖼️ COVERS SECTION ENGINE (750x300 & CATEGORY LIBRARY MODE)
+   ═══════════════════════════════════════════════════════════════════ */
+let COVERS = [];
+let COVERS_SELECTED = new Set(); // Default: 0 selected (Library mode)
+let COVERS_ACTIVE_CAT_INDEX = null; // null = Category Folders overview, number = Open category
+let COVERS_SEARCH = "";
+let COVERS_CATS_CACHE = []; // [{ name: "Burgers", items: [...] }, ...]
+let CURRENT_PREVIEW_COVER_IDX = null;
+
+function isCoverImg(f) {
+  return /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif|tiff?)$/i.test(f.name) ||
+    ((f.type || "").toLowerCase().startsWith("image/"));
 }
-async function collectCoversEntries(entries){
-  const out=[];
-  async function walk(entry){
-    if(entry.isFile){await new Promise(resolve=>entry.file(f=>{if(isImg(f)){try{Object.defineProperty(f,'__relPath',{value:String(entry.fullPath||f.name).replace(/^\//,'')})}catch(e){}out.push(f)}resolve()},resolve));return}
-    if(!entry.isDirectory)return;
-    const reader=entry.createReader();
-    await new Promise(resolve=>{const batch=()=>reader.readEntries(async items=>{if(!items.length){resolve();return}for(const item of items)await walk(item);batch()},resolve);batch()});
+
+function parseCoverMetadata(file) {
+  const relPath = file.__relPath || file.webkitRelativePath || file.name || "";
+  const parts = relPath.split("/").filter(Boolean);
+  const rawName = file.name.replace(/\.[^.]+$/, "");
+  
+  let cleaned = rawName
+    .replace(/^(\d+[\s_.-]+)+/, "")
+    .replace(/[\s_.-]*(?:cover|covers|غلاف|كفر|banner|header)[\s_.-]*/gi, " ")
+    .replace(/[\s_.-]*\d{3,4}\s*[xX*×]\s*\d{3,4}[\s_.-]*/g, " ")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  
+  if (!cleaned) cleaned = rawName.replace(/[_-]+/g, " ").trim();
+  
+  // Category detection:
+  let cat = "";
+  if (parts.length > 1) {
+    const parent = parts[parts.length - 2];
+    if (!/^(covers?|images?|img|assets?|all)$/i.test(parent)) {
+      cat = parent.replace(/[_-]+/g, " ").trim();
+    }
   }
-  for(const entry of entries)await walk(entry);return out;
+  
+  if (!cat) {
+    if (/^(img|dsc|photo|image|picture|pic|cover|file|scan)[\s_.-]*\d*$/i.test(cleaned) || !cleaned) {
+      cat = "Uncategorized";
+    } else {
+      cat = cleaned;
+    }
+  }
+  
+  if (!cleaned) cleaned = "Cover";
+  
+  let url = "";
+  try { url = URL.createObjectURL(file); } catch(e) {}
+  
+  return {
+    id: "cov_" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36),
+    file: file,
+    rawName: file.name,
+    coverName: cleaned,
+    category: cat,
+    exportName: cleaned,
+    url: url,
+    size: file.size || 0
+  };
 }
-function onCoversPicked(e){
-  const files=[...(e.target.files||[])].filter(isImg);if(files.length)loadCovers(files,files[0].webkitRelativePath?.split('/')[0]||'Covers');else toast('No image files found.','e');e.target.value='';
+
+function chooseCoverFolder(e) {
+  if (e?.target?.id === "coverFolderInput") return;
+  const input = document.getElementById("coverFolderInput");
+  if (input) input.click();
 }
-function coverTypeOf(file){
-  const raw=String(file.__relPath||file.webkitRelativePath||file.name||''),parts=raw.split('/').filter(Boolean),parent=(parts.length>1?parts[parts.length-2]:'').replace(/[_-]+/g,' ').trim();
-  if(parent&&/cover/i.test(parent))return parent.replace(/\b\w/g,c=>c.toUpperCase());
-  const rel=raw.replace(/[_-]+/g,' ').toLowerCase();
-  const hit=COVER_TYPES.find(([key])=>new RegExp('(^|\\s)'+key+'(\\s|$)').test(rel));return hit?hit[1]:'Other Covers';
+
+function onCoverDragOver(e) {
+  e.preventDefault();
+  const dz = document.getElementById("coverDz");
+  if (dz) dz.classList.add("over");
 }
-function loadCovers(files,folderName){
-  resetCovers(false);
-  COVERS=files.map(file=>({file,name:file.name,relPath:file.__relPath||file.webkitRelativePath||file.name,type:coverTypeOf(file),url:URL.createObjectURL(file)}));
-  COVERS_ACTIVE='all';COVERS_QUERY='';
-  document.getElementById('coversDz').style.display='none';document.getElementById('coversLoaded').style.display='flex';
-  document.getElementById('coversSearchRow').style.display='flex';document.getElementById('coversSearch').value='';
-  document.getElementById('coversFolderName').textContent=folderName||'Covers';
-  document.getElementById('coversStats').textContent=COVERS.length.toLocaleString()+' cover images loaded locally';
-  document.getElementById('navCovers').textContent=COVERS.length.toLocaleString();
-  renderCovers();toast('Loaded '+COVERS.length.toLocaleString()+' cover image'+(COVERS.length===1?'':'s')+'.','s');
+
+function onCoverDragLeave() {
+  const dz = document.getElementById("coverDz");
+  if (dz) dz.classList.remove("over");
 }
-function resetCovers(showDrop=true){
-  closeCatLightbox();
-  for(const c of COVERS){try{URL.revokeObjectURL(c.url)}catch(e){}}
-  COVERS=[];COVERS_ACTIVE='all';COVERS_QUERY='';
-  const loaded=document.getElementById('coversLoaded'),summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser'),searchRow=document.getElementById('coversSearchRow'),search=document.getElementById('coversSearch');
-  if(loaded)loaded.style.display='none';if(summary){summary.style.display='none';summary.innerHTML=''}if(browser){browser.style.display='none';browser.innerHTML=''}
-  if(searchRow)searchRow.style.display='none';if(search)search.value='';
-  const dz=document.getElementById('coversDz');if(dz&&showDrop)dz.style.display='block';const nav=document.getElementById('navCovers');if(nav)nav.textContent='—';
+
+function onCoverDrop(e) {
+  e.preventDefault();
+  onCoverDragLeave();
+  const entries = [...(e.dataTransfer.items || [])].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  if (entries.length) {
+    readCoverEntries(entries);
+  } else if (e.dataTransfer.files && e.dataTransfer.files.length) {
+    const files = [...e.dataTransfer.files].filter(isCoverImg);
+    if (files.length) addCoverFiles(files);
+  }
 }
-function renderCovers(){
-  const summary=document.getElementById('coversCategorySummary'),browser=document.getElementById('coversBrowser');if(!summary||!browser)return;
-  const counts={};for(const c of COVERS)counts[c.type]=(counts[c.type]||0)+1;
-  const types=Object.keys(counts).sort();summary.style.display='flex';summary.innerHTML='<strong style="font-size:.75rem;color:var(--tx);width:100%">Cover categories</strong><button class="covers-cat-btn '+(COVERS_ACTIVE==='all'?'active':'')+'" onclick="selectCoversCategory(\'all\')">All Covers ('+COVERS.length+')</button>'+types.map(t=>'<button class="covers-cat-btn '+(COVERS_ACTIVE===t?'active':'')+'" onclick="selectCoversCategory(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+' ('+counts[t]+')</button>').join('');
-  const scoped=COVERS_ACTIVE==='all'?COVERS:COVERS.filter(c=>c.type===COVERS_ACTIVE),query=COVERS_QUERY.trim().toLowerCase(),list=query?scoped.filter(c=>(c.name+' '+c.relPath+' '+c.type).toLowerCase().includes(query)):scoped;
-  browser.style.display='block';browser.innerHTML='<div class="covers-browser-head"><span>'+esc(COVERS_ACTIVE==='all'?'All Covers':COVERS_ACTIVE)+'</span><span style="color:var(--tx2);font-size:.7rem">'+list.length.toLocaleString()+(query?' of '+scoped.length.toLocaleString():'')+' image'+(list.length===1?'':'s')+'</span></div>'+(list.length?'<div class="covers-grid">'+list.map(c=>{const i=COVERS.indexOf(c);return '<div class="cover-tile"><button type="button" class="cover-thumb-btn" onclick="coverLightbox('+i+')" aria-label="Open '+esc(c.name)+' in a larger preview" title="Click to zoom"><img src="'+esc(c.url)+'" loading="lazy" decoding="async" alt="'+esc(c.name)+'"></button><div class="cover-tile-name" title="'+esc(c.relPath)+'">'+esc(c.name)+'</div></div>'}).join('')+'</div>':'<div class="covers-empty">No covers match “'+esc(COVERS_QUERY)+'”.</div>');
+
+async function readCoverEntries(entries) {
+  const files = [];
+  async function tr(entry) {
+    if (entry.isFile) {
+      await new Promise(r => entry.file(f => {
+        if (isCoverImg(f)) {
+          try { Object.defineProperty(f, "__relPath", { value: String(entry.fullPath || "").replace(/^\//, "") || f.name, enumerable: false }); } catch(e) {}
+          files.push(f);
+        }
+        r();
+      }, r));
+    } else if (entry.isDirectory) {
+      const rdr = entry.createReader();
+      await new Promise(r => {
+        function batch() {
+          rdr.readEntries(async b => {
+            if (!b.length) { r(); return; }
+            for (const e2 of b) await tr(e2);
+            batch();
+          });
+        }
+        batch();
+      });
+    }
+  }
+  for (const e of entries) await tr(e);
+  if (!files.length) { toast("No cover images found in folder.", "e"); return; }
+  addCoverFiles(files);
 }
-function selectCoversCategory(type){COVERS_ACTIVE=type;renderCovers()}
+
+function onCoverFolderPicked(e) {
+  const files = [...(e.target.files || [])].filter(isCoverImg);
+  if (!files.length) { toast("No cover images found in folder.", "e"); return; }
+  addCoverFiles(files);
+  e.target.value = "";
+}
+
+function addCoverFiles(newFiles) {
+  newFiles.forEach(f => {
+    const item = parseCoverMetadata(f);
+    COVERS.push(item);
+    // Note: Do NOT auto-select all covers so user can browse and pick individually!
+  });
+  COVERS_ACTIVE_CAT_INDEX = null; // Show Category Folders first
+  rebuildCoversCategoriesCache();
+  renderCoversUI();
+  toast(`Loaded ${newFiles.length} cover image${newFiles.length > 1 ? "s" : ""} in library`, "s");
+}
+
+/* Silent reset (no confirm dialog) — Image-Finder's "New session" reset
+   and other internal callers use this. */
+function resetCovers(showDrop=true) {
+  COVERS.forEach(c => { try { URL.revokeObjectURL(c.url); } catch(e) {} });
+  COVERS = [];
+  COVERS_SELECTED.clear();
+  COVERS_ACTIVE_CAT_INDEX = null;
+  COVERS_SEARCH = "";
+  CURRENT_PREVIEW_COVER_IDX = null;
+  const si = document.getElementById("coverSearchInput"); if (si) si.value = "";
+  closeCoverPreview();
+  rebuildCoversCategoriesCache();
+  renderCoversUI();
+}
+
+function clearAllCovers() {
+  if (!COVERS.length) return;
+  if (!confirm("Clear all loaded cover images?")) return;
+  COVERS.forEach(c => { try { URL.revokeObjectURL(c.url); } catch(e) {} });
+  COVERS = [];
+  COVERS_SELECTED.clear();
+  COVERS_ACTIVE_CAT_INDEX = null;
+  COVERS_SEARCH = "";
+  CURRENT_PREVIEW_COVER_IDX = null;
+  rebuildCoversCategoriesCache();
+  renderCoversUI();
+  toast("All covers cleared.", "i");
+}
+
+function rebuildCoversCategoriesCache() {
+  const map = new Map();
+  COVERS.forEach((c, idx) => {
+    const cat = (c.category || "").trim() || "Uncategorized";
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat).push({ cover: c, idx: idx });
+  });
+  
+  const list = [];
+  for (const [name, items] of map.entries()) {
+    list.push({ name, items });
+  }
+  list.sort((a, b) => {
+    if (a.name === "Uncategorized") return 1;
+    if (b.name === "Uncategorized") return -1;
+    return a.name.localeCompare(b.name);
+  });
+  COVERS_CATS_CACHE = list;
+}
+
+function openCoverCategoryByIndex(catIndex) {
+  if (catIndex >= 0 && catIndex < COVERS_CATS_CACHE.length) {
+    COVERS_ACTIVE_CAT_INDEX = catIndex;
+  } else {
+    COVERS_ACTIVE_CAT_INDEX = null;
+  }
+  renderCoversUI();
+}
+
+function showCategoriesOverview() {
+  COVERS_ACTIVE_CAT_INDEX = null;
+  renderCoversUI();
+}
+
+/* Global Select All & Deselect All */
+function selectAllCoversGlobal() {
+  COVERS.forEach((_, i) => COVERS_SELECTED.add(i));
+  renderCoversUI();
+  updateCoversStats();
+  toast(`Selected all ${COVERS.length} covers for ZIP`, "s");
+}
+
+function deselectAllCoversGlobal() {
+  COVERS_SELECTED.clear();
+  renderCoversUI();
+  updateCoversStats();
+  toast("Cleared selections (0 selected)", "i");
+}
+
+/* Category-level Select & Deselect */
+function toggleCategoryCoversByIndex(catIndex, select) {
+  const catObj = COVERS_CATS_CACHE[catIndex];
+  if (!catObj) return;
+  catObj.items.forEach(it => {
+    if (select) COVERS_SELECTED.add(it.idx);
+    else COVERS_SELECTED.delete(it.idx);
+  });
+  renderCoversContent();
+  updateCoversStats();
+  toast(select ? `Selected all ${catObj.items.length} in ${catObj.name}` : `Deselected ${catObj.name}`, "i");
+}
+
+/* Direct 1-Click Single Cover Download (750×300 JPG - NO ZIP!) */
+async function downloadSingleCoverDirect(idx) {
+  const item = COVERS[idx];
+  if (!item) return;
+  const fn = san(item.exportName || item.coverName || "Cover") + ".jpg";
+  try {
+    toast("Processing " + fn + " (750×300)…", "i", 2000);
+    const outputBlob = await makeCoverOutputImage(item.file);
+    saveOfflineBlob(outputBlob, fn);
+    toast("Downloaded " + fn + " (750×300 JPG)", "s");
+  } catch (err) {
+    toast("Download failed: " + err.message, "e");
+  }
+}
+
+function downloadCurrentCoverFromModal() {
+  if (CURRENT_PREVIEW_COVER_IDX !== null) {
+    downloadSingleCoverDirect(CURRENT_PREVIEW_COVER_IDX);
+  }
+}
+
+function setCoverSearch(txt) {
+  COVERS_SEARCH = (txt || "").trim().toLowerCase();
+  renderCoversContent();
+  updateCoversStats();
+}
+
+function updateCoversStats() {
+  const selCount = COVERS_SELECTED.size;
+  const ignCount = COVERS.length - selCount;
+  
+  const navBadge = document.getElementById("navCovers");
+  if (navBadge) navBadge.textContent = COVERS.length ? `${selCount}/${COVERS.length}` : "—";
+  
+  const dlSel = document.getElementById("coverDlSelected");
+  if (dlSel) dlSel.textContent = selCount;
+  
+  const dlIgn = document.getElementById("coverDlIgnored");
+  if (dlIgn) dlIgn.textContent = ignCount;
+  
+  const zipBtn = document.getElementById("coverZipBtn");
+  const deselectBtn = document.getElementById("coverDeselectAllBtn");
+  const hintEl = document.getElementById("coverDlHint");
+  
+  if (deselectBtn) {
+    deselectBtn.style.display = selCount > 0 ? "inline-flex" : "none";
+  }
+  
+  if (zipBtn) {
+    zipBtn.disabled = selCount === 0;
+    if (selCount === 1) {
+      zipBtn.innerHTML = "📥 Download Selected Cover (750×300 JPG)";
+      if (hintEl) hintEl.innerHTML = "1 cover selected · will download directly as a <strong>750×300 JPG</strong> (no ZIP).";
+    } else if (selCount > 1) {
+      zipBtn.innerHTML = `📦 Download Selected Covers ZIP (${selCount} covers)`;
+      if (hintEl) hintEl.innerHTML = `${selCount} covers selected · will be packed into <strong>Cover-Images.zip</strong> (750×300 JPGs).`;
+    } else {
+      zipBtn.innerHTML = "📦 Download Selected Covers (0)";
+      if (hintEl) hintEl.innerHTML = `Click <strong>📥 Download (750×300)</strong> on any cover card to download directly, or check multiple to download as a ZIP.`;
+    }
+  }
+}
+
+function renderCoversUI() {
+  const dz = document.getElementById("coverDz");
+  const toolbar = document.getElementById("coverToolbar");
+  const dlCard = document.getElementById("coverDlCard");
+  
+  if (!COVERS.length) {
+    if (dz) dz.style.display = "";
+    if (toolbar) toolbar.style.display = "none";
+    const content = document.getElementById("coversMainContent");
+    if (content) content.innerHTML = "";
+    if (dlCard) dlCard.style.display = "none";
+    const catWrap = document.getElementById("coverCatPills");
+    if (catWrap) catWrap.innerHTML = "";
+    updateCoversStats();
+    return;
+  }
+  
+  if (dz) dz.style.display = "none";
+  if (toolbar) toolbar.style.display = "flex";
+  if (dlCard) dlCard.style.display = "block";
+  
+  // Render Categories Filter Pills
+  const catWrap = document.getElementById("coverCatPills");
+  if (catWrap) {
+    let html = `<button class="covers-filter-pill ${COVERS_ACTIVE_CAT_INDEX === null ? "active" : ""}" onclick="showCategoriesOverview()">📁 All Category Folders (${COVERS_CATS_CACHE.length})</button>`;
+    
+    COVERS_CATS_CACHE.forEach((catObj, catIdx) => {
+      const isAct = COVERS_ACTIVE_CAT_INDEX === catIdx;
+      html += `<button class="covers-filter-pill ${isAct ? "active" : ""}" onclick="openCoverCategoryByIndex(${catIdx})">📁 ${esc(catObj.name)} (${catObj.items.length})</button>`;
+    });
+    catWrap.innerHTML = html;
+  }
+  
+  const summary = document.getElementById("coverSummaryText");
+  if (summary) {
+    summary.textContent = `📁 ${COVERS.length} cover images in ${COVERS_CATS_CACHE.length} category folder${COVERS_CATS_CACHE.length === 1 ? "" : "s"}`;
+  }
+  
+  renderCoversContent();
+  updateCoversStats();
+}
+
+function renderCoversContent() {
+  const container = document.getElementById("coversMainContent");
+  if (!container) return;
+  
+  // 1. CATEGORY FOLDERS OVERVIEW (Default - Clean & Compact, never dumps all images)
+  if (COVERS_ACTIVE_CAT_INDEX === null) {
+    let html = `<div class="cover-cats-grid">`;
+    let countShown = 0;
+    
+    COVERS_CATS_CACHE.forEach((catObj, catIdx) => {
+      if (COVERS_SEARCH) {
+        const matchesCat = catObj.name.toLowerCase().includes(COVERS_SEARCH);
+        const matchesSome = catObj.items.some(it => (it.cover.coverName || "").toLowerCase().includes(COVERS_SEARCH) || (it.cover.rawName || "").toLowerCase().includes(COVERS_SEARCH));
+        if (!matchesCat && !matchesSome) return;
+      }
+      countShown++;
+      
+      const firstImg = catObj.items[0]?.cover;
+      const selInCat = catObj.items.filter(it => COVERS_SELECTED.has(it.idx)).length;
+      
+      html += `
+        <div class="cover-cat-card" onclick="openCoverCategoryByIndex(${catIdx})">
+          <div class="cover-cat-thumb">
+            ${firstImg ? `<img src="${firstImg.url}" alt="${esc(catObj.name)}" loading="lazy"/>` : ""}
+            <span class="cover-cat-count-badge">${catObj.items.length} cover${catObj.items.length === 1 ? "" : "s"}</span>
+          </div>
+          <div class="cover-cat-body">
+            <div class="cover-cat-name">
+              <span>📁 ${esc(catObj.name)}</span>
+              <span style="font-size:.68rem;color:${selInCat ? "var(--gn)" : "var(--mu)"}">${selInCat ? `🟢 ${selInCat} selected` : ""}</span>
+            </div>
+            <div class="cover-cat-sub">
+              <span>${catObj.items.length} image${catObj.items.length === 1 ? "" : "s"} · 750 × 300</span>
+            </div>
+            <div class="cover-cat-open-btn">
+              <span>Click to view covers →</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    
+    if (countShown === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:36px;color:var(--mu);font-size:.85rem">No categories match "${esc(COVERS_SEARCH)}".</div>`;
+    } else {
+      container.innerHTML = html;
+    }
+    return;
+  }
+  
+  // 2. SINGLE CATEGORY VIEW (Shows only this specific category's images)
+  const catObj = COVERS_CATS_CACHE[COVERS_ACTIVE_CAT_INDEX];
+  if (!catObj) {
+    showCategoriesOverview();
+    return;
+  }
+  
+  const itemsToRender = catObj.items.filter(it => {
+    if (!COVERS_SEARCH) return true;
+    const c = it.cover;
+    return (c.coverName || "").toLowerCase().includes(COVERS_SEARCH) || (c.rawName || "").toLowerCase().includes(COVERS_SEARCH);
+  });
+  
+  const selInCat = catObj.items.filter(it => COVERS_SELECTED.has(it.idx)).length;
+  
+  let headerHtml = `
+    <div class="cover-detail-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn bs bsm" onclick="showCategoriesOverview()">⬅ Back to all categories</button>
+        <strong style="font-size:.88rem;color:var(--tx)">📁 Category: ${esc(catObj.name)} <span style="color:var(--mu);font-size:.74rem">(${catObj.items.length} cover${catObj.items.length === 1 ? "" : "s"} · 750×300)</span></strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <button class="btn bs bsm" onclick="toggleCategoryCoversByIndex(${COVERS_ACTIVE_CAT_INDEX}, true)">☑ Select all in ${esc(catObj.name)}</button>
+        <button class="btn bs bsm" onclick="toggleCategoryCoversByIndex(${COVERS_ACTIVE_CAT_INDEX}, false)">⬜ Deselect ${esc(catObj.name)}</button>
+      </div>
+    </div>
+  `;
+  
+  if (!itemsToRender.length) {
+    container.innerHTML = headerHtml + `<div style="text-align:center;padding:32px;color:var(--mu);font-size:.85rem">No cover images match "${esc(COVERS_SEARCH)}".</div>`;
+    return;
+  }
+  
+  let gridHtml = `<div class="covers-grid">`;
+  itemsToRender.forEach(({ cover: c, idx }) => {
+    const isSelected = COVERS_SELECTED.has(idx);
+    const sizeStr = c.size > 1048576 ? (c.size / 1048576).toFixed(1) + " MB" : (c.size / 1024).toFixed(0) + " KB";
+    
+    gridHtml += `
+      <div class="cover-card ${isSelected ? "selected-cover" : ""}" id="cover_card_${idx}">
+        <div class="cover-thumb-wrap" onclick="previewCover(${idx})" title="Click to preview full 750×300">
+          <img class="cover-thumb" src="${c.url}" alt="${esc(c.coverName)}" loading="lazy"/>
+          <span class="cover-badge">${esc(c.category)}</span>
+          <label class="cover-check" onclick="event.stopPropagation()" title="Select for Batch ZIP">
+            <input type="checkbox" ${isSelected ? "checked" : ""} onchange="toggleCoverSelection(${idx}, this.checked)"/>
+          </label>
+        </div>
+        <div class="cover-body">
+          <div style="font-size:.65rem;color:var(--mu);font-weight:700">Cover Name (Export):</div>
+          <input class="cover-name-input" dir="auto" value="${esc(c.exportName || c.coverName)}" onchange="updateCoverName(${idx}, this.value)" placeholder="Cover name…"/>
+          
+          <div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+            <button class="btn bp bsm cover-card-dl-btn" onclick="downloadSingleCoverDirect(${idx})" title="Download this 750×300 JPG directly">
+              📥 Download (750×300)
+            </button>
+            <button class="btn bd- bsm" style="padding:4px 8px;font-size:.68rem" onclick="removeCover(${idx})" title="Remove cover">
+              🗑️
+            </button>
+          </div>
+          
+          <div class="cover-meta" style="margin-top:4px">
+            <span>${sizeStr}</span>
+            <span style="color:var(--mu)">750 × 300 JPG</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  gridHtml += `</div>`;
+  
+  container.innerHTML = headerHtml + gridHtml;
+}
+
+function toggleCoverSelection(idx, checked) {
+  if (checked) COVERS_SELECTED.add(idx);
+  else COVERS_SELECTED.delete(idx);
+  
+  const card = document.getElementById("cover_card_" + idx);
+  if (card) {
+    card.classList.toggle("selected-cover", checked);
+    const chk = card.querySelector('input[type="checkbox"]');
+    if (chk) chk.checked = checked;
+  }
+  updateCoversStats();
+}
+
+function updateCoverName(idx, val) {
+  if (!COVERS[idx]) return;
+  const clean = san(val) || "Cover";
+  COVERS[idx].exportName = clean;
+}
+
+function updateCoverCategory(idx, val) {
+  if (!COVERS[idx]) return;
+  const clean = val.trim() || "Uncategorized";
+  COVERS[idx].category = clean;
+  rebuildCoversCategoriesCache();
+  renderCoversUI();
+}
+
+function removeCover(idx) {
+  if (!COVERS[idx]) return;
+  try { URL.revokeObjectURL(COVERS[idx].url); } catch(e) {}
+  COVERS.splice(idx, 1);
+  const newSet = new Set();
+  COVERS_SELECTED.forEach(i => {
+    if (i < idx) newSet.add(i);
+    else if (i > idx) newSet.add(i - 1);
+  });
+  COVERS_SELECTED = newSet;
+  if (CURRENT_PREVIEW_COVER_IDX === idx) CURRENT_PREVIEW_COVER_IDX = null;
+  rebuildCoversCategoriesCache();
+  renderCoversUI();
+}
+
+function previewCover(idx) {
+  const item = COVERS[idx];
+  if (!item) return;
+  CURRENT_PREVIEW_COVER_IDX = idx;
+  
+  const modal = document.getElementById("coverPreviewModal");
+  if (modal) {
+    document.getElementById("coverPrevImg").src = item.url;
+    document.getElementById("coverPrevTitle").textContent = item.coverName + " (" + item.category + ")";
+    document.getElementById("coverPrevFile").textContent = item.rawName;
+    modal.classList.add("open");
+  }
+}
+
+function closeCoverPreview() {
+  const modal = document.getElementById("coverPreviewModal");
+  if (modal) modal.classList.remove("open");
+  CURRENT_PREVIEW_COVER_IDX = null;
+}
+
+/* ESC closes the cover preview lightbox. Deliberately scoped: every other
+   modal in this tool already owns its own Escape handler. */
+window.addEventListener("keydown", function(e) {
+  if (e.key === "Escape" || e.key === "Esc" || e.keyCode === 27) {
+    const cmodal = document.getElementById("coverPreviewModal");
+    if (cmodal && cmodal.classList.contains("open")) {
+      closeCoverPreview();
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+}, true);
+
+/* 750 × 300 Cover Image Generator */
+async function makeCoverOutputImage(file) {
+  const W = 750, H = 300;
+  let source = null, url = "";
+  try {
+    if (typeof createImageBitmap === "function") {
+      source = await createImageBitmap(file);
+    } else {
+      url = URL.createObjectURL(file);
+      source = await new Promise((res, rej) => {
+        const image = new Image();
+        image.onload = () => res(image);
+        image.onerror = () => rej(new Error("Cover image could not be decoded"));
+        image.src = url;
+      });
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas is unavailable");
+    
+    // Scale & center on 750x300 canvas
+    const scale = Math.min(W / source.width, H / source.height);
+    const dw = source.width * scale, dh = source.height * scale;
+    const dx = (W - dw) / 2, dy = (H - dh) / 2;
+    
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(source, dx, dy, dw, dh);
+    
+    return await new Promise((res, rej) => {
+      canvas.toBlob(blob => {
+        if (!blob) rej(new Error("Canvas conversion to JPEG failed"));
+        else res(blob);
+      }, "image/jpeg", 0.94);
+    });
+  } finally {
+    if (source && typeof source.close === "function") source.close();
+    if (url) URL.revokeObjectURL(url);
+  }
+}
+
+/* Batch Download for 1 or more selected covers */
+async function doCoverZip() {
+  const selected = COVERS.filter((c, i) => COVERS_SELECTED.has(i));
+  if (!selected.length) {
+    toast("No cover images selected for download.", "e");
+    return;
+  }
+  const zipBtn = document.getElementById("coverZipBtn");
+  if (zipBtn) zipBtn.disabled = true;
+  
+  const dlLog = document.getElementById("coverDlLog");
+  if (dlLog) dlLog.innerHTML = "";
+  
+  showProg("coverZipProg", true);
+  
+  function logCoverLine(msg, cls) {
+    if (!dlLog) return;
+    const div = document.createElement("div");
+    div.className = "ll " + (cls || "");
+    div.textContent = msg;
+    dlLog.appendChild(div);
+    dlLog.scrollTop = dlLog.scrollHeight;
+  }
+  
+  // ── 1 COVER SELECTED: Direct JPG Download (NO ZIP) ──
+  if (selected.length === 1) {
+    const item = selected[0];
+    const fn = san(item.exportName || item.coverName || "Cover") + ".jpg";
+    setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 40, "Processing 750×300 JPG…", fn);
+    try {
+      const outputBlob = await makeCoverOutputImage(item.file);
+      setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 100, "Ready!", "Downloaded " + fn);
+      saveOfflineBlob(outputBlob, fn);
+      logCoverLine("✅ " + item.coverName + " → Downloaded " + fn + " (750×300 JPG)", "lok");
+      toast("Cover image downloaded: " + fn + " (750×300 JPG)", "s");
+    } catch (err) {
+      setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 0, "Error", err.message);
+      logCoverLine("❌ Image download failed: " + err.message, "ler");
+      toast("Could not process cover: " + err.message, "e");
+    } finally {
+      if (zipBtn) zipBtn.disabled = false;
+    }
+    return;
+  }
+  
+  // ── 2+ COVERS SELECTED: Pack into Cover-Images.zip ──
+  logCoverLine("Packing " + selected.length + " cover images into ZIP (750×300 format)…", "li");
+  
+  const entries = [];
+  let ok = 0, fail = 0, total = selected.length;
+  
+  for (let i = 0; i < total; i++) {
+    const item = selected[i];
+    const fn = san(item.exportName || item.coverName || "Cover") + ".jpg";
+    setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", Math.round((i / total) * 70), "Reading " + (i + 1) + "/" + total, fn);
+    try {
+      const output = await makeCoverOutputImage(item.file);
+      entries.push({ name: "Cover Images/" + fn, file: output });
+      logCoverLine("✅ " + item.coverName + " → " + fn + " (750×300 high-quality JPG)", "lok");
+      ok++;
+    } catch (err) {
+      logCoverLine("❌ " + item.coverName + " — " + String(err.message), "ler");
+      fail++;
+    }
+    if ((i + 1) % 5 === 0) await sleep(0);
+  }
+  
+  try {
+    setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 78, "Compressing ZIP…", "Offline DEFLATE compression");
+    let usedCompression = false;
+    const blob = await makeOfflineZip(entries, (fraction, compressed) => {
+      usedCompression = usedCompression || compressed;
+      setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 78 + Math.round(fraction * 20), "Compressing ZIP…", compressed ? "DEFLATE compression" : "Storing image data");
+    });
+    setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 100, "Ready!", usedCompression ? "Compressed offline" : "Offline ZIP ready");
+    saveOfflineBlob(blob, "Cover-Images.zip");
+    logCoverLine("🎉 Finished: " + ok + " covers zipped into Cover-Images.zip (750×300)" + (fail ? " (" + fail + " failed)" : ""), ok ? "lok" : "ler");
+    toast("Cover images ZIP downloaded (" + ok + " covers · 750×300)", "s");
+  } catch (err) {
+    setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", 0, "Error", err.message);
+    logCoverLine("❌ ZIP creation failed: " + err.message, "ler");
+    toast("Could not build Covers ZIP: " + err.message, "e");
+  } finally {
+    if (zipBtn) zipBtn.disabled = false;
+  }
+}
 
 /* ═══════════════════════════════════════
    SEARCH
@@ -4403,7 +5057,7 @@ function setActiveNav(id){
 let RAIL_OBS=null;
 function initRailSpy(){
   if(RAIL_OBS||!('IntersectionObserver' in window))return;
-  const ids=['step1','step2','step3','resWrap','dlCard'];
+  const ids=['step1','step2','step3','coversStep','resWrap','dlCard'];
   const seen=new Map();
   RAIL_OBS=new IntersectionObserver(es=>{
     es.forEach(e=>seen.set(e.target.id,e.isIntersecting?e.intersectionRatio:0));
@@ -5262,5 +5916,5 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45c2cec2fb2c8e8',t:'MTc5MTIwMDY3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45c2cec2fb2c8e8',t:'MTc5MTIwMDY3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a46276e34d64ed20',t:'MTc5MTI2NjYyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
