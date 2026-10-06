@@ -487,6 +487,37 @@ textarea::placeholder{color:var(--mu)}
 .cat-tile-sel{width:100%;font:inherit;font-size:.64rem;padding:4px 5px;border-radius:var(--rx);
   border:1px solid var(--bd2);background:var(--sur);color:var(--tx);min-width:0}
 .cat-more{margin-top:11px;width:100%}
+/* ── ☁ Cloud team sync panel ─────────────────────────────────── */
+.cloud-sync-manager{margin-top:10px;padding-top:9px;border-top:1px solid var(--bd)}
+.cloud-sync-manager>summary{cursor:pointer;color:var(--tx2);font-size:.72rem;font-weight:800;margin-bottom:7px;display:flex;align-items:center;gap:7px;list-style:none}
+.cloud-sync-manager>summary::-webkit-details-marker{display:none}
+.cloud-sync-manager>summary::before{content:'▾';color:var(--mu);font-size:.6rem;transition:transform .15s}
+.cloud-sync-manager:not([open])>summary::before{transform:rotate(-90deg)}
+.cloud-badge{font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid var(--bd2);color:var(--mu);letter-spacing:.02em}
+.cloud-badge.on{color:var(--gn,#16A34A);border-color:rgba(22,163,74,.45);background:rgba(22,163,74,.08)}
+.cloud-badge.err{color:var(--re,#DC2626);border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.07)}
+.cloud-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.cloud-tabs label{display:flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;color:var(--tx2);background:var(--sur);border:1px solid var(--bd);border-radius:999px;padding:4px 10px;cursor:pointer;user-select:none}
+.cloud-tabs label span{font-size:.58rem;color:var(--or);text-transform:uppercase;letter-spacing:.04em}
+.cloud-tabs label:has(input:checked){border-color:var(--or);color:var(--tx);background:var(--orl)}
+.cloud-field{margin-bottom:7px}
+.cloud-field label{display:block;font-size:.66rem;font-weight:800;color:var(--tx2);margin-bottom:4px}
+.cloud-field input,.cloud-field textarea{width:100%;box-sizing:border-box;background:var(--sur);color:var(--tx);border:1px solid var(--bd2);border-radius:var(--rx);font:inherit;font-size:.72rem;padding:7px 8px}
+.cloud-field textarea{min-height:96px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.66rem;line-height:1.5;white-space:pre}
+.cloud-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.cloud-status-line{font-size:.74rem;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cloud-dot{width:9px;height:9px;border-radius:50%;background:var(--mu);flex:none;box-shadow:0 0 0 3px rgba(138,149,163,.15)}
+.cloud-dot.on{background:#22b573;box-shadow:0 0 0 3px rgba(34,181,115,.2);animation:cloudPulse 2.4s infinite}
+.cloud-dot.err{background:#e05260;box-shadow:0 0 0 3px rgba(224,82,96,.18)}
+@keyframes cloudPulse{0%,100%{box-shadow:0 0 0 3px rgba(34,181,115,.2)}50%{box-shadow:0 0 0 6px rgba(34,181,115,.06)}}
+.cloud-mini{font-size:.68rem;color:var(--tx2);display:flex;align-items:center;gap:5px}
+.cloud-mini select{font:inherit;font-size:.68rem;background:var(--sur);color:var(--tx);border:1px solid var(--bd2);border-radius:var(--rx);padding:2px 4px}
+.cloud-guide{margin-top:9px;border-top:1px dashed var(--bd2);padding-top:7px}
+.cloud-guide>summary{cursor:pointer;font-size:.68rem;font-weight:800;color:var(--tx2)}
+.cloud-guide .cloud-guide-body{font-size:.67rem;color:var(--tx2);line-height:1.7;margin-top:6px;white-space:pre-line;overflow-wrap:anywhere}
+
+
+
 /* ── Covers Section (750x300 Covers - Library Mode) ── */
 .covers-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:12px 0 10px 0;padding:10px 14px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs)}
 .covers-summary{font-size:.78rem;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:6px}
@@ -969,6 +1000,85 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
           <div class="smart-help">One CSV with everything the tool remembers: your categories, custom &amp; folder categories, every manual assignment, the words it learned from your picks, your corrections, dictionary and settings. Restore merges it back on any device.</div>
         </div>
       </div>
+<details class="cloud-sync-manager" id="cloudSyncPanel">
+          <summary>☁ Cloud team sync <span class="cloud-badge" id="cloudBadge">off</span></summary>
+          <div class="smart-help" style="margin-top:2px">Share your categories, aliases, priority rules, learned matches and corrections with the whole team — automatically, no CSV export/import. Images never leave any device; only this settings memory syncs.</div>
+          <div id="cloudCfgView">
+            <div class="cloud-tabs" id="cloudTabs">
+              <label><input type="radio" name="cloudMode" value="firebase" checked/> 🔥 Firebase <span>live</span></label>
+              <label><input type="radio" name="cloudMode" value="github"/> 🐙 GitHub file</label>
+              <label><input type="radio" name="cloudMode" value="rest"/> 🔗 REST endpoint</label>
+            </div>
+            <div id="cloudFirebaseFields">
+              <div class="cloud-field"><label>Firebase web-app config — paste the whole firebaseConfig object</label>
+                <textarea id="cloudFbCfg" dir="ltr" spellcheck="false" placeholder='{
+  "apiKey": "AIza…",
+  "databaseURL": "https://your-project-default-rtdb.firebaseio.com",
+  "projectId": "your-project",
+  "appId": "1:…:web:…"
+}'></textarea></div>
+              <div class="cloud-field"><label>Workspace name — must be identical for every teammate</label><input id="cloudFbWs" value="default" dir="ltr"/></div>
+            </div>
+            <div id="cloudGithubFields" hidden>
+              <div class="cloud-field"><label>Repository (owner/name) — the shared file lives in this repo</label><input id="cloudGhRepo" dir="ltr" placeholder="androssyoussef/ToolsTest"/></div>
+              <div class="cloud-field"><label>File path in the repo</label><input id="cloudGhPath" value="shared-settings.json" dir="ltr"/></div>
+              <div class="cloud-field"><label>GitHub token — only needed to publish edits (readers leave empty)</label><input id="cloudGhToken" type="password" autocomplete="off" dir="ltr" placeholder="github_pat_… (fine-grained · Contents: Read and write)"/></div>
+            </div>
+            <div id="cloudRestFields" hidden>
+              <div class="cloud-field"><label>JSON endpoint URL — must answer GET and accept PUT</label><input id="cloudRestUrl" dir="ltr" placeholder="https://…"/></div>
+              <div class="cloud-field"><label>Extra headers as JSON (optional, e.g. {"X-API-Key":"…"})</label><input id="cloudRestHeaders" dir="ltr" placeholder="{}"/></div>
+            </div>
+            <div class="cloud-actions">
+              <button class="btn bp bsm" onclick="TIFCloud.connectFromPanel()">🔗 Connect</button>
+              <span class="smart-help" id="cloudCfgHint" style="margin:0;align-self:center"></span>
+            </div>
+            <details class="cloud-guide">
+              <summary>Setup guide — pick what fits your team</summary>
+              <div class="cloud-guide-body">
+🔥 FIREBASE — recommended: real-time, free, nothing to host
+1. console.firebase.google.com → Add project (any name, e.g. talabat-tools) → Create.
+2. In the project: Build → Realtime Database → Create Database → pick a location → Start in test mode.
+3. ⚙ Project settings → Your apps → Web (‹/›) → Register app → copy the firebaseConfig object.
+4. Paste it on the left, keep one workspace name for everyone, Connect — done.
+Teammates get every change within about a second while the page is open.
+Note: test-mode rules stay open for 30 days; afterwards set Rules to {"rules":{".read": true,".write": true}} or enable Authentication → Anonymous and require auth. Keep the workspace name hard to guess if you want it private-ish.
+
+🐙 GITHUB — no new accounts: the shared settings live as a JSON file inside a repo you control
+1. Reading is zero-setup for public repos.
+2. To publish edits once per editor: GitHub → Settings → Developer settings → Fine-grained personal access tokens → Generate new token → Repository access: only this repo → Permissions → Contents: Read and write → paste it above.
+3. Readers/consumers need no token at all. Everyone sees changes within the poll interval (GitHub caches raw files a few minutes).
+
+🔗 REST ENDPOINT — any JSON store with GET + PUT
+Create a bin on a JSON-storage service or point it at your own API / Cloudflare Worker, then paste the URL. Use “Copy team link” to hand the same endpoint to everyone.
+              </div>
+            </details>
+          </div>
+          <div id="cloudRunView" hidden>
+            <div class="cloud-status-line"><span class="cloud-dot" id="cloudDot"></span><span id="cloudStatusText">…</span></div>
+            <div class="cloud-field" style="margin-top:7px"><label>This device shows up as</label><input id="cloudDeviceName" dir="ltr"/></div>
+            <div class="cloud-actions">
+              <button class="btn bp bsm" onclick="TIFCloud.syncNow()">🔄 Sync now</button>
+              <button class="btn bs bsm" onclick="TIFCloud.copyTeamLink()">🔗 Copy team link</button>
+              <button class="btn bs bsm" onclick="TIFCloud.disconnect(true)">⏏ Disconnect</button>
+            </div>
+            <div class="cloud-actions">
+              <button class="btn bs bsm" onclick="TIFCloud.forcePull()">⬇ Reset this device from cloud</button>
+              <button class="btn bs bsm" onclick="TIFCloud.forcePush()">⬆ Overwrite cloud with this device</button>
+            </div>
+            <div class="cloud-actions" style="align-items:center">
+              <label class="cloud-mini" id="cloudPollWrap">poll every
+                <select id="cloudPollSel">
+                  <option value="5">5s</option>
+                  <option value="12" selected>12s</option>
+                  <option value="30">30s</option>
+                  <option value="60">60s</option>
+                </select>
+              </label>
+              <label class="cloud-mini"><input type="checkbox" id="cloudAutoChk" checked/> auto-connect on open</label>
+            </div>
+            <div class="smart-help" id="cloudLastLine">—</div>
+          </div>
+        </details>
     </div>
     <div class="smart-foot" id="smartStatus">🧠 Local matching ready · auto categorization is on.</div>
   </div>
@@ -5813,6 +5923,823 @@ async function bootSession(){
 document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCategories();renderCategoryChoices();initAutoCatUI();updateScopeEstimate();renderWorkspaceOptions();bootSession();loadSharedConfig()});
 </script>
 <script>
+/* ══════════════════════════════════════════════════════════════════
+   ☁ CLOUD TEAM SYNC  ·  v1.0
+   Shares this tool's whole "settings memory" with every teammate,
+   live — no more CSV export/import:
+     · custom categories        · dictionary aliases
+     · manual image categories  · manual item categories
+     · priority rules           · learned matches
+     · library picks
+   Images NEVER leave any device — only this settings memory syncs.
+
+   Backends (pick one in the panel):
+     firebase  Firebase Realtime Database — real-time push to everyone
+     github    a shared-settings.json file inside a repo you own
+     rest      any JSON URL that answers GET and accepts PUT
+
+   Design: localStorage/IndexedDB stay the source of truth on this
+   device; the cloud is a merge-synced replica. Each section carries
+   a rev counter (last-writer-wins); concurrent edits to DIFFERENT
+   keys merge cleanly via 3-way merge. No account is required for
+   readers on GitHub/REST backends.
+══════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+function $(id){return document.getElementById(id)}
+function now(){return Date.now()}
+function clone(x){return x==null?x:JSON.parse(JSON.stringify(x))}
+function jparse(s,d){try{return JSON.parse(s)}catch(e){return d}}
+function eqv(a,b){return a===b||(JSON.stringify(a)===JSON.stringify(b))}
+function utf8b64e(s){try{return btoa(unescape(encodeURIComponent(s)))}catch(e){return ''}}
+function utf8b64d(s){try{return decodeURIComponent(escape(atob(String(s).replace(/\s+/g,''))))}catch(e){return ''}}
+function b64uEnc(s){return utf8b64e(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64uDec(s){s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return utf8b64d(s)}
+function testOpts(){try{return window.__TIF_CLOUD_TEST__||{}}catch(e){return {}}}
+function dbg(){try{if(window.__TIF_CLOUD_DEBUG__)console.log('[cloud-sync]',...arguments)}catch(e){}}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:jparse(v,d)}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v));return true}catch(e){return false}}
+function slugWs(s){return String(s||'').toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9_-]/g,'').slice(0,40)||'default'}
+
+/* ── identity & config ─────────────────────────────────────────── */
+const LS_META='tif_cloud_sync_v2';
+let META=Object.assign({
+  mode:null,                       /* 'firebase' | 'github' | 'rest' */
+  firebase:{cfg:null,workspace:'default'},
+  github:{repo:'',path:'shared-settings.json',token:''},
+  rest:{url:'',headers:''},
+  pollSec:12,autoConnect:true,
+  deviceName:'',deviceId:'d_'+Math.random().toString(36).slice(2,8)+now().toString(36),
+  revs:{}                          /* last-synced rev per section */
+},lsGet(LS_META,{}));
+function saveMeta(){lsSet(LS_META,META)}
+if(!META.deviceName){META.deviceName=defaultDeviceName();saveMeta()}
+function defaultDeviceName(){
+  const ua=(typeof navigator!=='undefined'&&navigator.userAgent)||'';
+  const os=/Windows/i.test(ua)?'Windows':/Android/i.test(ua)?'Android':/iPhone|iPad|iPod/i.test(ua)?'iOS':/Mac/i.test(ua)?'Mac':/Linux/i.test(ua)?'Linux':'Device';
+  const br=/Edg\//i.test(ua)?'Edge':/OPR\//i.test(ua)?'Opera':/SamsungBrowser/i.test(ua)?'Samsung':/Chrome\//i.test(ua)?'Chrome':/Firefox\//i.test(ua)?'Firefox':/Safari\//i.test(ua)?'Safari':'Browser';
+  return os+' · '+br;
+}
+
+/* ── the seven shared sections ─────────────────────────────────── */
+const SECTION_ORDER=['categories','dict','imageCats','itemCats','priority','learned','picks'];
+const SECTION_LABEL={categories:'categories',dict:'dictionary',imageCats:'image categories',itemCats:'item categories',priority:'priority rules',learned:'learned matches',picks:'library picks'};
+let passthroughSections={};
+const KEY_TO_SECTION={'tif_custom_categories_v1':'categories','tif_dictionary_v1':'dict','tif_manual_image_categories_v1':'imageCats','tif_manual_item_categories_v1':'itemCats','tif_priority_rules_v1':'priority','tif_learned_v1':'learned','tif_library_picks_v1':'picks'};
+
+function sectionLocal(n){
+  switch(n){
+    case 'categories':{const out={};try{for(const[k,v]of Object.entries(CUSTOM_CATEGORY_DEFS||{}))if(v&&v.label&&Array.isArray(v.words))out[k]={label:String(v.label),words:v.words.map(String)}}catch(e){}return out}
+    case 'dict':{const out={};try{Object.assign(out,CUSTOM_DICT||{})}catch(e){}return out}
+    case 'imageCats':{const out={};try{Object.assign(out,MANUAL_IMAGE_CATS||{})}catch(e){}return out}
+    case 'itemCats':{const out={};try{Object.assign(out,MANUAL_ITEM_CATS||{})}catch(e){}return out}
+    case 'priority':{try{return (typeof PRIORITY_RULES!=='undefined')?(PRIORITY_RULES||[]).map(r=>r&&({...r,words:[...(r.words||[])]})):clone(passthroughSections.priority||[])}catch(e){return clone(passthroughSections.priority||[])}}
+    case 'learned':{try{return clone(LEARNED||{})}catch(e){return {}}}
+    case 'picks':{const out={};try{Object.assign(out,LIBRARY_PICK_MEM||{})}catch(e){}return out}
+  }
+  return {};
+}
+function isEmptyData(n,v){return n==='priority'?!(Array.isArray(v)&&v.length):!(v&&typeof v==='object'&&Object.keys(v).length)}
+
+/* validate/clean everything coming from the cloud (defensive) */
+function sanitizeSection(name,data){
+  const out=(name==='priority')?[]:{};
+  if(!data||typeof data!=='object')return out;
+  try{
+    if(name==='categories'){
+      for(const[k,v]of Object.entries(data)){
+        if(typeof k!=='string'||!k)continue;
+        if(typeof BUILTIN_CATEGORY_KEYS!=='undefined'&&BUILTIN_CATEGORY_KEYS.has&&BUILTIN_CATEGORY_KEYS.has(k))continue;
+        const label=(v&&typeof v.label==='string')?v.label.slice(0,60):'';
+        const words=(v&&Array.isArray(v.words))?v.words.map(x=>String(x).trim()).filter(Boolean).slice(0,200):[];
+        if(label&&words.length)out[k]={label,words};
+      }
+    }else if(name==='dict'){
+      for(const[k,v]of Object.entries(data))if(typeof k==='string'&&k&&typeof v==='string'&&v)out[k]=v;
+    }else if(name==='imageCats'||name==='itemCats'){
+      const defs=(typeof CATEGORY_DEFS!=='undefined'&&CATEGORY_DEFS)||{};
+      for(const[k,v]of Object.entries(data))if(typeof k==='string'&&k&&typeof v==='string'&&v&&defs[v])out[k]=v;
+    }else if(name==='priority'){
+      const seen=new Set();
+      for(const r of (Array.isArray(data)?data:[])){
+        if(!r||typeof r!=='object')continue;
+        if(typeof validPriorityRule==='function'&&!validPriorityRule(r))continue;
+        const rule={id:String(r.id||('custom_'+now()+'_'+Math.random().toString(36).slice(2,6))),name:String(r.name).slice(0,80),words:(r.words||[]).map(String).map(x=>x.trim()).filter(Boolean).slice(0,200),category:((typeof CATEGORY_DEFS!=='undefined'&&CATEGORY_DEFS&&CATEGORY_DEFS[r.category])?String(r.category):''),priority:Math.max(1,Number(r.priority)||1),enabled:r.enabled!==false};
+        if(!rule.words.length||seen.has(rule.id))continue;
+        seen.add(rule.id);out.push(rule);
+      }
+      out.sort((a,b)=>a.priority-b.priority);
+    }else if(name==='learned'){
+      for(const[k,v]of Object.entries(data))if(typeof k==='string'&&k&&v&&typeof v==='object'&&typeof v.name==='string'&&v.name)out[k]={name:String(v.name).slice(0,200),normalized:String(v.normalized||'').slice(0,200)};
+    }else if(name==='picks'){
+      for(const[k,v]of Object.entries(data))if(typeof k==='string'&&k&&typeof v==='string')out[k]=v;
+    }
+  }catch(e){console.warn('[cloud-sync] sanitize failed for',name,e)}
+  return out;
+}
+
+/* ── 3-way merge (base = last-synced snapshot) ─────────────────── */
+function merge3Map(base,ours,theirs){
+  const out={...(theirs||{})};
+  const keys=new Set([...Object.keys(base||{}),...Object.keys(ours||{}),...Object.keys(theirs||{})]);
+  for(const k of keys){
+    const b=(base||{})[k],o=(ours||{})[k],t=(theirs||{})[k];
+    if(o===undefined){
+      if(b!==undefined&&eqv(t,b)){delete out[k];continue}   /* we deleted it, theirs untouched → stays deleted */
+      if(t!==undefined)out[k]=t;                            /* theirs added/changed → take theirs */
+    }else{
+      if(eqv(o,b)){                                  /* ours untouched → follow theirs */
+        if(t===undefined){if(b!==undefined)delete out[k]}
+        else out[k]=t;
+      }else out[k]=o;                                /* ours edited → keep ours */
+    }
+  }
+  return out;
+}
+function merge3Array(base,ours,theirs){
+  const byId=x=>{const m=new Map();for(const r of (Array.isArray(x)?x:[]))if(r&&r.id)m.set(r.id,r);return m};
+  const B=byId(base),O=byId(ours),T=byId(theirs);
+  const ids=new Set([...B.keys(),...O.keys(),...T.keys()]);
+  const out=[];
+  for(const id of ids){
+    const b=B.get(id),o=O.get(id),t=T.get(id);
+    if(o===undefined){
+      if(b!==undefined&&eqv(t,b))continue;          /* we deleted it, untouched by them */
+      if(t!==undefined)out.push(t);
+    }else{
+      if(eqv(o,b)){if(t!==undefined)out.push(t)}    /* ours untouched → theirs (or deleted) */
+      else out.push(o);                              /* ours edited → keep ours */
+    }
+  }
+  out.sort((a,b)=>(Number(a&&a.priority)||99)-(Number(b&&b.priority)||99));
+  return out;
+}
+function merge3(name,base,ours,theirs){return name==='priority'?merge3Array(base,ours,theirs):merge3Map(base,ours,theirs)}
+function unionMerge(name,ours,theirs){
+  if(name==='priority'){
+    const m=new Map();for(const r of (theirs||[]))if(r&&r.id)m.set(r.id,r);for(const r of (ours||[]))if(r&&r.id)m.set(r.id,r);
+    return [...m.values()].sort((a,b)=>(Number(a&&a.priority)||99)-(Number(b&&b.priority)||99));
+  }
+  return {...(theirs||{}),...(ours||{})};
+}
+
+/* ── runtime state ─────────────────────────────────────────────── */
+let ADAPTER=null,connected=false,connecting=false;
+let pollTimer=0,pushTimer=0,renderTimer=0;
+let pushInFlight=false,pushAgain=false;
+let dirty=new Set(),base={},lastKnownRev={},lastRemoteDoc=null;
+let applyingRemote=false,lastSyncAt=0,lastToastAt=0;
+const CLOUD={state:'off',msg:''};
+
+/* ── hooks into the app's save funnel ──────────────────────────── */
+try{
+  const _persist=persist;
+  persist=function(key,value,label){
+    const ok=_persist(key,value,label);
+    if(!applyingRemote){const s=KEY_TO_SECTION[key];if(s)markDirty(s)}
+    return ok;
+  };
+}catch(e){console.warn('[cloud-sync] could not hook persist()',e)}
+try{
+  const _saveCategoryMemory=saveCategoryMemory;
+  saveCategoryMemory=function(){
+    const r=_saveCategoryMemory();
+    if(!applyingRemote){markDirty('imageCats');markDirty('itemCats')}
+    return r;
+  };
+}catch(e){console.warn('[cloud-sync] could not hook saveCategoryMemory()',e)}
+
+function markDirty(name){
+  dirty.add(name);
+  if(connected)schedulePush();
+}
+function schedulePush(){clearTimeout(pushTimer);pushTimer=setTimeout(()=>{pushDirty().catch(()=>{})},2000)}
+
+/* ── apply a section into the live app ─────────────────────────── */
+function applySection(name,data){
+  try{
+    if(name==='categories'){
+      if(typeof CUSTOM_CATEGORY_DEFS!=='undefined'){
+        for(const k of Object.keys(CUSTOM_CATEGORY_DEFS))if(!(k in data)){delete CUSTOM_CATEGORY_DEFS[k];if(typeof CATEGORY_DEFS!=='undefined')delete CATEGORY_DEFS[k]}
+        for(const[k,v]of Object.entries(data)){const cv={label:v.label,words:[...v.words]};CUSTOM_CATEGORY_DEFS[k]=cv;if(typeof CATEGORY_DEFS!=='undefined')CATEGORY_DEFS[k]=cv}
+        if(typeof persistCustomCategories==='function')persistCustomCategories();
+      }
+    }else if(name==='dict'){
+      if(typeof CUSTOM_DICT!=='undefined'){CUSTOM_DICT={...data};if(typeof persist==='function')persist('tif_dictionary_v1',CUSTOM_DICT,'your dictionary')}
+    }else if(name==='imageCats'||name==='itemCats'){
+      const cur=name==='imageCats'?(typeof MANUAL_IMAGE_CATS!=='undefined'?MANUAL_IMAGE_CATS:null):(typeof MANUAL_ITEM_CATS!=='undefined'?MANUAL_ITEM_CATS:null);
+      if(cur){
+        for(const k of Object.keys(cur))if(!(k in data))delete cur[k];
+        for(const[k,v]of Object.entries(data))cur[k]=v;
+        if(typeof saveCategoryMemory==='function')saveCategoryMemory();
+      }
+    }else if(name==='priority'){
+      if(typeof PRIORITY_RULES!=='undefined'){PRIORITY_RULES=data.map(r=>({...r,words:[...r.words]}));if(typeof persistPriorityRules==='function')persistPriorityRules()}
+      else passthroughSections.priority=clone(data);
+    }else if(name==='learned'){
+      if(typeof LEARNED!=='undefined'){LEARNED={...data};if(typeof saveLearned==='function')saveLearned()}
+    }else if(name==='picks'){
+      if(typeof LIBRARY_PICK_MEM!=='undefined'){LIBRARY_PICK_MEM={...data};if(typeof saveLibraryPicks==='function')saveLibraryPicks()}
+    }
+  }catch(e){console.warn('[cloud-sync] applySection failed for',name,e)}
+}
+function scheduleRerender(){clearTimeout(renderTimer);renderTimer=setTimeout(rerenderAll,350)}
+function rerenderAll(){
+  try{
+    applyingRemote=true;
+    if(typeof rebuildCategoryWords==='function')rebuildCategoryWords();
+    if(typeof renderCustomCategories==='function')renderCustomCategories();
+    if(typeof renderCategoryChoices==='function')renderCategoryChoices();
+    if(typeof renderPriorityRules==='function')renderPriorityRules();
+    if(typeof IMAGES!=='undefined'&&IMAGES)for(const img of IMAGES)if(img&&img.file&&typeof imageCategoriesForFile==='function')img.categories=imageCategoriesForFile(img.file);
+    if(typeof IMAGES!=='undefined'&&IMAGES.length&&typeof rebuildLiveSearchIndex==='function')rebuildLiveSearchIndex();
+    if(typeof restoreLibraryPicks==='function')restoreLibraryPicks();
+    if(typeof updateStats==='function')updateStats();
+    if(typeof renderLibraryCategorySummary==='function')renderLibraryCategorySummary();
+    if(typeof renderResults==='function')renderResults();
+    if(typeof refreshModal==='function')refreshModal();
+    if(typeof loadDictionaryUI==='function')loadDictionaryUI();
+  }catch(e){console.warn('[cloud-sync] rerender failed',e)}
+  finally{applyingRemote=false}
+}
+
+/* ── doc shape: {v:2, app, updatedAt, sections:{name:{rev,by,data(JSON string)}}} ── */
+function emptyDoc(){return {v:2,app:'talabat-images-finder',updatedAt:now(),sections:{}}}
+function normalizeDoc(raw){
+  if(!raw||typeof raw!=='object')return null;
+  const secs=(raw.sections&&typeof raw.sections==='object')?raw.sections:{};
+  const out={v:2,sections:{}};
+  for(const n of SECTION_ORDER){
+    const s=secs[n];if(!s||typeof s!=='object')continue;
+    const rev=Number(s.rev)||0;if(!rev)continue;
+    const data=typeof s.data==='string'?jparse(s.data,undefined):(s.data===undefined?null:s.data);
+    out.sections[n]={rev,by:String(s.by||''),data:data};
+  }
+  return out;
+}
+function nextRev(name){const r=Math.max(now(),(lastKnownRev[name]||0)+1,(META.revs[name]||0)+1);META.revs[name]=r;saveMeta();return r}
+function sectionPayload(name,data){return {rev:nextRev(name),by:META.deviceName,data:JSON.stringify(data===undefined?null:data)}}
+
+/* ── incoming doc ──────────────────────────────────────────────── */
+function feedDoc(doc){
+  if(!doc||!doc.sections)return;
+  lastRemoteDoc=doc;
+  const changed=[];
+  try{applyingRemote=true;
+    for(const n of SECTION_ORDER){
+      const rs=doc.sections[n];if(!rs)continue;
+      lastKnownRev[n]=Math.max(lastKnownRev[n]||0,rs.rev);
+      dbg('feed',n,'remote rev',rs.rev,'local rev',META.revs[n]||0,'dirty?',dirty.has(n));
+      if(rs.rev<=(META.revs[n]||0))continue;               /* already have it (incl. our own echo) */
+      const remoteData=sanitizeSection(n,rs.data);
+      if(!dirty.has(n)){
+        applySection(n,remoteData);
+        META.revs[n]=rs.rev;base[n]=clone(remoteData);
+        changed.push(n);
+      }else{
+        const local=sectionLocal(n);
+        const merged=sanitizeSection(n,(base[n]?merge3(n,base[n],local,remoteData):unionMerge(n,local,remoteData)));
+        applySection(n,merged);
+        META.revs[n]=rs.rev;base[n]=clone(merged);
+        changed.push(n);                                    /* keep dirty — merged result still needs publishing */
+      }
+    }
+  }finally{applyingRemote=false}
+  saveMeta();
+  if(changed.length){
+    lastSyncAt=now();
+    scheduleRerender();
+    syncToast(changed.map(n=>SECTION_LABEL[n]));
+  }else lastSyncAt=now();
+  if(CLOUD.state!=='error')setStatus('ok');
+  if(dirty.size&&connected)schedulePush();   /* merged results still need publishing */
+}
+let lastToastAt2=0;
+function syncToast(sections){
+  const t=now();if(t-lastToastAt2<15000)return;lastToastAt2=t;
+  toastCloud('☁ Team sync · updated '+sections.join(', '),'s');
+}
+function toastCloud(msg,type){try{if(typeof toast==='function')toast(msg,type||'i',6000)}catch(e){}}
+function setSmart(txt){try{const el=$('smartStatus');if(el)el.textContent=txt}catch(e){}}
+
+/* ── read-modify-write push (REST + GitHub) ───────────────────── */
+async function rmmPush(names,getDoc,putDoc){
+  for(let attempt=0;attempt<4;attempt++){
+    let remote=null;
+    try{remote=await getDoc()}catch(e){if(!(e&&e.notFound))throw e}
+    const doc=remote||emptyDoc();
+    if(!doc.sections)doc.sections={};
+    const wrote={};
+    for(const n of names){
+      const rs=doc.sections[n];
+      if(rs)lastKnownRev[n]=Math.max(lastKnownRev[n]||0,Number(rs.rev)||0);
+      let data=sectionLocal(n);
+      if(rs&&Number(rs.rev)>(META.revs[n]||0)){
+        /* someone else changed this section since our last sync → merge first */
+        const remoteData=sanitizeSection(n,rs.data);
+        const merged=sanitizeSection(n,(base[n]?merge3(n,base[n],data,remoteData):unionMerge(n,data,remoteData)));
+        if(!eqv(merged,data)){try{applyingRemote=true;applySection(n,merged)}finally{applyingRemote=false};data=merged}
+      }
+      if(rs&&eqv(data,sanitizeSection(n,rs.data))){wrote[n]=false;continue}  /* nothing new — leave remote alone */
+      if(isEmptyData(n,data)&&!rs){wrote[n]=false;continue}                  /* don't create empty sections */
+      doc.sections[n]=sectionPayload(n,data);
+      wrote[n]=true;
+    }
+    if(!Object.values(wrote).some(Boolean)){
+      names.forEach(n=>{base[n]=clone(sectionLocal(n))});
+      return;
+    }
+    doc.updatedAt=now();
+    try{await putDoc(doc)}
+    catch(e){if(e&&e.retry){continue}throw e}
+    for(const n of names){
+      if(wrote[n]){META.revs[n]=doc.sections[n].rev;lastKnownRev[n]=doc.sections[n].rev}
+      base[n]=clone(sectionLocal(n));
+    }
+    saveMeta();
+    return;
+  }
+  throw new Error('conflict retries exhausted');
+}
+
+/* ── publish dirty sections ────────────────────────────────────── */
+async function pushDirty(){
+  if(!connected||!ADAPTER)return;
+  const names=SECTION_ORDER.filter(n=>dirty.has(n));
+  if(!names.length)return;
+  if(pushInFlight){pushAgain=true;return}
+  pushInFlight=true;
+  try{
+    for(let i=0;i<3;i++){
+      try{await ADAPTER.pushSections(names);break}
+      catch(e){if(!(e&&e.retry)||i===2)throw e}
+    }
+    names.forEach(n=>{dirty.delete(n);base[n]=clone(sectionLocal(n))});
+    lastSyncAt=now();
+    setStatus('ok');
+  }catch(e){
+    setStatus('error','Publish failed ('+(e&&e.message||e)+'). Your changes are safe on this device and will retry automatically.');
+  }finally{
+    pushInFlight=false;
+    if(pushAgain){pushAgain=false;schedulePush()}
+  }
+}
+
+/* ── adapters ──────────────────────────────────────────────────── */
+const FB_SDK='https://www.gstatic.com/firebasejs/10.12.2/';
+function loadFirebaseSdk(){
+  return new Promise((res,rej)=>{
+    try{
+      if(window.firebase&&window.firebase.database&&window.firebase.initializeApp)return res();
+      const urls=[FB_SDK+'firebase-app-compat.js',FB_SDK+'firebase-auth-compat.js',FB_SDK+'firebase-database-compat.js'];
+      let left=urls.length,failed=false;
+      for(const u of urls){
+        const s=document.createElement('script');s.src=u;s.async=true;
+        s.onload=()=>{if(--left===0)(failed?rej:res)(failed?new Error('Could not load the Firebase SDK'):null)};
+        s.onerror=()=>{failed=true;if(--left===0)rej(new Error('Could not load the Firebase SDK — check your internet connection'))};
+        document.head.appendChild(s);
+      }
+    }catch(e){rej(e)}
+  });
+}
+const firebaseAdapter={
+  kind:'live',db:null,ref:null,path:'',
+  /* RTDB stores each section directly under the workspace path:
+     tif-sync/workspaces/<ws>/dict = {rev, by, data}. The workspace
+     snapshot therefore IS the sections map — wrap it for normalizeDoc. */
+  fbDoc(v){return (v&&typeof v==='object')?normalizeDoc({v:2,sections:v}):null},
+  async init(){
+    await loadFirebaseSdk();
+    const cfg=META.firebase.cfg;
+    if(!cfg||!cfg.databaseURL)throw new Error('Firebase config is missing databaseURL');
+    const fb=window.firebase;
+    /* dedicated named app — never touches a default app the host page may own */
+    const appName=testOpts().fbAppName||'tif-cloud-sync';
+    try{const old=fb.app(appName);await old.delete()}catch(e){/* none yet */}
+    const app=fb.initializeApp(cfg,appName);
+    try{if(app.auth)await app.auth().signInAnonymously()}catch(e){/* anonymous auth disabled → public-rules setups still work */}
+    this.db=app.database();
+    const em=testOpts().fbEmulator;
+    if(em){const i=em.lastIndexOf(':');this.db.useEmulator(em.slice(0,i),Number(em.slice(i+1)))}
+    this.path='tif-sync/workspaces/'+slugWs(META.firebase.workspace);
+  },
+  async getDoc(){const s=await this.db.ref(this.path).once('value');return this.fbDoc(s.val())},
+  async startLive(){
+    this.ref=this.db.ref(this.path);
+    dbg('startLive attaching listener on',this.path);
+    this.ref.on('value',snap=>{dbg('live event, sections=',snap.val()&&Object.keys(snap.val()));const v=this.fbDoc(snap.val());if(v)feedDoc(v);else{lastSyncAt=now();if(CLOUD.state!=='error')setStatus('ok')}},
+      err=>{dbg('live ERROR',err&&err.message);setStatus('error',(err&&err.message)||'realtime listener error')});
+  },
+  async pushSections(names){
+    for(const n of names){
+      let data=sectionLocal(n);
+      const rs=lastRemoteDoc&&lastRemoteDoc.sections&&lastRemoteDoc.sections[n];
+      if(rs&&Number(rs.rev)>(META.revs[n]||0)){
+        const merged=sanitizeSection(n,base[n]?merge3(n,base[n],data,sanitizeSection(n,rs.data)):unionMerge(n,data,sanitizeSection(n,rs.data)));
+        if(!eqv(merged,data)){try{applyingRemote=true;applySection(n,merged)}finally{applyingRemote=false};data=merged}
+      }
+      if(isEmptyData(n,data)&&!(rs&&rs.rev))continue;
+      const p=sectionPayload(n,data);
+      await this.db.ref(this.path+'/'+n).set(p);
+      META.revs[n]=p.rev;lastKnownRev[n]=p.rev;base[n]=clone(data);
+    }
+    saveMeta();
+  },
+  stop(){try{this.ref&&this.ref.off()}catch(e){}this.ref=null}
+};
+
+const githubAdapter={
+  kind:'poll',repo:'',path:'',token:'',branch:null,sha:null,etag:null,
+  apiBase(){return (testOpts().apiBase||'https://api.github.com').replace(/\/+$/,'')},
+  rawBase(){return (testOpts().rawBase||'https://raw.githubusercontent.com').replace(/\/+$/,'')},
+  ghPath(){return (this.path||'').split('/').filter(Boolean).map(encodeURIComponent).join('/')},
+  auth(){return this.token?{Authorization:'Bearer '+this.token}:{}},
+  async init(){
+    this.repo=(META.github.repo||'').trim();this.path=(META.github.path||'shared-settings.json').trim();this.token=(META.github.token||'').trim();
+    if(!this.repo)throw new Error('no repository configured');
+    try{
+      const res=await fetch(this.apiBase()+'/repos/'+this.repo,{headers:{...this.auth(),'Accept':'application/vnd.github+json'},cache:'no-store'});
+      if(res.status===404)throw new Error('repository not found: '+this.repo+(this.token?'':' — private repos need a token'));
+      if(res.status===401)throw new Error('GitHub rejected this token — invalid or expired token');
+      if(res.status===403)throw new Error('GitHub 403 Forbidden — check token permissions (needs Contents: Read and write)');
+      if(res.ok){const j=await res.json();this.branch=j.default_branch||'main'}
+      else this.branch='main';
+    }catch(e){if(e&&e.message&&/repository not found|rejected this token|Forbidden/.test(e.message))throw e;this.branch='main'}
+  },
+  async getDoc(){
+    if(this.token){
+      try{
+        const api=this.apiBase()+'/repos/'+this.repo+'/contents/'+this.ghPath();
+        const res=await fetch(api,{headers:{...this.auth(),'Accept':'application/vnd.github+json'},cache:'no-store'});
+        if(res.ok){
+          const j=await res.json();
+          this.sha=j.sha||null;
+          return normalizeDoc(jparse(utf8b64d(j.content||''),null));
+        }
+        if(res.status===404)return null;
+      }catch(e){}
+    }
+    const branches=this.branch?[this.branch]:['main','master'];
+    for(const b of branches){
+      const url=this.rawBase()+'/'+this.repo+'/'+b+'/'+this.ghPath()+'?_t='+now();
+      let res;
+      try{res=await fetch(url,{headers:{...this.auth(),'Accept':'application/vnd.raw'},cache:'no-store'})}
+      catch(e){throw new Error('network error reading the repo file')}
+      if(res.ok){this.branch=b;return normalizeDoc(jparse(await res.text(),null))}
+      if(res.status===404)continue;
+      throw new Error('GitHub raw read HTTP '+res.status);
+    }
+    return null;                        /* file (or branch) does not exist yet */
+  },
+  async pushSections(names){
+    if(!this.token)throw new Error('this device has no GitHub token — it can read the shared settings but not publish. Paste a token to publish.');
+    const api=this.apiBase()+'/repos/'+this.repo+'/contents/'+this.ghPath();
+    await rmmPush(names,async()=>{
+      const res=await fetch(api,{headers:{...this.auth(),'Accept':'application/vnd.github+json'},cache:'no-store'});
+      if(res.status===404){const e=new Error('not found');e.notFound=true;throw e}
+      if(!res.ok)throw new Error('GitHub HTTP '+res.status+(res.status===401?' — check the token':''));
+      const j=await res.json();
+      this.sha=j.sha||null;
+      return normalizeDoc(jparse(utf8b64d(j.content||''),null));
+    },async doc=>{
+      const body={message:'cloud-sync: update shared team settings',content:utf8b64e(JSON.stringify(doc))};
+      if(this.sha)body.sha=this.sha;
+      if(this.branch)body.branch=this.branch;
+      const res=await fetch(api,{method:'PUT',headers:{...this.auth(),'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+      if(res.status===409){const e=new Error('the file changed on GitHub while publishing');e.retry=true;throw e}
+      if(!res.ok){
+        let m='GitHub HTTP '+res.status;
+        try{
+          const j=await res.json();
+          if(j&&j.message)m+=' — '+j.message;
+          if(res.status===403)m+=' (Token needs Contents: Read and write permissions)';
+        }catch(e){}
+        throw new Error(m);
+      }
+      const j=await res.json().catch(()=>({}));
+      this.sha=(j.content&&j.content.sha)||this.sha;
+    });
+  },
+  stop(){}
+};
+
+const restAdapter={
+  kind:'poll',url:'',hdr:{},etag:null,
+  async init(){
+    this.url=(META.rest.url||'').trim();this.hdr=jparse(META.rest.headers||'',null)||{};
+    if(!/^https?:\/\/.+/i.test(this.url))throw new Error('invalid endpoint URL');
+  },
+  async getDoc(){
+    const sep=this.url.includes('?')?'&':'?';
+    const res=await fetch(this.url+sep+'_t='+now(),{headers:{...this.hdr,'Accept':'application/json'},cache:'no-store'});
+    if(res.status===404){this.etag=null;return null}
+    if(!res.ok)throw new Error('HTTP '+res.status+' reading the endpoint');
+    this.etag=res.headers.get('etag');
+    return normalizeDoc(jparse(await res.text(),null));
+  },
+  async pushSections(names){
+    if(!this.url)throw new Error('no endpoint URL');
+    await rmmPush(names,()=>this.getDoc(),async doc=>{
+      const headers={...this.hdr,'Content-Type':'application/json'};
+      if(this.etag)headers['If-Match']=this.etag;
+      const res=await fetch(this.url,{method:'PUT',headers,body:JSON.stringify(doc)});
+      if(res.status===412||res.status===409){const e=new Error('the endpoint changed while publishing');e.retry=true;throw e}
+      if(!res.ok)throw new Error('HTTP '+res.status+' writing the endpoint');
+      this.etag=res.headers.get('etag')||this.etag;
+    });
+  },
+  stop(){}
+};
+
+function makeAdapter(){
+  if(META.mode==='firebase')return Object.assign({},firebaseAdapter);
+  if(META.mode==='github')return Object.assign({},githubAdapter);
+  if(META.mode==='rest')return Object.assign({},restAdapter);
+  throw new Error('no sync mode configured');
+}
+
+/* ── polling (github + rest) ───────────────────────────────────── */
+function startPolling(){
+  stopPolling();
+  pollTimer=setInterval(()=>{pull().catch(e=>setStatus('error',(e&&e.message)||String(e)))},Math.max(5,Number(META.pollSec)||12)*1000);
+  try{document.addEventListener('visibilitychange',onVis)}catch(e){}
+  try{window.addEventListener('online',onOnline)}catch(e){}
+}
+function stopPolling(){
+  clearInterval(pollTimer);pollTimer=0;
+  try{document.removeEventListener('visibilitychange',onVis)}catch(e){}
+  try{window.removeEventListener('online',onOnline)}catch(e){}
+}
+function onVis(){if(!document.hidden&&connected&&ADAPTER&&ADAPTER.kind==='poll')pull().catch(()=>{})}
+function onOnline(){if(connected){pull().catch(()=>{});pushDirty().catch(()=>{})}}
+async function pull(){
+  if(!connected||!ADAPTER)return;
+  const doc=await ADAPTER.getDoc();
+  if(doc)feedDoc(doc);
+  lastSyncAt=now();
+  if(CLOUD.state!=='error')setStatus('ok');
+  if(dirty.size)schedulePush();
+}
+
+/* ── connect / disconnect ──────────────────────────────────────── */
+async function connect(){
+  if(connected||connecting)return;
+  if(!META.mode){setStatus('off');return}
+  connecting=true;setStatus('busy','Connecting…');
+  try{
+    if(typeof ensureCategoryMemoryLoaded==='function'){try{await ensureCategoryMemoryLoaded()}catch(e){}}
+    ADAPTER=makeAdapter();
+    dbg('adapter init',META.mode);
+    await ADAPTER.init();
+    dbg('adapter ready, kind=',ADAPTER.kind);
+    connected=true;
+    const doc=await ADAPTER.getDoc();
+    const secs=doc&&doc.sections?Object.keys(doc.sections):[];
+    if(!secs.length){
+      /* cloud is empty → this device publishes the first version */
+      SECTION_ORDER.forEach(n=>{if(!isEmptyData(n,sectionLocal(n)))dirty.add(n)});
+      await pushDirty();
+      toastCloud('☁ Connected — the shared team workspace is live.','s');
+    }else{
+      /* merge whatever this device already had with the cloud version */
+      for(const n of SECTION_ORDER){
+        const rs=doc.sections[n];
+        const local=sectionLocal(n);
+        if(!rs){if(!isEmptyData(n,local))dirty.add(n)}
+        else if(!eqv(local,sanitizeSection(n,rs.data)))dirty.add(n);
+      }
+      feedDoc(doc);
+      toastCloud('☁ Connected to the team settings ('+secs.length+' shared sections).','s');
+    }
+    if(ADAPTER.kind==='live')await ADAPTER.startLive();
+    else startPolling();
+    lastSyncAt=now();setStatus('ok');
+    setSmart('☁ Cloud sync connected · '+META.deviceName+' · team settings are shared'+(ADAPTER.kind==='live'?' live':''));
+  }catch(e){
+    connected=false;
+    try{ADAPTER&&ADAPTER.stop&&ADAPTER.stop()}catch(_){}
+    ADAPTER=null;stopPolling();
+    const errMsg='Connect failed: '+((e&&e.message)||e);
+    setStatus('error',errMsg);
+    hint(errMsg);
+    toastCloud('⚠ '+errMsg,'e');
+  }finally{connecting=false;renderPanel()}
+}
+function disconnect(userAction){
+  try{ADAPTER&&ADAPTER.stop&&ADAPTER.stop()}catch(e){}
+  stopPolling();clearTimeout(pushTimer);pushTimer=0;
+  ADAPTER=null;connected=false;
+  if(userAction){META.mode=null;saveMeta();toastCloud('☁ Cloud sync disconnected — back to this device only.','i')}
+  setStatus(userAction?'off':'idle');
+  renderPanel();
+}
+
+/* ── manual actions ────────────────────────────────────────────── */
+async function syncNow(){
+  if(!connected||!ADAPTER){toastCloud('Cloud sync is not connected yet.','e');return}
+  setStatus('busy','Syncing…');
+  try{const doc=await ADAPTER.getDoc();if(doc)feedDoc(doc);await pushDirty();lastSyncAt=now();setStatus('ok');toastCloud('🔄 Synced with the team cloud.','s')}
+  catch(e){setStatus('error',(e&&e.message)||String(e))}
+}
+async function forcePull(){
+  if(!connected||!ADAPTER)return;
+  if(typeof confirm==='function'&&!confirm('Reset this device\'s shared settings from the cloud? Local categories, aliases and learned matches are replaced.'))return;
+  setStatus('busy','Pulling…');
+  try{
+    const doc=await ADAPTER.getDoc();
+    if(!doc||!Object.keys(doc.sections).length){setStatus('ok');toastCloud('The cloud is empty — nothing to pull.','e');return}
+    try{applyingRemote=true;
+      for(const n of SECTION_ORDER){
+        const rs=doc.sections[n];
+        if(rs){const data=sanitizeSection(n,rs.data);applySection(n,data);META.revs[n]=rs.rev;base[n]=clone(data)}
+        else if(!isEmptyData(n,sectionLocal(n))){applySection(n,sanitizeSection(n,{}));META.revs[n]=now()}
+      }
+    }finally{applyingRemote=false}
+    dirty.clear();saveMeta();scheduleRerender();lastSyncAt=now();
+    setStatus('ok');toastCloud('⬇ This device was reset from the team cloud.','s');
+  }catch(e){setStatus('error',(e&&e.message)||String(e))}
+}
+async function forcePush(){
+  if(!connected||!ADAPTER)return;
+  if(typeof confirm==='function'&&!confirm('Overwrite the shared team settings with THIS device\'s data? Everyone else will receive this version.'))return;
+  SECTION_ORDER.forEach(n=>dirty.add(n));
+  await pushDirty();
+  toastCloud('⬆ The team cloud now matches this device.','s');
+}
+
+/* ── team link (share via URL) ─────────────────────────────────── */
+function teamLink(){
+  let payload=null;
+  if(META.mode==='firebase')payload={cfg:META.firebase.cfg,workspace:META.firebase.workspace};
+  else if(META.mode==='github')payload={repo:META.github.repo,path:META.github.path};      /* token never leaves the device */
+  else if(META.mode==='rest')payload={url:META.rest.url};                                   /* headers never leave the device */
+  else return '';
+  try{return location.origin+location.pathname+'#cloud='+b64uEnc(JSON.stringify(payload))}catch(e){return ''}
+}
+function parseHashCloud(){
+  let m=null;
+  try{m=/[#&]cloud=([A-Za-z0-9_\-]+)/.exec(location.hash||'')}catch(e){}
+  if(!m)return false;
+  const raw=jparse(b64uDec(m[1]),null);
+  if(!raw||typeof raw!=='object')return false;
+  if(raw.cfg&&raw.cfg.databaseURL){META.mode='firebase';META.firebase={cfg:raw.cfg,workspace:slugWs(raw.workspace)}}
+  else if(raw.repo){META.mode='github';META.github={repo:String(raw.repo),path:String(raw.path||'shared-settings.json'),token:(META.github&&META.github.token)||''}}
+  else if(raw.url){META.mode='rest';META.rest={url:String(raw.url),headers:(META.rest&&META.rest.headers)||''}}
+  else return false;
+  saveMeta();return true;
+}
+async function copyTeamLink(){
+  const url=teamLink();
+  if(!url){toastCloud('Connect first, then copy the team link.','e');return}
+  try{await navigator.clipboard.writeText(url);toastCloud('🔗 Team link copied — teammates just open it and everything syncs.','s')}
+  catch(e){try{window.prompt('Copy this team link:',url)}catch(e2){toastCloud('Team link: '+url,'i',12000)}}
+}
+function guessRepo(){
+  try{
+    const h=(location.hostname||'').toLowerCase();
+    const m=/^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\.github\.io$/.exec(h);
+    if(!m)return '';
+    const seg=(location.pathname||'/').split('/').filter(Boolean)[0];
+    return seg?(m[1]+'/'+decodeURIComponent(seg)):(m[1]+'/'+m[1]+'.github.io');
+  }catch(e){return ''}
+}
+
+/* ── panel UI ──────────────────────────────────────────────────── */
+function statusText(){
+  if(!META.mode)return 'Not configured';
+  if(connecting)return 'Connecting…';
+  if(!connected)return CLOUD.state==='error'?('Offline · '+CLOUD.msg):'Not connected';
+  const mode={firebase:'Firebase · live',github:'GitHub file',rest:'REST endpoint'}[META.mode]||META.mode;
+  if(CLOUD.state==='error')return mode+' · '+CLOUD.msg;
+  if(CLOUD.state==='busy')return mode+' · '+(CLOUD.msg||'working…');
+  return mode+(ADAPTER&&ADAPTER.kind==='poll'?(' · polling every '+META.pollSec+'s'):' · real-time');
+}
+function fmtTime(t){try{const d=new Date(t);return d.toLocaleTimeString?d.toLocaleTimeString():String(t)}catch(e){return ''}}
+function setStatus(state,msg){CLOUD.state=state;CLOUD.msg=msg||'';refreshStatusUI()}
+function refreshStatusUI(){
+  const badge=$('cloudBadge');
+  if(badge){
+    const map={off:['off',''],idle:['off',''],busy:['…',''],ok:['live ✓',' on'],error:['error',' err']};
+    const m=map[CLOUD.state]||['…',''];
+    badge.textContent=(connected&&CLOUD.state==='ok')?'live ✓':(connecting?'…':m[0]);
+    badge.className='cloud-badge'+((connected&&CLOUD.state==='ok')?' on':(CLOUD.state==='error'?' err':''));
+  }
+  const dot=$('cloudDot');
+  if(dot)dot.className='cloud-dot'+((connected&&CLOUD.state==='ok')?' on':(CLOUD.state==='error'?' err':''));
+  const txt=$('cloudStatusText');
+  if(txt)txt.textContent=statusText();
+  const last=$('cloudLastLine');
+  if(last)last.textContent=connected||connecting
+    ? ('Device: '+META.deviceName+' · last sync '+(lastSyncAt?fmtTime(lastSyncAt):'—')+(dirty.size?(' · publishing '+dirty.size+' section'+(dirty.size>1?'s':'')+'…'):''))
+    : 'Tip: connect once on one machine, then send everyone the team link — it carries the whole configuration.';
+}
+function renderPanel(){
+  const cfgV=$('cloudCfgView'),runV=$('cloudRunView');
+  if(!cfgV||!runV)return;
+  const on=connected||connecting;
+  cfgV.hidden=on;runV.hidden=!on;
+  if(on){
+    const dn=$('cloudDeviceName');
+    if(dn&&document.activeElement!==dn)dn.value=META.deviceName;
+    const ps=$('cloudPollSel');if(ps)ps.value=String(META.pollSec||12);
+    const ac=$('cloudAutoChk');if(ac)ac.checked=META.autoConnect!==false;
+    const pw=$('cloudPollWrap');if(pw)pw.style.display=(ADAPTER&&ADAPTER.kind==='poll')?'':'none';
+  }
+  refreshStatusUI();
+}
+function modeFromTabs(){
+  const r=document.querySelector('input[name="cloudMode"]:checked');
+  return r?r.value:'firebase';
+}
+function syncTabs(){
+  const v=modeFromTabs();
+  const map={firebase:'cloudFirebaseFields',github:'cloudGithubFields',rest:'cloudRestFields'};
+  for(const[m,id]of Object.entries(map)){const el=$(id);if(el)el.hidden=(v!==m)}
+}
+function hint(msg){const el=$('cloudCfgHint');if(el)el.textContent=msg}
+function parseLenientJSON(text){
+  if(!text)return null;
+  let t=String(text).trim();
+  const i=t.indexOf('{');const j=t.lastIndexOf('}');
+  if(i<0||j<=i)return null;
+  t=t.slice(i,j+1);
+  try{return JSON.parse(t)}catch(e){}
+  try{return (new Function('return ('+t+')'))()}catch(e){}
+  return null;
+}
+function connectFromPanel(){
+  const mode=modeFromTabs();
+  if(mode==='firebase'){
+    const raw=(($('cloudFbCfg')||{}).value||'').trim();
+    if(!raw){hint('Paste your Firebase config first — see the setup guide below.');return}
+    const cfg=parseLenientJSON(raw);
+    if(!cfg||!cfg.databaseURL){hint('That config has no databaseURL. Copy the whole firebaseConfig object from Firebase → Project settings → Your apps → Web app.');return}
+    META.firebase={cfg:cfg,workspace:slugWs(($('cloudFbWs')||{}).value)};
+  }else if(mode==='github'){
+    const repo=(($('cloudGhRepo')||{}).value||'').trim()||guessRepo();
+    if(!/^[\w.-]+\/[\w.-]+$/.test(repo)){hint('Repository must look like owner/name — e.g. '+(guessRepo()||'androssyoussef/ToolsTest')+'.');return}
+    META.github={repo:repo,path:(($('cloudGhPath')||{}).value||'').trim()||'shared-settings.json',token:(($('cloudGhToken')||{}).value||'').trim()};
+  }else{
+    const url=(($('cloudRestUrl')||{}).value||'').trim();
+    if(!/^https?:\/\/.+/i.test(url)){hint('Enter the JSON endpoint URL (https://…) — see the guide below.');return}
+    const hdrRaw=(($('cloudRestHeaders')||{}).value||'').trim();
+    if(hdrRaw&&!jparse(hdrRaw,null)){hint('Headers must be valid JSON, e.g. {"X-API-Key":"…"}.');return}
+    META.rest={url:url,headers:hdrRaw};
+  }
+  META.mode=mode;saveMeta();hint('');
+  disconnect(false);
+  connect();
+}
+function prefillPanel(){
+  const mode=META.mode||'firebase';
+  const r=document.querySelector('input[name="cloudMode"][value="'+mode+'"]');
+  if(r)r.checked=true;
+  syncTabs();
+  try{
+    if(META.firebase&&META.firebase.cfg){const t=$('cloudFbCfg');if(t)t.value=JSON.stringify(META.firebase.cfg);const w=$('cloudFbWs');if(w)w.value=META.firebase.workspace||'default'}
+    if(META.github){const rp=$('cloudGhRepo');if(rp&&!rp.value)rp.value=META.github.repo||guessRepo();const pt=$('cloudGhPath');if(pt)pt.value=META.github.path||'shared-settings.json';const tk=$('cloudGhToken');if(tk)tk.value=META.github.token||''}
+    if(META.rest){const u=$('cloudRestUrl');if(u)u.value=META.rest.url||'';const h=$('cloudRestHeaders');if(h)h.value=META.rest.headers||''}
+  }catch(e){}
+}
+function wirePanel(){
+  const tabs=$('cloudTabs');
+  if(tabs)tabs.addEventListener('change',()=>{syncTabs();hint('')});
+  const dn=$('cloudDeviceName');
+  if(dn)dn.addEventListener('change',()=>{META.deviceName=dn.value.trim()||defaultDeviceName();saveMeta()});
+  const ps=$('cloudPollSel');
+  if(ps)ps.addEventListener('change',()=>{META.pollSec=Number(ps.value)||12;saveMeta();if(connected&&ADAPTER&&ADAPTER.kind==='poll')startPolling()});
+  const ac=$('cloudAutoChk');
+  if(ac)ac.addEventListener('change',()=>{META.autoConnect=ac.checked;saveMeta()});
+}
+
+/* ── boot ──────────────────────────────────────────────────────── */
+function boot(){
+  wirePanel();
+  const fromLink=parseHashCloud();
+  prefillPanel();
+  renderPanel();
+  if(fromLink)toastCloud('☁ Team settings link detected — connecting…','s');
+  if(META.autoConnect!==false&&META.mode){setTimeout(()=>{connect().catch(()=>{})},700)}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+else boot();
+
+/* public surface (also used by the buttons and by the test-suite) */
+window.TIFCloud={
+  connect:connect,disconnect:disconnect,syncNow:syncNow,forcePull:forcePull,forcePush:forcePush,
+  copyTeamLink:copyTeamLink,connectFromPanel:connectFromPanel,
+  get state(){return {connected:connected,connecting:connecting,mode:META.mode,dirty:Array.from(dirty),revs:{...META.revs},lastSyncAt:lastSyncAt,device:META.deviceName}},
+  __test:{merge3:merge3,merge3Map:merge3Map,merge3Array:merge3Array,sanitizeSection:sanitizeSection,normalizeDoc:normalizeDoc,
+    sectionLocal:sectionLocal,feedDoc:feedDoc,parseHashCloud:parseHashCloud,teamLink:teamLink,guessRepo:guessRepo,
+    b64uEnc:b64uEnc,b64uDec:b64uDec,parseLenientJSON:parseLenientJSON,rmmPush:rmmPush,
+    setMeta:function(m){Object.assign(META,m);saveMeta()},getMeta:function(){return META},
+    markDirty:markDirty,pushDirty:pushDirty,pull:pull}
+};
+console.info('[cloud-sync] ready — open “Categories & Data → Cloud team sync” to share settings with your team.');
+})();
+
+</script>
+<script>
 (function () {
   /* The app is self-contained, but GitHub Pages can still provide offline
      navigation and versioned updates through ./sw.js. */
@@ -5914,5 +6841,5 @@ document.addEventListener('DOMContentLoaded',()=>{countItems();renderCustomCateg
   }
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45c2cec2fb2c8e8',t:'MTc5MTIwMDY3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a46276e34d64ed20',t:'MTc5MTI2NjYyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a463ab445fa8ed62',t:'MTc5MTI3OTI1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45c2cec2fb2c8e8',t:'MTc5MTIwMDY3Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a46276e34d64ed20',t:'MTc5MTI2NjYyMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a463ab445fa8ed62',t:'MTc5MTI3OTI1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a463e0848f70bae0',t:'MTc5MTI4MTQzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
