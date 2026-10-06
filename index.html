@@ -719,7 +719,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
   </div>
 
   <button class="btn bp rail-zip" id="railZipBtn" onclick="doZip()"
-    title="Package every selected image as a renamed, resized ZIP">📦 Download ZIP</button>
+    title="Package every selected image as a renamed, resized ZIP" aria-label="Download selected images as ZIP">📦 Download ZIP</button>
 
   <div class="rail-foot">
     <div class="rail-tools">
@@ -2037,7 +2037,7 @@ function renderCustomCategories(){
   const box=document.getElementById('customCategoriesList');if(!box)return;
   const items=Object.entries(CUSTOM_CATEGORY_DEFS);
   if(!items.length){box.innerHTML='<div class="smart-help">No custom categories yet — the built-in food taxonomy is doing the work.</div>';return}
-  box.innerHTML=items.map(([k,v])=>`<div class="custom-cat-row"><span class="custom-cat-name" dir="auto" title="${esc((v.words||[]).join(', '))}">${esc(v.label)} <b>${(v.words||[]).length}</b> keyword${(v.words||[]).length===1?'':'s'}</span><span class="category-choice-actions"><button class="btn bs bxs" onclick="editCustomCategory('${esc(k)}')">✎</button><button class="btn bs bxs" onclick="removeCustomCategory('${esc(k)}')">✕</button></span></div>`).join('');
+  box.innerHTML=items.map(([k,v])=>`<div class="custom-cat-row"><span class="custom-cat-name" dir="auto" title="${esc((v.words||[]).join(', '))}">${esc(v.label)} <b>${(v.words||[]).length}</b> keyword${(v.words||[]).length===1?'':'s'}</span><span class="category-choice-actions"><button class="btn bs bxs" aria-label="Edit ${esc(v.label)}" title="Edit ${esc(v.label)}" onclick="editCustomCategory('${esc(k)}')">✎</button><button class="btn bs bxs" aria-label="Remove ${esc(v.label)}" title="Remove ${esc(v.label)}" onclick="removeCustomCategory('${esc(k)}')">✕</button></span></div>`).join('');
 }
 function addCustomCategoryValues(label,words){
   label=String(label||'').trim();words=(words||[]).map(x=>String(x).trim()).filter(Boolean);
@@ -3500,8 +3500,8 @@ function rememberMatch(menu,idx){const img=IMAGES[idx];if(!img)return;LEARNED[no
 function findLearned(menu){const x=LEARNED[norm(menu)];if(!x)return-1;return IMAGES.findIndex(img=>img.name===x.name&&(x.normalized?img.normalized===x.normalized:true))}
 const INDEX_DB='tif_library_index_v1';
 function idbOpen(){return new Promise((res,rej)=>{if(!indexedDB)return rej(new Error('IndexedDB unavailable'));const r=indexedDB.open(INDEX_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('meta',{keyPath:'key'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-async function readIndexCache(){try{const db=await idbOpen();return await new Promise((res,rej)=>{const r=db.transaction('meta').objectStore('meta').getAll();r.onsuccess=()=>res(new Map(r.result.filter(x=>x&&typeof x.key==='string'&&!x.key.startsWith('__')).map(x=>[x.key,x])));r.onerror=()=>rej(r.error)})}catch(e){return new Map()}}
-async function writeIndexCache(items){try{const db=await idbOpen(),tx=db.transaction('meta','readwrite'),st=tx.objectStore('meta');for(const x of items)st.put(x);return new Promise(res=>{tx.oncomplete=res;tx.onerror=res})}catch(e){}}
+async function readIndexCache(files=[]){try{const db=await idbOpen(),keys=new Set();for(const f of files)for(const k of [fileKey(f),...imageCategoryKeys(f)])keys.add(k);return await new Promise((res,rej)=>{const out=new Map(),tx=db.transaction('meta'),st=tx.objectStore('meta');for(const key of keys){const r=st.get(key);r.onsuccess=()=>{const x=r.result;if(x&&typeof x.key==='string'&&!x.key.startsWith('__'))out.set(x.key,x)};r.onerror=()=>rej(r.error)}tx.oncomplete=()=>{db.close();res(out)};tx.onerror=()=>{db.close();rej(tx.error)}})}catch(e){return new Map()}}
+async function writeIndexCache(items){try{const db=await idbOpen();for(let p=0;p<items.length;p+=500){const tx=db.transaction('meta','readwrite'),st=tx.objectStore('meta');for(const x of items.slice(p,p+500))st.put(x);await new Promise(res=>{tx.oncomplete=res;tx.onerror=res;tx.onabort=res})}db.close()}catch(e){}}
 function fileKey(f){return f.name+'|'+f.size+'|'+(f.lastModified||0)}
 function libraryDuplicateCount(files){const m=new Map();for(const f of files){const k=f.name.toLowerCase();m.set(k,(m.get(k)||0)+1)}let n=0;for(const v of m.values())if(v>1)n+=v-1;return n}
 let FINGERPRINT_WORKER=null;
@@ -3637,7 +3637,7 @@ files.push(f)}r()},r));
 }
 
 async function loadFiles(files,folderName){
-  const cached=await readIndexCache();
+  const cached=await readIndexCache(files);
   const duplicateCount=libraryDuplicateCount(files);
   clearThumbCache();
   IMAGES.forEach(img=>{try{URL.revokeObjectURL(img.objectUrl)}catch(e){}});
@@ -3680,7 +3680,7 @@ async function loadFiles(files,folderName){
     IMAGES.push({name:file.name,relPath,normalized,categories,catKey:catInfo.key,catConf:catInfo.score,catSrc:catInfo.source,catSrcText:catInfo.src,allV:[...vs],tokens,folderTokens,file,objectUrl:null});
     const pct=Math.round(((i+1)/total)*80);
     setP('lFill','lPct','lLbl','lMsg',pct,'Loading '+(i+1)+'/'+total,(wasReused?'Reusing cached index: ':'Indexing new image: ')+file.name);
-    if((i+1)%128===0)await yieldToBrowser();
+    if((i+1)%32===0)await yieldToBrowser();
   }
   setP('lFill','lPct','lLbl','lMsg',92,'Building index…','');await sleep(0);buildIndices();buildIdf();   /* v2 ②: document frequency from the live library */
   const cacheRecords=[];
@@ -4039,7 +4039,7 @@ setTimeout(function probeBlob(){
 function onBlobBlocked(){
   if(!BLOB_OK)return;
   BLOB_OK=false;
-  try{THUMB_CACHE.clear()}catch(e){}    /* every cached blob src is dead here */
+  try{clearThumbCache()}catch(e){}    /* every cached blob src is dead here */
   try{if(typeof RESULTS!=='undefined'&&RESULTS.length)renderResults()}catch(e){}
   try{renderLibraryCategorySummary()}catch(e){}
   try{scheduleTick()}catch(e){}
@@ -4213,7 +4213,7 @@ addEventListener('resize',scheduleTick,{passive:true});
 function clearThumbCache(){
   THUMB_GENERATION++;
   for(const u of THUMB_CACHE.values()){try{URL.revokeObjectURL(u)}catch(e){}}
-  THUMB_CACHE.clear();THUMB_Q=[];
+  THUMB_CACHE.clear();DATA_CACHE.clear();THUMB_Q=[];
   if(THUMB_TICK){clearTimeout(THUMB_TICK);THUMB_TICK=0}
 }
 function resultCardHtml(gi,dups){
