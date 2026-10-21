@@ -916,7 +916,7 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
   <!-- CATEGORIES & DATA -->
   <div class="card smart-card" id="step3">
     <div class="ctitle"><div class="snum">🤖</div>Auto Categories &amp; Data</div>
-    <div class="csub">Images and menu items are classified automatically from the shared Drive library. Previews and downloads are served through the read-only image service.</div>
+    <div class="csub">Images and menu items are classified automatically from the shared Drive library. Previews and downloads are served through the free Google Apps Script connection.</div>
     <div class="smart-grid">
       <div class="smart-panel">
         <div class="smart-label">Menu file import</div>
@@ -1167,7 +1167,7 @@ Create a bin on a JSON-storage service or point it at your own API / Cloudflare 
   <div class="fr">
     <span>Talabat Images Finder</span>
     <span class="fdot"></span>
-    <span>Shared Drive library · live API</span>
+    <span>Shared Drive library · Google Apps Script</span>
   </div>
 </footer>
 </div><!-- /.main -->
@@ -3339,48 +3339,48 @@ const IMGTYPES=new Set(['image/jpeg','image/jpg','image/png','image/gif',
 ══════════════════════════════════════════════════════════════════ */
 const DRIVE_API_BASE=String(window.IMAGE_FINDER_DRIVE_API_BASE||'').trim();
 let DRIVE_LOAD_PROMISE=null;
+function driveJsonp(params,timeoutMs=60000){
+  return new Promise((resolve,reject)=>{
+    if(!DRIVE_API_BASE){reject(new Error('Apps Script URL is not configured'));return}
+    const callback='__iffJsonp_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2);
+    const script=document.createElement('script');let timer;
+    const cleanup=()=>{clearTimeout(timer);delete window[callback];script.remove()};
+    window[callback]=value=>{cleanup();resolve(value)};
+    const url=new URL(DRIVE_API_BASE);Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,String(v)));url.searchParams.set('callback',callback);
+    script.onerror=()=>{cleanup();reject(new Error('Could not reach the public Apps Script. Check its deployment access and URL.'))};
+    timer=setTimeout(()=>{cleanup();reject(new Error('Apps Script request timed out'))},timeoutMs);
+    script.src=url.toString();document.head.appendChild(script);
+  });
+}
 async function loadDriveLibrary(force=false){
   if(DRIVE_LOAD_PROMISE&&!force)return DRIVE_LOAD_PROMISE;
   DRIVE_LOAD_PROMISE=(async()=>{
     const dz=document.getElementById('dz'),fl=document.getElementById('fl');
-    const api=String(DRIVE_API_BASE||'').trim().replace(/\/$/,'');
-    if(!api||api.includes('YOUR-CLOUD-RUN-SERVICE-URL')){
-      if(dz)dz.style.display='block';
-      setSt('Drive backend setup is not finished yet.','');
-      return;
+    if(!DRIVE_API_BASE||DRIVE_API_BASE.includes('PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL')){
+      if(dz)dz.style.display='block';setSt('Drive connection setup is not finished yet.','');return;
     }
     try{
-      setSt('Connecting to the shared Google Drive image library…','run');
-      showProg('loadProg',true);
+      setSt('Connecting to the shared Google Drive image library…','run');showProg('loadProg',true);
       setP('lFill','lPct','lLbl','lMsg',5,'Connecting to Drive…','Loading the shared library index');
-      const response=await fetch(api+'/api/library'+(force?'?refresh=1':''),{headers:{'Accept':'application/json'},cache:'no-store'});
-      if(!response.ok)throw new Error('Library request failed ('+response.status+')');
-      const payload=await response.json();
-      if(!Array.isArray(payload.images))throw new Error('Backend returned an invalid image index');
+      const payload=await driveJsonp({action:'library',refresh:force?'1':'0'});
+      if(!payload||payload.ok===false)throw new Error(payload?.error||'Apps Script returned an invalid response');
+      if(!Array.isArray(payload.images))throw new Error('Apps Script returned an invalid image index');
       setP('lFill','lPct','lLbl','lMsg',30,'Preparing library…',payload.images.length.toLocaleString()+' images found');
       const files=payload.images.map(row=>{
-        const file={name:String(row.name||''),type:String(row.mimeType||''),size:Number(row.size||0),lastModified:Date.parse(row.modifiedTime||'')||0,__relPath:String(row.relPath||row.name||''),__driveId:String(row.id||''),__contentUrl:String(row.contentUrl||api+'/api/images/'+encodeURIComponent(row.id)+'/content')};
+        const id=String(row.id||'');
+        const file={name:String(row.name||''),type:String(row.mimeType||''),size:Number(row.size||0),lastModified:Date.parse(row.modifiedTime||'')||0,__relPath:String(row.relPath||row.name||''),__driveId:id,__contentUrl:String(row.thumbnailUrl||('https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w1600'))};
         return file;
       }).filter(file=>file.__driveId&&isImg(file));
-      if(!files.length)throw new Error('No supported images were returned from the configured Drive folder');
+      if(!files.length)throw new Error('No supported images were found in the configured Drive folder');
       await loadFiles(files,payload.folderName||'Shared Google Drive');
       if(dz)dz.style.display='none';
-      if(fl){
-        document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');
-        document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · shared source · refreshes as uploads arrive';
-        document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';
-      }
+      if(fl){document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · shared source · refreshes when loaded';document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';}
       setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images','ok');
     }catch(error){
-      showProg('loadProg',false);
-      if(dz)dz.style.display='block';
-      setSt('Could not connect to the shared image library.','');
-      toast('Drive library connection failed: '+(error?.message||error),'e',9000);
+      showProg('loadProg',false);if(dz)dz.style.display='block';setSt('Could not connect to the shared image library.','');toast('Drive library connection failed: '+(error?.message||error),'e',9000);
     }finally{DRIVE_LOAD_PROMISE=null;}
-  })();
-  return DRIVE_LOAD_PROMISE;
+  })();return DRIVE_LOAD_PROMISE;
 }
-
 let IMAGES=[];
 let RESULTS=[];
 let PREVIEWED=new Set();
@@ -5654,9 +5654,11 @@ function saveOfflineBlob(blob,name){
 }
 async function getImageBlob(img){
   if(!img?.remoteId)return img?.file;
-  const response=await fetch(img.contentUrl,{mode:'cors'});
-  if(!response.ok)throw new Error('Drive image download failed ('+response.status+')');
-  return response.blob();
+  const payload=await driveJsonp({action:'image',id:img.remoteId},90000);
+  if(!payload||payload.ok===false||!payload.base64)throw new Error(payload?.error||'Drive image download failed');
+  const raw=atob(payload.base64),bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  return new Blob([bytes],{type:payload.mimeType||img.file?.type||'application/octet-stream'});
 }
 async function makeOutputImage(file){
   const W=810,H=540;
