@@ -12,7 +12,7 @@
    what pushes the update to users.
    ============================================================ */
 
-const VERSION = 'finder-v27-covers-library-20261006';
+const VERSION = 'finder-v28-drive-library-20261021';
 
 const APP_SHELL_CACHE = `app-shell-${VERSION}`;
 const RUNTIME_CACHE   = `runtime-${VERSION}`;
@@ -26,6 +26,7 @@ const REQUIRED_URLS = [
 /* Nice to have. A 404 here is logged and ignored — never fatal. */
 const OPTIONAL_URLS = [
   './shared-config.json',
+  './drive-config.js',
   './manifest-finder.webmanifest',
   './icons/finder-192.png',
   './icons/finder-512.png',
