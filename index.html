@@ -722,6 +722,17 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
 .custom-cat-name{font-size:.7rem;color:var(--tx2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .custom-cat-name b{color:var(--or)}
 @media(max-width:680px){.auto-stat-grid{grid-template-columns:1fr 1fr}}
+
+/* Compact, accessible disclosure cards for secondary work areas. */
+.fold-card{padding:0;overflow:hidden}
+.fold-card>summary{display:flex;align-items:center;gap:11px;min-height:58px;cursor:pointer;list-style:none;margin:0;padding:14px 18px;font-size:.97rem;font-weight:700;color:var(--tx);user-select:none}
+.fold-card>summary::-webkit-details-marker{display:none}
+.fold-card>summary::after{content:'＋';margin-left:auto;color:var(--or);font-size:1.1rem;font-weight:800;transition:transform .18s}
+.fold-card[open]>summary::after{content:'−'}
+.fold-card>summary:hover{background:color-mix(in srgb,var(--or) 5%,transparent)}
+.fold-card>.fold-body{padding:0 18px 18px}
+.fold-hint{margin-left:auto;color:var(--mu);font-size:.68rem;font-weight:500}
+@media(max-width:680px){.fold-card>summary{padding:12px 14px}.fold-card>.fold-body{padding:0 14px 14px}}
 </style>
 </head>
 <body>
@@ -793,8 +804,9 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
   <!-- STATUS -->
 
   <!-- STEP 1 -->
-  <div class="card" id="step1">
-    <div class="ctitle"><div class="snum">1</div>Shared Drive Image Library</div>
+  <details class="card fold-card" id="step1" open>
+    <summary><div class="snum">1</div><span>Shared Drive Image Library</span><span class="fold-hint">Image source</span></summary>
+    <div class="fold-body">
     <div class="csub">Shared Google Drive library. Anyone using this site can search and download its images.</div>
     <div class="shared-config-note" id="sharedConfigNote">Shared configuration: loading…</div>
     <div class="session-bar" id="sessionBar" style="display:none"></div>
@@ -820,11 +832,13 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
       <div class="pb"><div class="pf" id="lFill"></div></div>
       <div class="pm" id="lMsg"></div>
     </div>
-  </div>
+    </div>
+  </details>
 
   <!-- ══════════ COVERS SECTION ══════════ -->
-  <div class="card covers-card" id="coversStep">
-    <div class="ctitle"><div class="snum">🖼️</div>Cover Images Library (750 × 300)</div>
+  <details class="card covers-card fold-card" id="coversStep">
+    <summary><div class="snum">🖼️</div><span>Cover Images</span><span class="fold-hint">750 × 300 · optional</span></summary>
+    <div class="fold-body">
     <div class="csub">Drop your covers folder to browse by category · Click any category to view covers · Download any cover directly as a 750×300 JPG, or select multiple for a ZIP.</div>
     
     <!-- DROPZONE (Folder Only) -->
@@ -872,7 +886,8 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
       </div>
       <div class="log" id="coverDlLog" style="margin-top:10px"></div>
     </div>
-  </div>
+    </div>
+  </details>
 
   <!-- COVER PREVIEW LIGHTBOX -->
   <div class="ov" id="coverPreviewModal" onclick="if(event.target===this)closeCoverPreview()">
@@ -893,8 +908,9 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
   </div>
 
   <!-- STEP 2 -->
-  <div class="card" id="step2">
-    <div class="ctitle"><div class="snum">2</div>Paste Your Menu Items</div>
+  <details class="card fold-card" id="step2" open>
+    <summary><div class="snum">2</div><span>Menu Search</span><span class="fold-hint">Paste items and search</span></summary>
+    <div class="fold-body">
     <div class="csub">One item per line · Arabic, English, or mixed · Exact match always wins</div>
     <textarea dir="auto" id="menuTA" placeholder="Grilled Chicken&#10;شاورما دجاج&#10;Caesar Salad&#10;Latte&#10;عصير مانجو&#10;بيتزا مارغريتا" oninput="countItems()"></textarea>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
@@ -911,11 +927,13 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
       <div class="pb"><div class="pf" id="sFill"></div></div>
       <div class="pm" id="sMsg"></div>
     </div>
-  </div>
+    </div>
+  </details>
 
   <!-- CATEGORIES & DATA -->
-  <div class="card smart-card" id="step3">
-    <div class="ctitle"><div class="snum">🤖</div>Auto Categories &amp; Data</div>
+  <details class="card smart-card fold-card" id="step3">
+    <summary><div class="snum">🤖</div><span>Auto Categories &amp; Data</span><span class="fold-hint">Advanced · optional</span></summary>
+    <div class="fold-body">
     <div class="csub">Images and menu items are classified automatically from the shared Drive library. Previews and downloads are served through the free Google Apps Script connection.</div>
     <div class="smart-grid">
       <div class="smart-panel">
@@ -1082,7 +1100,8 @@ Create a bin on a JSON-storage service or point it at your own API / Cloudflare 
         </details>
     </div>
     <div class="smart-foot" id="smartStatus">🧠 Local matching ready · auto categorization is on.</div>
-  </div>
+    </div>
+  </details>
 
   <!-- RESULTS -->
   <div id="resWrap" style="display:none">
@@ -3339,6 +3358,8 @@ const IMGTYPES=new Set(['image/jpeg','image/jpg','image/png','image/gif',
 ══════════════════════════════════════════════════════════════════ */
 const DRIVE_API_BASE=String(window.IMAGE_FINDER_DRIVE_API_BASE||'').trim();
 let DRIVE_LOAD_PROMISE=null;
+const DRIVE_CATALOG_KEY='__drive_catalog_v1__';
+const DRIVE_CATALOG_TTL=7*24*60*60*1000;
 function driveJsonp(params,timeoutMs=180000){
   return new Promise((resolve,reject)=>{
     if(!DRIVE_API_BASE){reject(new Error('Apps Script URL is not configured'));return}
@@ -3362,7 +3383,18 @@ async function loadDriveLibrary(force=false){
     try{
       setSt('Connecting to the shared Google Drive image library…','run');showProg('loadProg',true);
       setP('lFill','lPct','lLbl','lMsg',5,'Connecting to Drive…','Loading the shared library index');
-      const payload=await driveJsonp({action:'library',refresh:force?'1':'0'});
+      let payload=null,fromCache=false;
+      if(!force){
+        const saved=await idbGet(DRIVE_CATALOG_KEY);
+        if(saved&&saved.payload&&Date.now()-Number(saved.savedAt||0)<DRIVE_CATALOG_TTL){payload=saved.payload;fromCache=true;}
+      }
+      if(!payload){
+        payload=await driveJsonp({action:'library',refresh:force?'1':'0'});
+        if(payload&&payload.ok!==false&&Array.isArray(payload.images)){
+          // Keep just the compact catalogue, not image blobs, in this browser.
+          await idbPut(DRIVE_CATALOG_KEY,{savedAt:Date.now(),payload:{ok:true,folderName:payload.folderName||'Shared image library',images:payload.images.map(x=>({id:x.id,name:x.name,mimeType:x.mimeType,relPath:x.relPath||x.name}))}});
+        }
+      }
       if(!payload||payload.ok===false)throw new Error(payload?.error||'Apps Script returned an invalid response');
       if(!Array.isArray(payload.images))throw new Error('Apps Script returned an invalid image index');
       setP('lFill','lPct','lLbl','lMsg',30,'Preparing library…',payload.images.length.toLocaleString()+' images found');
@@ -3374,8 +3406,8 @@ async function loadDriveLibrary(force=false){
       if(!files.length)throw new Error('No supported images were found in the configured Drive folder');
       await loadFiles(files,payload.folderName||'Shared Google Drive');
       if(dz)dz.style.display='none';
-      if(fl){document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · shared source · refreshes when loaded';document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';}
-      setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images','ok');
+      if(fl){document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · cached in this browser · use Refresh to check for new uploads';document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';}
+      setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images'+(fromCache?' · loaded from this browser':' · saved for next time'),'ok');
     }catch(error){
       showProg('loadProg',false);if(dz)dz.style.display='block';setSt('Could not connect to the shared image library.','');toast('Drive library connection failed: '+(error?.message||error),'e',9000);
     }finally{DRIVE_LOAD_PROMISE=null;}
@@ -5218,6 +5250,7 @@ function reviewRank(gi){
 function goToStep(id){
   const el=document.getElementById(id);
   if(!el)return;
+  if(el.tagName==='DETAILS')el.open=true;
   el.scrollIntoView({behavior:'smooth',block:'start'});
   setActiveNav(id);
 }
@@ -5717,14 +5750,17 @@ async function doZip(){
 }
 
 function resetSession(){
-  const hasWork=IMAGES.length||RESULTS.length||COVERS.length||document.getElementById('menuTA')?.value.trim();
+  const keepLibrary=IMAGES.length>0;
   RUNNING=false;
-  clearThumbCache();
-  IMAGES.forEach(img=>{try{URL.revokeObjectURL(img.objectUrl)}catch(e){}});
-  IMAGES=[];RESULTS=[];PREVIEWED.clear();EXCLUDED_RESULTS.clear();LIBRARY_PICKS.clear();RENDER_LIMIT=240;WIDX=new Map();EMAP=new Map();MODAL_IDX=-1;MODAL_ALT=-1;
+  if(!keepLibrary){
+    clearThumbCache();
+    IMAGES.forEach(img=>{try{URL.revokeObjectURL(img.objectUrl)}catch(e){}});
+    IMAGES=[];WIDX=new Map();EMAP=new Map();
+  }
+  RESULTS=[];PREVIEWED.clear();EXCLUDED_RESULTS.clear();LIBRARY_PICKS.clear();RENDER_LIMIT=240;MODAL_IDX=-1;MODAL_ALT=-1;
   document.getElementById('folderInput').value='';document.getElementById('menuFileInput').value='';document.getElementById('menuTA').value='';
-  document.getElementById('fldCount').textContent='0 images';
-  document.getElementById('dz').style.display='block';document.getElementById('fl').style.display='none';
+  document.getElementById('fldCount').textContent=keepLibrary?IMAGES.length.toLocaleString()+' images':'0 images';
+  document.getElementById('dz').style.display=keepLibrary?'none':'block';document.getElementById('fl').style.display=keepLibrary?'flex':'none';
   document.getElementById('resWrap').style.display='none';document.getElementById('dlCard').classList.remove('show');
   document.getElementById('grid').innerHTML='';document.getElementById('dlLog').innerHTML='';document.getElementById('dlLog').classList.remove('show');
   document.getElementById('searchBtn').disabled=false;document.getElementById('stopBtn').style.display='none';
@@ -5732,7 +5768,8 @@ function resetSession(){
   document.getElementById('modal').classList.remove('open');countItems();updateStats();
   resetCovers(true);
   PENDING_SESSION=null;SESSION_RESTORED=false;clearTimeout(SESSION_T);idbDel(SESSION_KEY);renderSessionBar();
-  setSt('New session ready — reconnecting to the shared Drive library…','');toast('New session ready. Your categories, learning and settings are kept.','s',7000);if(!DRIVE_API_BASE.includes('YOUR-CLOUD-RUN-SERVICE-URL'))void loadDriveLibrary(true);
+  if(keepLibrary){setSt('New session ready · shared image library kept loaded','ok');toast('New session ready. The image library stayed loaded; no Drive rescan needed.','s',5000)}else{setSt('New session ready — connecting to the shared Drive library…','');if(DRIVE_API_BASE&&!DRIVE_API_BASE.includes('PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL'))void loadDriveLibrary()}
+  const step=document.getElementById('step2');if(step)step.open=true;
 }
 
 /* ═══════════════════════════════════════

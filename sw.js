@@ -12,7 +12,7 @@
    what pushes the update to users.
    ============================================================ */
 
-const VERSION = 'finder-v30-drive-config-refresh-20261021';
+const VERSION = 'finder-v31-library-cache-dropdowns-20261021';
 
 const APP_SHELL_CACHE = `app-shell-${VERSION}`;
 const RUNTIME_CACHE   = `runtime-${VERSION}`;
