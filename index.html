@@ -733,6 +733,22 @@ select.sel-pro optgroup{background:var(--bg);color:var(--mu);font-size:.66rem;fo
 .fold-card>.fold-body{padding:0 18px 18px}
 .fold-hint{margin-left:auto;color:var(--mu);font-size:.68rem;font-weight:500}
 @media(max-width:680px){.fold-card>summary{padding:12px 14px}.fold-card>.fold-body{padding:0 14px 14px}}
+
+/* Refined shared-library header and loader */
+#step1 > summary{background:linear-gradient(120deg,rgba(255,111,0,.14),rgba(255,170,60,.045) 55%,transparent);}
+#step1 .fold-body{padding-top:16px}
+#step1 .csub{font-size:.9rem;line-height:1.65;max-width:72ch}
+#step1 .shared-config-note{border:1px solid rgba(255,143,40,.2);border-radius:12px;padding:10px 13px;background:rgba(255,143,40,.055);margin:12px 0;color:var(--mu)}
+#step1 #dz{position:relative;min-height:205px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,143,40,.38);border-radius:18px;background:radial-gradient(ellipse at 50% 0%,rgba(255,125,25,.13),transparent 62%),linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));box-shadow:0 14px 34px rgba(0,0,0,.14);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+#step1 #dz:hover{transform:translateY(-2px);border-color:rgba(255,160,70,.78);box-shadow:0 18px 40px rgba(0,0,0,.2)}
+#step1 #dz .dz-icon{font-size:2.25rem;filter:drop-shadow(0 5px 12px rgba(255,122,0,.28))}
+#step1 #dz h3{font-size:1.12rem;margin:2px 0 0;letter-spacing:.01em}
+#step1 #dz>p:not(.dz-alt){max-width:54ch;text-align:center;line-height:1.55;color:var(--mu)}
+#step1 #dz .btn{padding:10px 17px;border-radius:11px;font-weight:750;box-shadow:0 6px 18px rgba(255,116,0,.17)}
+#step1 .fl{border:1px solid rgba(65,190,130,.26);border-radius:15px;padding:14px 16px;background:linear-gradient(120deg,rgba(55,180,120,.09),rgba(255,255,255,.025));}
+#step1 .fi{font-size:1.45rem}
+#step1 .fd strong{font-size:1rem}
+@media(max-width:650px){#step1 #dz{min-height:175px;padding:18px 12px}#step1 .fl{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -1181,7 +1197,7 @@ Create a bin on a JSON-storage service or point it at your own API / Cloudflare 
 <footer class="footer">
   <div class="sig">
     <span class="sigp">✍️</span>
-    <span class="sigt">Andro ss Youseef</span>
+    <span class="sigt">Andro ss Youssef</span>
   </div>
   <div class="fr">
     <span>Talabat Images Finder</span>
@@ -1670,7 +1686,7 @@ sauces_extras:{g:'Extras',weight:0.9,label:'🧂 Sauces & Extras',s:['sauce','ص
 bread:{g:'Bakery',label:'🍞 Bread',s:['bread','خبز','عيش','عيش بلدي','عيش فينو','توست','toast','بيجل','bagel','بريوش','brioche','pita','صامولي','sourdough','خبز سن','رغيف','buns','خبز برجر'],w:['loaf','بان','baked bread']},
 
 /* ── BAKERY & SWEETS ───────────────────────────────────────────── */
-pastry:{g:'Bakery',label:'🥐 Pastry & Croissant',s:['croissant','كرواسون','كرواسان','danish','دانش','muffin','مافن','cinnamon roll','سينابون','pain au chocolat','بان او شوكولا','puff','بف باستري','باتيه','pattie','pastry','معجنات','مخبوزات','scone','بريتزل','pretzel','tart','تارت','quiche','كيش','ميني فطاير'],w:['bakery','مخبز','فرن','butter pastry']},
+pastry:{g:'Bakery',label:'🥐 Pastry & Croissant',s:['croissant','كرواسون','كرواسان','danish','دانش','muffin','مافن','cinnamon roll','سينابون','pain au chocolat','بان او شوكولا','puff','بف باستري','باتيه','pattie','pastry','معجنات','مخبوزات','باتون ساليه','باتون ساليه حبة البركة','بسكاط','بسكاط حبة البركة','بسكويت مالح','breadstick','bread sticks','cracker sticks','scone','بريتزل','pretzel','tart','تارت','quiche','كيش','ميني فطاير'],w:['bakery','مخبز','فرن','butter pastry']},
 cakes:{g:'Sweets',label:'🍰 Cakes & Gateaux',s:['cake','كيك','كيكه','تورته','gateau','جاتوه','cheesecake','تشيز كيك','cupcake','كب كيك','red velvet','ريد فيلفيت','swiss roll','سويس رول','سويسرول','black forest','بلاك فورست','تريليتشا','tres leches','carrot cake','كيكه جزر','birthday cake','تورته عيد ميلاد','باوند كيك','pound cake','mini cake'],w:['frosting','كريمه','slice','شريحه','sponge']},
 western_desserts:{g:'Sweets',label:'🍮 Desserts (Western)',s:['كريم كراميل','creme caramel','موس شوكولاته','dessert','حلويات','desserts','brownie','براوني','tiramisu','تيراميسو','molten','مولتن','pudding','بودينج','mousse','موس','panna cotta','بانا كوتا','souffle','سوفليه','cookies','كوكيز','بسكويت','donut','دونات','دونتس','churros','تشوروز','waffle? ','trifle','cheesecake? ','ice cream cake? ','pancake? ','eclair','اكلير','profiterole','بروفيترول','فوندو','fondue'],w:['chocolate dessert','نوتيلا','nutella','lotus','لوتس','oreo','اوريو','caramel','كراميل']},
 oriental_sweets:{g:'Sweets',weight:1.02,label:'🍯 Oriental Sweets',s:['كنافه','kunafa','konafa','بسبوسه','basbousa','بقلاوه','baklava','ام علي','om ali','رز بلبن','rice pudding','مهلبيه','mahalabia','قطايف','kataief','زلابيه','zalabya','لقمه القاضي','بلح الشام','balah el sham','حلويات شرقي','oriental sweets','عيش السرايا','غريبه','كحك','kahk','معمول','maamoul','هريسه','نموره','حلاوه طحينيه','مشبك'],w:['شيره','syrup','قشطه','cream oriental','فستق حلويات']},
@@ -1689,7 +1705,7 @@ cold_drinks:{g:'Drinks',label:'🧊 Cold & Iced Drinks',s:['iced tea','ايس ت
 juices:{g:'Drinks',weight:1.03,label:'🧃 Fresh Juices',s:['asir','3asir','aseer','asir laymoon','laymoon','lamoon','3asir mango','juice','عصير','عصاير','عصائر','fresh juice','عصير فريش','cocktail','كوكتيل','قصب','sugarcane','عصير قصب','عصير برتقال','orange juice','عصير مانجو','mango juice','عصير فراوله','عصير جوافه','guava','عصير ليمون','lemon juice','عصير رمان','بلح باللبن','سوبيا عصير'],w:['fresh','فريش','طازج','natural','طبيعي','pulp','مكس عصاير']},
 shakes:{g:'Drinks',weight:1.03,label:'🥤 Shakes & Smoothies',s:['milkshake','milk shake','ميلك شيك','ميلكشيك','shake','شيك','smoothie','سموذي','سموثي','frozen yogurt drink','بوبا','bubble tea','شيك اوريو','oreo shake','nutella shake','شيك فراوله','protein shake','بروتين شيك'],w:['blended','مخفوق','whipped','كريمه شانتيه','ice blended']},
 soft_drinks:{g:'Drinks',label:'🥫 Soft Drinks',s:['pepsi','بيبسي','cola','كولا','coca','كوكا','كوكاكولا','كوكا كولا','coca cola','cocacola','pepsi cola','coke','sprite','سبرايت','fanta','فانتا','mirinda','ميرندا','7up','سفن اب','schweppes','شويبس','soda','صودا','مشروب غازي','soft drink','غازيه','birell','بيريل','تفاح غازي','مياه غازيه','dew','ديو','vimto','فيمتو'],w:['can','كانز','علبه','bottle','زجاجه','diet','دايت','zero','زيرو','330','500']},
-water:{g:'Drinks',label:'💧 Water',s:['water','مياه','ماء','مياه معدنيه','mineral water','aquafina','اكوافينا','nestle water','نستله','baraka','بركه','دسني','dasani','sparkling water','مياه فواره','مياه غازيه معدنيه','زجاجه مياه'],w:['500 ml','1 5 l','لتر','small water','large water']},
+water:{g:'Drinks',label:'💧 Water',no:['حبه البركه','باتون ساليه','بسكاط','بسكويت مالح'],s:['water','مياه','ماء','مياه معدنيه','mineral water','aquafina','اكوافينا','nestle water','نستله','baraka','مياه بركه','مياه باركه','دسني','dasani','sparkling water','مياه فواره','مياه غازيه معدنيه','زجاجه مياه'],w:['500 ml','1 5 l','لتر','small water','large water']},
 energy_drinks:{g:'Drinks',label:'⚡ Energy Drinks',s:['energy drink','مشروب طاقه','red bull','ريد بول','power horse','باور هورس','monster','مونستر','hype','هايب','sting','ستينج','xl energy','بريزه? '],w:['taurine','كافيين','energy']},
 dairy_drinks:{g:'Drinks',weight:0.95,label:'🥛 Milk, Laban & Yogurt',s:['yogurt','yoghurt','زبادي','laban','لبن رايب','عيران','ayran','رايب','بوظه لبن? ','milkshake? ','قشطه','buttermilk','كفير','kefir','lassi','لاسي'],w:['milk','لبن','حليب','dairy','البان','جبنه','cheese']},
 
@@ -2032,7 +2048,7 @@ function autoCategorizeImage(file){
   let out=EMPTY_AUTO;
   if(nameRes.key&&folderRes.key&&nameRes.key===folderRes.key){
     out={key:nameRes.key,score:Math.min(1,Math.max(nameRes.score,folderRes.score)+.12),why:nameRes.why,src:'file name + folder'};
-  }else if(nameRes.key&&(!folderRes.key||folderRes.score<nameRes.score+.2)){
+  }else if(nameRes.key&&(!folderRes.key||nameRes.score>=AUTO_CFG.threshold||folderRes.score<nameRes.score+.2)){
     out={key:nameRes.key,score:nameRes.score,why:nameRes.why,src:'file name'};
   }else if(folderRes.key){
     out={key:folderRes.key,score:folderRes.score*.95,why:folderRes.why,src:'folder'};
@@ -3405,6 +3421,9 @@ async function loadDriveLibrary(force=false){
       }).filter(file=>file.__driveId&&isImg(file));
       if(!files.length)throw new Error('No supported images were found in the configured Drive folder');
       await loadFiles(files,payload.folderName||'Shared Google Drive');
+      // A top-level Drive folder named Covers (or Cover) also feeds the Covers workspace.
+      const driveCoverFiles=files.filter(file=>/(^|\/)covers?(\/|$)/i.test(file.__relPath||''));
+      replaceDriveCovers(driveCoverFiles);
       if(dz)dz.style.display='none';
       if(fl){document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · cached in this browser · use Refresh to check for new uploads';document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';}
       setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images'+(fromCache?' · loaded from this browser':' · saved for next time'),'ok');
@@ -4026,8 +4045,8 @@ function parseCoverMetadata(file) {
   
   if (!cleaned) cleaned = "Cover";
   
-  let url = "";
-  try { url = URL.createObjectURL(file); } catch(e) {}
+  let url = file.__contentUrl || "";
+  if(!url)try { url = URL.createObjectURL(file); } catch(e) {}
   
   return {
     id: "cov_" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36),
@@ -4105,6 +4124,18 @@ function onCoverFolderPicked(e) {
   if (!files.length) { toast("No cover images found in folder.", "e"); return; }
   addCoverFiles(files);
   e.target.value = "";
+}
+
+function replaceDriveCovers(files) {
+  const kept=[], selected=new Set();
+  COVERS.forEach((cover,oldIndex)=>{
+    if(cover.file&&cover.file.__driveId)return;
+    const nextIndex=kept.push(cover)-1;
+    if(COVERS_SELECTED.has(oldIndex))selected.add(nextIndex);
+  });
+  COVERS=kept; COVERS_SELECTED=selected;
+  if(files.length)addCoverFiles(files);
+  else { rebuildCoversCategoriesCache(); renderCoversUI(); }
 }
 
 function addCoverFiles(newFiles) {
@@ -4407,7 +4438,7 @@ function renderCoversContent() {
     gridHtml += `
       <div class="cover-card ${isSelected ? "selected-cover" : ""}" id="cover_card_${idx}">
         <div class="cover-thumb-wrap" onclick="previewCover(${idx})" title="Click to preview full 750×300">
-          <img class="cover-thumb" src="${c.url}" alt="${esc(c.coverName)}" loading="lazy"/>
+          <img class="cover-thumb" src="${c.url}" alt="${esc(c.coverName)}" loading="lazy" onerror="loadDriveCoverPreview(${idx},this)"/>
           <span class="cover-badge">${esc(c.category)}</span>
           <label class="cover-check" onclick="event.stopPropagation()" title="Select for Batch ZIP">
             <input type="checkbox" ${isSelected ? "checked" : ""} onchange="toggleCoverSelection(${idx}, this.checked)"/>
@@ -4481,6 +4512,15 @@ function removeCover(idx) {
   renderCoversUI();
 }
 
+function loadDriveCoverPreview(idx,el) {
+  const item=COVERS[idx];
+  if(!item?.file?.__driveId||!el||el.dataset.driveFallback)return;
+  el.dataset.driveFallback='1';
+  getImageBlob({remoteId:item.file.__driveId,file:item.file}).then(blob=>{
+    if(!el.isConnected)return;
+    const url=URL.createObjectURL(blob); item.url=url; el.src=url;
+  }).catch(()=>{el.alt='Image preview unavailable';});
+}
 function previewCover(idx) {
   const item = COVERS[idx];
   if (!item) return;
@@ -4488,7 +4528,7 @@ function previewCover(idx) {
   
   const modal = document.getElementById("coverPreviewModal");
   if (modal) {
-    document.getElementById("coverPrevImg").src = item.url;
+    const preview=document.getElementById("coverPrevImg"); preview.src = item.url; preview.onerror=()=>loadDriveCoverPreview(idx,preview);
     document.getElementById("coverPrevTitle").textContent = item.coverName + " (" + item.category + ")";
     document.getElementById("coverPrevFile").textContent = item.rawName;
     modal.classList.add("open");
@@ -4519,6 +4559,7 @@ async function makeCoverOutputImage(file) {
   const W = 750, H = 300;
   let source = null, url = "";
   try {
+    if(file&&file.__driveId) file=await getImageBlob({remoteId:file.__driveId,file});
     if (typeof createImageBitmap === "function") {
       source = await createImageBitmap(file);
     } else {
@@ -5704,8 +5745,8 @@ async function makeOutputImage(file){
     }
     const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
     const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas is unavailable');
-    const scale=Math.min(W/source.width,H/source.height),dw=source.width*scale,dh=source.height*scale;
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+    const scale=Math.max(W/source.width,H/source.height),dw=source.width*scale,dh=source.height*scale;
+    // Match FILL: cover the full canvas and crop overflow symmetrically from the center.
     ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
     ctx.drawImage(source,(W-dw)/2,(H-dh)/2,dw,dh);
     const blob=await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('Image conversion failed')),'image/jpeg',0.98));
