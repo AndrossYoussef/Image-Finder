@@ -37,14 +37,13 @@ function walkFolder_(folder, parentPath, out) {
   while (files.hasNext()) {
     const f = files.next();
     if (f.isTrashed()) continue;
-    const mime = f.getMimeType() || '';
-    if (!mime.toLowerCase().startsWith('image/')) continue;
-    out.push({
-      id:f.getId(), name:f.getName(), mimeType:mime, size:f.getSize(),
-      modifiedTime:f.getLastUpdated().toISOString(),
-      relPath:path ? path + '/' + f.getName() : f.getName(),
-      thumbnailUrl:'https://drive.google.com/thumbnail?id=' + encodeURIComponent(f.getId()) + '&sz=w1600'
-    });
+    const name = f.getName();
+    const ext = (name.match(/\.([^.]+)$/) || [,''])[1].toLowerCase();
+    const mime = ({jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',gif:'image/gif',webp:'image/webp',bmp:'image/bmp',heic:'image/heic',heif:'image/heif',avif:'image/avif',tif:'image/tiff',tiff:'image/tiff'})[ext];
+    // Avoid multiple Drive metadata lookups per image: the filename extension
+    // is sufficient for the Finder and keeps large first-load indexes smaller.
+    if (!mime) continue;
+    out.push({id:f.getId(), name:name, mimeType:mime, relPath:path ? path + '/' + name : name});
   }
   const folders = folder.getFolders();
   while (folders.hasNext()) walkFolder_(folders.next(), path, out);

@@ -26,11 +26,15 @@ Open `drive-config.js` and replace `PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE` wit
 
 Upload/replace `index.html`, `drive-config.js`, and `sw.js` in the repository root and commit to the branch GitHub Pages uses (usually `main`). Leave the remaining assets/config files in place. The service-worker version was bumped so visitors can receive the update. Then open the published site in a fresh tab and click **Load / refresh shared library** if it has not loaded automatically.
 
+## Updating an already deployed version
+
+If you already deployed the earlier script version, replace its code with the revised `Code.gs`, save, then go to **Deploy → Manage deployments**, select the web app, click the pencil icon, choose **New version**, and click **Deploy**. The `/exec` URL normally stays the same. Replace the GitHub Pages `index.html` and `sw.js` with the revised package files as well; keep your already-filled-in `drive-config.js` URL.
+
 ## Notes and troubleshooting
 
 - The configured folder ID is `19MQRXfFORhtffu2oZn-XfkXGaI1J5btv` and matches the link you provided. The folder is publicly viewable at setup time.
 - The script recursively includes image files in subfolders and excludes non-images.
 - If you change the Apps Script code later, create a new deployment version or edit the deployment to serve the latest version. Keep the same `/exec` URL if possible.
 - If the app says it cannot connect, verify deployment access is **Anyone**, the URL ends in `/exec`, and the Apps Script owner still has access to the Drive folder.
-- Large folders can take longer to enumerate, and Apps Script has Google account execution quotas. ZIP creation downloads image bytes through JSONP one selected image at a time; very large selected batches may take a while.
+- The provided folder currently contains about 8,147 images. The script uses a compact metadata index and the site waits up to three minutes for the initial scan. Large folders can still take longer to enumerate, and Apps Script has Google account execution quotas. ZIP creation downloads image bytes through JSONP one selected image at a time; very large selected batches may take a while.
 - This is a static-hosted app connected to a free script endpoint; it does not incur a hosting bill by itself, but Google quotas and policies apply.

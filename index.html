@@ -3339,7 +3339,7 @@ const IMGTYPES=new Set(['image/jpeg','image/jpg','image/png','image/gif',
 ══════════════════════════════════════════════════════════════════ */
 const DRIVE_API_BASE=String(window.IMAGE_FINDER_DRIVE_API_BASE||'').trim();
 let DRIVE_LOAD_PROMISE=null;
-function driveJsonp(params,timeoutMs=60000){
+function driveJsonp(params,timeoutMs=180000){
   return new Promise((resolve,reject)=>{
     if(!DRIVE_API_BASE){reject(new Error('Apps Script URL is not configured'));return}
     const callback='__iffJsonp_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2);
