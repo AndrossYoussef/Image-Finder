@@ -26,13 +26,15 @@ function doGet(e) {
 function listLibrary_() {
   const root = DriveApp.getFolderById(CONFIGURED_FOLDER_ID);
   const images = [];
-  walkFolder_(root, '', images);
+  walkFolder_(root, '', images, true);
   images.sort((a,b) => a.relPath.localeCompare(b.relPath));
   return {ok:true, folderName:root.getName(), images:images};
 }
 
-function walkFolder_(folder, parentPath, out) {
-  const path = parentPath ? parentPath + '/' + folder.getName() : '';
+function walkFolder_(folder, parentPath, out, isRoot) {
+  // Keep each child directory in relPath. The root itself is intentionally
+  // omitted so a child like Covers is represented as Covers/image.jpg.
+  const path = isRoot ? '' : (parentPath ? parentPath + '/' : '') + folder.getName();
   const files = folder.getFiles();
   while (files.hasNext()) {
     const f = files.next();
@@ -46,7 +48,7 @@ function walkFolder_(folder, parentPath, out) {
     out.push({id:f.getId(), name:name, mimeType:mime, relPath:path ? path + '/' + name : name});
   }
   const folders = folder.getFolders();
-  while (folders.hasNext()) walkFolder_(folders.next(), path, out);
+  while (folders.hasNext()) walkFolder_(folders.next(), path, out, false);
 }
 
 function getImage_(id) {

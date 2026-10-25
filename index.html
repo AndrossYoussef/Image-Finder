@@ -3374,7 +3374,7 @@ const IMGTYPES=new Set(['image/jpeg','image/jpg','image/png','image/gif',
 ══════════════════════════════════════════════════════════════════ */
 const DRIVE_API_BASE=String(window.IMAGE_FINDER_DRIVE_API_BASE||'').trim();
 let DRIVE_LOAD_PROMISE=null;
-const DRIVE_CATALOG_KEY='__drive_catalog_v1__';
+const DRIVE_CATALOG_KEY='__drive_catalog_v2__';
 const DRIVE_CATALOG_TTL=7*24*60*60*1000;
 function driveJsonp(params,timeoutMs=180000){
   return new Promise((resolve,reject)=>{
@@ -3422,11 +3422,12 @@ async function loadDriveLibrary(force=false){
       if(!files.length)throw new Error('No supported images were found in the configured Drive folder');
       await loadFiles(files,payload.folderName||'Shared Google Drive');
       // A top-level Drive folder named Covers (or Cover) also feeds the Covers workspace.
-      const driveCoverFiles=files.filter(file=>/(^|\/)covers?(\/|$)/i.test(file.__relPath||''));
+      const rootIsCovers=/^covers?$/i.test(String(payload.folderName||'').trim());
+      const driveCoverFiles=files.filter(file=>rootIsCovers||/(^|\/)covers?(\/|$)/i.test(file.__relPath||''));
       replaceDriveCovers(driveCoverFiles);
       if(dz)dz.style.display='none';
       if(fl){document.getElementById('fldName').textContent='Google Drive · '+(payload.folderName||'Shared image library');document.getElementById('fldStats').textContent=IMAGES.length.toLocaleString()+' images · cached in this browser · use Refresh to check for new uploads';document.getElementById('fldCount').textContent=IMAGES.length.toLocaleString()+' images';}
-      setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images'+(fromCache?' · loaded from this browser':' · saved for next time'),'ok');
+      setSt('✅ Shared Drive library ready · '+IMAGES.length.toLocaleString()+' images · '+driveCoverFiles.length.toLocaleString()+' Drive covers'+(fromCache?' · loaded from this browser':' · saved for next time'),'ok');
     }catch(error){
       showProg('loadProg',false);if(dz)dz.style.display='block';setSt('Could not connect to the shared image library.','');toast('Drive library connection failed: '+(error?.message||error),'e',9000);
     }finally{DRIVE_LOAD_PROMISE=null;}
