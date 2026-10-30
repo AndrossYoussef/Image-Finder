@@ -609,8 +609,9 @@ textarea::placeholder{color:var(--mu)}
   align-items:center;justify-content:center;padding:24px}
 .cat-lb-box{position:relative;max-width:min(92vw,900px);max-height:88vh;background:var(--sur);
   border-radius:var(--rs);padding:12px;box-shadow:var(--shl);display:flex;flex-direction:column;gap:9px}
-.cat-lb-box img{max-width:100%;max-height:74vh;object-fit:contain;border-radius:var(--rx);background:var(--sur2)}
-.cat-lb-cap{font-size:.7rem;color:var(--tx2);word-break:break-all}
+.cat-lb-box img{max-width:100%;max-height:66vh;object-fit:contain;border-radius:var(--rx);background:var(--sur2)}
+.cat-lb-cap{font-size:1.3rem;font-weight:600;line-height:1.35;color:var(--tx);word-break:break-word;padding:2px 4px 4px}
+.cat-lb-cap small{display:block;margin-top:2px;font-size:.85rem;font-weight:400;color:var(--tx2)}
 .cat-lb-x{position:absolute;top:-11px;right:-11px;width:30px;height:30px;border-radius:50%;
   border:1px solid var(--bd2);background:var(--sur);color:var(--tx);cursor:pointer;
   font-size:.82rem;line-height:1;box-shadow:var(--sh)}
@@ -877,7 +878,7 @@ body:not(.admin-tools) #uncatSimple{display:none!important}
 .uncat-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:5px;min-width:0}
 .uncat-tile .pic{position:relative;display:block;border-radius:10px;overflow:hidden;border:3px solid transparent;background:var(--sur2)}
 .uncat-tile img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
-.uncat-tile .nm{font-size:.68rem;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uncat-tile .nm{font-size:.82rem;font-weight:500;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .uncat-tile .tk{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.28);display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff}
 .uncat-tile.on .pic{border-color:var(--or)}
 .uncat-tile.on .tk{background:var(--or);border-color:var(--or)}
@@ -886,6 +887,54 @@ body:not(.admin-tools) #uncatSimple{display:none!important}
 .uncat-bar{position:sticky;bottom:12px;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:10px 16px;background:var(--sur);border:1px solid var(--bd2);border-radius:14px;box-shadow:var(--shl)}
 .uncat-bar[hidden]{display:none}
 .uncat-bar select{min-width:220px}
+.uncat-tile .tk{left:6px;right:auto}
+.uncat-tile .addc{position:absolute;right:6px;bottom:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(10,10,11,.8);color:#fff;font:600 19px/1 sans-serif;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4);opacity:0;transition:opacity .15s}
+.uncat-tile:hover .addc,.uncat-tile:focus-within .addc,.uncat-tile .addc.open,.uncat-tile .addc:focus-visible{opacity:1}
+.uncat-tile .addc.open{background:var(--or)}
+@media (hover:none){.uncat-tile .addc{opacity:1}}
+.uncat-tile{cursor:pointer}
+.uncat-tile:focus-visible{outline:none}
+.uncat-tile:focus-visible .pic{outline:3px solid var(--or);outline-offset:2px}
+.uncat-mv{color:var(--mu);font-size:.8rem}
+.uncat-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1}
+.uncat-chip{border:1px solid var(--bd2);background:var(--sur2);color:var(--tx);border-radius:999px;font:inherit;font-size:.78rem;font-weight:600;padding:6px 14px;cursor:pointer}
+.uncat-chip:hover{border-color:var(--or)}
+select.uncat-chip{background:transparent;color:var(--tx2);padding-right:8px;max-width:150px}
+.uncat-chip.plus{border:1.5px dashed var(--or);background:transparent;display:inline-flex;align-items:center;gap:6px}
+.uncat-chip.plus i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--or);color:#fff;font-weight:700;line-height:1}
+.uncat-clear{margin-left:auto}
+.uncat-newrow{display:flex;align-items:center;gap:10px;width:100%;margin-top:2px;padding-top:12px;border-top:1px solid var(--bd)}
+.uncat-newrow[hidden]{display:none}
+.uncat-plusb{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--or);color:#fff;font-weight:700}
+.uncat-newinp{flex:0 1 280px;background:var(--sur2);border:2px solid var(--or);border-radius:999px;color:var(--tx);padding:7px 16px;font:inherit;font-size:.85rem;outline:none}
+.uncat-pop{position:absolute;z-index:80;width:310px;background:var(--sur);color:var(--tx);border:1px solid var(--bd2);border-radius:14px;padding:12px 14px 14px;box-shadow:var(--shl)}
+.uncat-pop[hidden]{display:none}
+.uncat-pop .pt{font-size:.78rem;color:var(--tx2);margin-bottom:9px;word-break:break-word}
+.uncat-pop .pt b{color:var(--tx);font-weight:600}
+.uncat-pop .pc{display:flex;flex-wrap:wrap;gap:7px}
+.uncat-pop .pn{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)}
+.uncat-pop .pl{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--or);color:#fff;font-weight:700;flex:none}
+.uncat-pop .pin{flex:1;min-width:0;background:var(--sur2);border:2px solid var(--or);border-radius:999px;color:var(--tx);padding:6px 14px;font:inherit;font-size:.85rem;outline:none}
+/* ---- big, searchable category picker (replaces the tiny native list) ---- */
+.cp-back{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.cp-box{width:min(560px,94vw);max-height:84vh;display:flex;flex-direction:column;background:var(--sur);color:var(--tx);border:1px solid var(--bd2);border-radius:18px;box-shadow:var(--shl);overflow:hidden}
+.cp-h{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+.cp-s{flex:1;min-width:0;background:var(--sur2);color:var(--tx);border:2px solid var(--bd2);border-radius:999px;padding:11px 18px;font:inherit;font-size:1.05rem;outline:none}
+.cp-s:focus{border-color:var(--or)}
+.cp-x{width:38px;height:38px;border-radius:50%;border:1px solid var(--bd2);background:var(--sur2);color:var(--tx);cursor:pointer;font-size:1rem}
+.cp-l{overflow-y:auto;padding:4px 8px 12px}
+.cp-g{position:sticky;top:0;z-index:1;background:var(--sur);color:var(--mu);font-size:.8rem;font-weight:700;padding:10px 12px 4px}
+.cp-o{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:start;background:none;border:0;border-radius:10px;color:var(--tx);font:inherit;font-size:1.08rem;line-height:1.3;padding:11px 14px;cursor:pointer}
+.cp-o:hover,.cp-o.act{background:var(--orl)}
+.cp-o.cur{font-weight:700}
+.cp-t{color:var(--or);font-weight:800}
+.cp-e{padding:22px;text-align:center;color:var(--mu);font-size:1rem}
+/* the native list, where it is still used, a little larger too */
+.cat-tile-sel{font-size:.8rem}
+.card-cat-select{font-size:.8rem}
+select.sel-pro optgroup{font-size:.85rem}
+select option,select optgroup{font-size:1rem}
+.uncat-pop .pgo{background:linear-gradient(135deg,#D2490A,#B23C00);color:#fff;border:0;border-radius:999px;font:inherit;font-size:.8rem;font-weight:700;padding:8px 16px;cursor:pointer}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1009,7 +1058,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <div class="category-summary" id="libraryCategorySummary" style="display:none"></div>
     <details class="uncat-simple" id="uncatSimple" hidden>
       <summary id="uncatTitle">Uncategorized Images</summary>
-      <p class="uncat-help">Click pictures to select them, then choose a category. Search by file name to find similar ones, then select them all at once.</p>
+      <p class="uncat-help">Click pictures to select them, then pick a category at the bottom. Or use the + on a picture to categorize just that one. Search by file name to find similar ones, then select them all at once.</p>
       <div class="uncat-tools">
         <input type="search" id="uncatSearch" class="uncat-search" placeholder="Search by file name…" autocomplete="off" aria-label="Search uncategorized images by file name">
         <button type="button" class="uncat-link" id="uncatAll"></button>
@@ -1019,9 +1068,16 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
       <div class="uncat-grid" id="uncatGrid"></div>
       <div id="uncatMore" class="uncat-more"></div>
       <div class="uncat-bar" id="uncatBar" hidden>
-        <span><b id="uncatSelN">0</b> selected</span>
-        <select id="uncatBulk" class="fsel" aria-label="Move the selected images to a category"></select>
-        <button type="button" class="uncat-link" id="uncatClear">Clear selection</button>
+        <span class="uncat-sel"><b id="uncatSelN">0</b> selected</span>
+        <span class="uncat-mv">Move to</span>
+        <div class="uncat-chips" id="uncatChips"></div>
+        <button type="button" class="uncat-link uncat-clear" id="uncatClear">Clear selection</button>
+        <div class="uncat-newrow" id="uncatNewRow" hidden>
+          <span class="uncat-plusb">+</span>
+          <input type="text" id="uncatNewInput" class="uncat-newinp" placeholder="New category name" autocomplete="off" aria-label="New category name">
+          <button type="button" class="btn bp bsm" id="uncatNewGo">Create and move</button>
+          <button type="button" class="uncat-link" id="uncatNewCancel">Cancel</button>
+        </div>
       </div>
     </details>
     <div class="prog" id="loadProg">
@@ -2340,6 +2396,13 @@ let LC_T=null;
 function saveLearnedCats(){persist('tif_learned_cats_v1',LEARNED_CATS,'what it learned from your category picks')}
 function saveLearnedCatsSoon(){clearTimeout(LC_T);LC_T=setTimeout(saveLearnedCats,600)}
 const LEARN_STOP=new Set(['small','large','medium','regular','new','old','final','copy','box','meal','combo','offer','pcs','piece','pieces','gm','ml','kg','size','img','photo','image','jpg','png','webp','صغير','كبير','وسط','وجبه','علبه','صوره','family','mix','mixed','special','offer','deal','xl','xxl','combo','value','super','best','hot','cold','عائلي','مشكل','عرض','خاص','سوبر']);
+/* The library's top folder name is on EVERY image, so words from it say nothing about one category.
+   Learn only from the file name and the folders between the top folder and the file. */
+['menu','images','imag','item','items','library','cover','covers'].forEach(function(w){LEARN_STOP.add(w);delete LEARNED_CATS[w]});
+function learnTextFor(img){
+  var parts=String(img&&img.relPath||'').split('/').filter(Boolean);parts.pop();parts.shift();
+  return String(img&&img.name||'')+' '+parts.join(' ');
+}
 function learnCategoryFrom(text,key){
   if(!key||!CATEGORY_DEFS[key]||FALLBACK_KEYS.has(key))return;
   const toks=[...catPrep(text).set].filter(w=>w.length>2&&!LEARN_STOP.has(w)&&!/^\d+$/.test(w)&&!NOISE.has(w));
@@ -2731,8 +2794,13 @@ function catFootHtml(list,shownCount){
        </div>`
     : `<div class="cat-foot">Showing all ${list.length.toLocaleString()}${CAT_FILTER?' matching':''} image${list.length===1?'':'s'}.</div>`;
 }
+let CAT_SCROLL_SIG='';
 function renderCategoryBrowser(keepFocus){
   const box=document.getElementById('categoryBrowser');if(!box)return;
+  /* remember where the grid was scrolled, so a redraw (a tick, a new category for one picture...) does not throw you back to the top */
+  const prevGrid=box.querySelector('.cat-grid'),prevTop=prevGrid?prevGrid.scrollTop:0;
+  const scrollSig=String(OPEN_CATEGORY)+'|'+CAT_FILTER+'|'+CAT_PICKED_ONLY;
+  const keepScroll=scrollSig===CAT_SCROLL_SIG;CAT_SCROLL_SIG=scrollSig;
   invalidateImageResultMap();
   if(!OPEN_CATEGORY){box.innerHTML='';box.classList.remove('open');return}
   box.classList.add('open');
@@ -2777,10 +2845,35 @@ function renderCategoryBrowser(keepFocus){
   const tiles=shown.map(e=>catTileHtml(e,resDups,libDups)).join('');
   const more=catFootHtml(list,shown.length);
   box.innerHTML=head+`<div class="cat-grid">${tiles}</div><div id="catFootWrap">${more}</div>`;
+  if(keepScroll){const g2=box.querySelector('.cat-grid');if(g2)g2.scrollTop=prevTop}
   if(keepFocus)focusCatSearch();
   hookFulls(box);
   requestAnimationFrame(()=>{hookFulls(box);catAutoLoad()});
   CAT_HAS_MORE=list.length>shown.length;
+}
+/* redraw a single picture and the two counters in the header, nothing else */
+function catRefreshTile(i){
+  const box=document.getElementById('categoryBrowser');
+  if(!box||!OPEN_CATEGORY||CAT_PICKED_ONLY)return false;          /* in "Selected only" the picture may have to leave the list */
+  const sv=document.getElementById('catsv-'+i),tile=sv&&sv.closest('.cat-tile'),img=IMAGES[i];
+  if(!tile||!img)return false;
+  const tmp=document.createElement('div');
+  tmp.innerHTML=catTileHtml({img,i},getDups(),getLibDups()).trim();
+  const fresh=tmp.firstElementChild;if(!fresh)return false;
+  tile.replaceWith(fresh);hookFulls(fresh);
+  const pickedInCat=categoryImageList(OPEN_CATEGORY).filter(({i:k})=>imageIsPicked(k)).length;
+  let chip=box.querySelector('.cat-browser-count.picked');
+  if(pickedInCat){
+    if(!chip){chip=document.createElement('span');chip.className='cat-browser-count picked';const first=box.querySelector('.cat-browser-title .cat-browser-count');if(first)first.after(chip);else return false}
+    chip.textContent=pickedInCat.toLocaleString()+' selected for ZIP';
+  }else if(chip)chip.remove();
+  const bar=box.querySelector('.cat-browser-bar');let clr=box.querySelector('.cat-clear-all');
+  if(LIBRARY_PICKS.size){
+    if(!clr&&bar){clr=document.createElement('button');clr.type='button';clr.className='btn bs bsm cat-clear-all';clr.title='Forget every image picked straight from the library, in every category';clr.setAttribute('onclick','catClearAllPicks()');bar.appendChild(clr)}
+    if(clr)clr.textContent='🗑 Clear all library picks ('+LIBRARY_PICKS.size.toLocaleString()+')';
+  }else if(clr)clr.remove();
+  catRefreshDupFlags();
+  return true;
 }
 function catTileHtml({img,i},resDups,libDups){
   {
@@ -2884,13 +2977,13 @@ function catTogglePick(i,on){
     else{LIBRARY_PICKS.delete(i);forgetPick(i)}
     updateStats();
   }
-  renderCategoryBrowser();
+  if(!catRefreshTile(i))renderCategoryBrowser();
 }
 function catToggleUMN(i,v){
   const link=resultForImage(i);if(!link||link.r.confirmed!==i)return;
   link.r.useMenuName=v;
   if(v&&!link.r.exportName)link.r.exportName=san(link.r.menuItem);
-  updPrev(link.ri);chkDups();renderResults();renderCategoryBrowser();
+  updPrev(link.ri);chkDups();renderResults();if(!catRefreshTile(i))renderCategoryBrowser();
 }
 /* typed into live — never re-render here or the field loses focus */
 function catNameInput(i,v){
@@ -2966,7 +3059,7 @@ function catLightbox(i){
   ov.innerHTML=`<div class="cat-lb-box">
       <button type="button" class="cat-lb-x" aria-label="Close preview">✕</button>
       <img src="${esc(BLOB_OK?objectSrc(img):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} alt="${esc(img.name||'')}"/>
-      <div class="cat-lb-cap" dir="auto">${esc(img.relPath||img.name||'')}</div>
+      <div class="cat-lb-cap" dir="auto">${(()=>{const rp=String(img.relPath||img.name||''),cut=rp.lastIndexOf('/');return esc(cut>=0?rp.slice(cut+1):rp)+(cut>0?'<small>'+esc(rp.slice(0,cut))+'</small>':'')})()}</div>
     </div>`;
   ov.addEventListener('click',e=>{if(e.target===ov||e.target.classList.contains('cat-lb-x'))closeCatLightbox()});
   document.body.appendChild(ov);
@@ -4076,7 +4169,7 @@ function categoryOptions(selected,includeAuto=true){
   }
   return h+(g?'</optgroup>':'');
 }
-function saveImageCategory(idx,key){const img=IMAGES[idx];if(!img)return;if(key==='auto')for(const k of imageCategoryKeys(img.file))delete MANUAL_IMAGE_CATS[k];else for(const k of imageCategoryKeys(img.file))MANUAL_IMAGE_CATS[k]=key;if(key!=='auto')learnCategoryFrom(img.name+' '+(img.relPath||''),key);const info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();refreshModal();document.getElementById('smartStatus').textContent=(key==='auto'?'🤖 Back to auto for ':'💾 Saved image category for ')+img.name}
+function saveImageCategory(idx,key){const img=IMAGES[idx];if(!img)return;if(key==='auto')for(const k of imageCategoryKeys(img.file))delete MANUAL_IMAGE_CATS[k];else for(const k of imageCategoryKeys(img.file))MANUAL_IMAGE_CATS[k]=key;if(key!=='auto')learnCategoryFrom(learnTextFor(img),key);const info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();refreshModal();document.getElementById('smartStatus').textContent=(key==='auto'?'🤖 Back to auto for ':'💾 Saved image category for ')+img.name}
 /* one assignment, both sides. The operator never cared about the
    difference between "the item is a pizza" and "the photo is a pizza". */
 function cardCategoryValue(r){
@@ -9062,8 +9155,93 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   }
   window.dupScanCard=scanCard;
 
+  /* ---------- big, searchable category picker ----------
+     Any drop-down that lists categories (it has groups) opens this instead of the tiny native list.
+     It is part of the page, so it grows with browser zoom, and you can type to find a category. */
+  (function(){
+    var overlay=null,cur=null,groups=[],items=[],active=-1,listEl=null,inputEl=null;
+    function escP(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    function isCatSelect(el){return !!el&&el.tagName==='SELECT'&&!el.multiple&&!el.disabled&&!!el.querySelector('optgroup')}
+    function collect(sel){
+      var out=[],head=null;
+      Array.prototype.forEach.call(sel.children,function(ch){
+        if(ch.tagName==='OPTGROUP'){out.push({label:ch.label,opts:Array.prototype.slice.call(ch.children)})}
+        else if(ch.tagName==='OPTION'){if(!head){head={label:'',opts:[]};out.push(head)}head.opts.push(ch)}
+      });
+      return out;
+    }
+    function render(){
+      var q=(inputEl.value||'').trim().toLowerCase(),html='',chosen=-1;items=[];
+      groups.forEach(function(g){
+        var rows=g.opts.filter(function(o){return !q||String(o.textContent).toLowerCase().indexOf(q)>=0});
+        if(!rows.length)return;
+        if(g.label)html+='<div class="cp-g">'+escP(g.label)+'</div>';
+        rows.forEach(function(o){
+          items.push(o);if(o.selected&&chosen<0)chosen=items.length-1;
+          html+='<button type="button" class="cp-o'+(o.selected?' cur':'')+'" role="option" data-n="'+(items.length-1)+'"><bdi>'+escP(o.textContent)+'</bdi>'+(o.selected?'<span class="cp-t">✓</span>':'')+'</button>';
+        });
+      });
+      listEl.innerHTML=html||'<div class="cp-e">No category matches.</div>';
+      setActive(q?(items.length?0:-1):chosen,!q);
+    }
+    function setActive(n,scroll){
+      active=n;
+      var all=listEl.querySelectorAll('.cp-o');
+      all.forEach(function(b,i){b.classList.toggle('act',i===n)});
+      if(scroll&&n>=0&&all[n])all[n].scrollIntoView({block:'center'});
+      else if(n>=0&&all[n])all[n].scrollIntoView({block:'nearest'});
+    }
+    function pick(o){
+      var sel=cur;close(false);
+      if(!sel||!o)return;
+      sel.value=o.value;
+      sel.dispatchEvent(new Event('input',{bubbles:true}));
+      sel.dispatchEvent(new Event('change',{bubbles:true}));
+      try{sel.focus({preventScroll:true})}catch(e){}
+    }
+    function close(refocus){
+      if(overlay){overlay.remove();overlay=null}
+      document.removeEventListener('keydown',onKey,true);
+      if(refocus&&cur){try{cur.focus({preventScroll:true})}catch(e){}}
+      cur=null;items=[];active=-1;
+    }
+    function onKey(e){
+      if(!overlay)return;
+      if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close(true)}
+      else if(e.key==='ArrowDown'){e.preventDefault();e.stopPropagation();if(items.length)setActive(Math.min(items.length-1,active+1))}
+      else if(e.key==='ArrowUp'){e.preventDefault();e.stopPropagation();if(items.length)setActive(Math.max(0,active-1))}
+      else if(e.key==='Enter'){e.preventDefault();e.stopPropagation();if(active>=0)pick(items[active]);else if(items.length===1)pick(items[0])}
+    }
+    function open(sel){
+      close(false);cur=sel;groups=collect(sel);
+      overlay=document.createElement('div');overlay.className='cp-back';overlay.id='catPicker';
+      overlay.innerHTML='<div class="cp-box" role="dialog" aria-modal="true" aria-label="Choose a category"><div class="cp-h"><input type="search" class="cp-s" placeholder="Type to find a category…" autocomplete="off" aria-label="Find a category"><button type="button" class="cp-x" aria-label="Close">✕</button></div><div class="cp-l" role="listbox"></div></div>';
+      document.body.appendChild(overlay);
+      listEl=overlay.querySelector('.cp-l');inputEl=overlay.querySelector('.cp-s');
+      inputEl.addEventListener('input',render);
+      listEl.addEventListener('click',function(e){var b=e.target.closest('.cp-o');if(b)pick(items[parseInt(b.getAttribute('data-n'),10)])});
+      listEl.addEventListener('mousemove',function(e){var b=e.target.closest('.cp-o');if(b){var n=parseInt(b.getAttribute('data-n'),10);if(n!==active)setActive(n)}});
+      overlay.addEventListener('mousedown',function(e){if(e.target===overlay)close(true)});
+      overlay.querySelector('.cp-x').addEventListener('click',function(){close(true)});
+      document.addEventListener('keydown',onKey,true);
+      render();
+      inputEl.focus();
+    }
+    document.addEventListener('mousedown',function(e){
+      if(overlay||e.button!==0)return;
+      var s=e.target.closest&&e.target.closest('select');
+      if(isCatSelect(s)){e.preventDefault();e.stopPropagation();open(s)}
+    },true);
+    document.addEventListener('keydown',function(e){
+      if(overlay)return;
+      var s=document.activeElement;
+      if(isCatSelect(s)&&(e.key==='Enter'||e.key===' '||e.key==='F4'||(e.altKey&&e.key==='ArrowDown'))){e.preventDefault();e.stopPropagation();open(s)}
+    },true);
+    window.openCategoryPicker=open;
+  })();
+
   /* ---------- "Uncategorized Images": see them all, select, choose a category ---------- */
-  var UNCAT_STEP=60,uncatLimit=UNCAT_STEP,uncatSel=new Set(),uncatQuery='',uncatIO=null;
+  var UNCAT_STEP=60,uncatLimit=UNCAT_STEP,uncatSel=new Set(),uncatQuery='',uncatIO=null,uncatPopFor=-1,uncatPopTargets=[];
   function isUncat(im){return !!im&&!(im.categories||[]).length}
   function uncatAll(){var out=[];for(var i=0;i<IMAGES.length;i++)if(isUncat(IMAGES[i]))out.push(i);return out}
   function natural(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:'base'})}
@@ -9079,12 +9257,97 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   }
   function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function fmt(n){return Number(n).toLocaleString()}
-  function bulkOptions(){return '<option value="">Move selected to…</option>'+categoryOptions('',false)+'<option value="__new__">➕ New category…</option>'}
+  function labelOf(k){return (CATEGORY_DEFS[k]&&CATEGORY_DEFS[k].label)||k}
+  /* the categories people use most come first, as one-click buttons */
+  function topCats(n){
+    var c=categoryCounts().counts,keys=Object.keys(c).filter(function(k){return c[k]>0});
+    keys.sort(function(a,b){return c[b]-c[a]||natural(labelOf(a),labelOf(b))});
+    if(keys.length<n)Object.keys(CATEGORY_DEFS).forEach(function(k){if(keys.indexOf(k)<0&&keys.length<n)keys.push(k)});
+    return keys.slice(0,n);
+  }
+  function chipsHtml(n){return topCats(n).map(function(k){return '<button type="button" class="uncat-chip" data-k="'+esc2(k)+'">'+esc2(labelOf(k))+'</button>'}).join('')}
+  function moreSelect(id){return '<select class="uncat-chip" '+(id?'id="'+id+'" ':'')+'aria-label="More categories"><option value="">More ▾</option>'+categoryOptions('',false)+'</select>'}
+  function ensureCategory(name){
+    var key=categorySlug(name);
+    if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name]))return '';
+    return key;
+  }
+  /* one save for a whole group (the single-image save re-draws the page every time) */
+  function saveCategoryBatch(indices,key){
+    indices.forEach(function(idx){
+      var img=IMAGES[idx];if(!img)return;
+      imageCategoryKeys(img.file).forEach(function(k){MANUAL_IMAGE_CATS[k]=key});
+      learnCategoryFrom(learnTextFor(img),key);
+      var info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;
+    });
+    saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();
+    if(typeof refreshModal==='function')refreshModal();
+    var st=document.getElementById('smartStatus');if(st)st.textContent='💾 Saved the category for '+fmt(indices.length)+' image'+(indices.length===1?'':'s');
+  }
+  function applyCategory(targets,key){
+    var n=targets.length,label=labelOf(key);
+    if(!n||!key)return false;
+    if(n>=100&&!window.confirm('Move '+fmt(n)+' images to '+label+'?'))return false;      /* big moves ask first */
+    targets.forEach(function(i){uncatSel.delete(i)});
+    closePop();
+    saveCategoryBatch(targets,key);
+    renderUncat();
+    if(typeof toast==='function')toast('Moved '+fmt(n)+' image'+(n===1?'':'s')+' to '+label+'.','s',5000);
+    return true;
+  }
+  /* ----- the pop-up behind the + on each picture ----- */
+  function ensurePop(){
+    var pop=document.getElementById('uncatPop');
+    if(!pop){
+      pop=document.createElement('div');pop.id='uncatPop';pop.className='uncat-pop';pop.hidden=true;pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Choose a category');
+      document.body.appendChild(pop);
+      pop.addEventListener('click',function(e){
+        var chip=e.target.closest('.uncat-chip[data-k]');
+        if(chip){applyCategory(uncatPopTargets,chip.getAttribute('data-k'));return}
+        if(e.target.closest('.pgo'))popAdd();
+      });
+      pop.addEventListener('change',function(e){
+        var sel=e.target.closest('select');if(sel&&sel.value)applyCategory(uncatPopTargets,sel.value);
+      });
+      pop.addEventListener('keydown',function(e){
+        if(e.key==='Enter'&&e.target.classList.contains('pin')){e.preventDefault();popAdd()}
+      });
+    }
+    return pop;
+  }
+  function popTargets(i){return(uncatSel.has(i)&&uncatSel.size>1)?Array.from(uncatSel):[i]}   /* a selected picture acts for the whole selection */
+  function popAdd(){
+    var inp=document.querySelector('#uncatPop .pin'),name=((inp&&inp.value)||'').trim();
+    if(!name)return;
+    var key=ensureCategory(name);if(!key)return;
+    applyCategory(uncatPopTargets,key);
+  }
+  function closePop(){
+    var pop=document.getElementById('uncatPop');if(pop)pop.hidden=true;
+    uncatPopFor=-1;
+    document.querySelectorAll('#uncatGrid .addc.open').forEach(function(b){b.classList.remove('open')});
+  }
+  function openPop(i,tile,btn){
+    var pop=ensurePop(),targets=popTargets(i),many=targets.length>1;
+    document.querySelectorAll('#uncatGrid .addc.open').forEach(function(b){b.classList.remove('open')});
+    uncatPopFor=i;uncatPopTargets=targets.slice();btn.classList.add('open');
+    pop.innerHTML='<div class="pt">'+(many?('Category for <b>'+fmt(targets.length)+' selected images</b>'):('Category for <b>'+esc2(IMAGES[i].name)+'</b>'))+'</div>'+
+      '<div class="pc">'+chipsHtml(5)+moreSelect()+'</div>'+
+      '<div class="pn"><span class="pl">+</span><input type="text" class="pin" placeholder="New category name" autocomplete="off" aria-label="New category name"><button type="button" class="pgo">Add</button></div>';
+    pop.hidden=false;
+    var r=tile.getBoundingClientRect(),w=pop.offsetWidth,h2=pop.offsetHeight,sx=window.pageXOffset,sy=window.pageYOffset;
+    var left=Math.max(8,Math.min(r.left+sx-6,sx+document.documentElement.clientWidth-w-8));
+    var top=r.bottom+sy+6;
+    if(r.bottom+h2+16>window.innerHeight&&r.top-h2-16>0)top=r.top+sy-h2-6;      /* near the bottom: open upwards */
+    pop.style.left=left+'px';pop.style.top=top+'px';
+  }
+  /* ----- the grid, the bar, and loading more as you scroll ----- */
   function renderUncat(){
     var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
     if(!box||!grid||typeof IMAGES==='undefined'||typeof categoryOptions!=='function')return;
+    closePop();
     var all=uncatAll(),total=all.length;
-    if(!total){box.hidden=true;grid.innerHTML='';uncatSel.clear();return}
+    if(!total){box.hidden=true;grid.innerHTML='';uncatSel.clear();updateBar();return}
     box.hidden=false;
     document.getElementById('uncatTitle').textContent='Uncategorized Images ('+fmt(total)+')';
     if(!box.open)return;                                    /* pictures are only built while the panel is open */
@@ -9093,7 +9356,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     var shown=list.slice(0,uncatLimit);
     grid.innerHTML=shown.map(function(i){
       var im=IMAGES[i],on=uncatSel.has(i);
-      return '<button type="button" class="uncat-tile'+(on?' on':'')+'" data-i="'+i+'" aria-pressed="'+on+'" title="'+esc2(im.relPath||im.name)+'"><span class="pic"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'"><span class="tk">'+(on?'&#10003;':'')+'</span></span><span class="nm"><bdi>'+esc2(im.name)+'</bdi></span></button>';
+      return '<div class="uncat-tile'+(on?' on':'')+'" data-i="'+i+'" role="button" tabindex="0" aria-pressed="'+on+'" title="'+esc2(im.relPath||im.name)+'"><span class="pic"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'"><span class="tk">'+(on?'&#10003;':'')+'</span><button type="button" class="addc" aria-label="Choose a category for '+esc2(im.name)+'">+</button></span><span class="nm"><bdi>'+esc2(im.name)+'</bdi></span></div>';
     }).join('');
     document.getElementById('uncatAll').textContent=list.length?('Select all '+fmt(list.length)+(uncatQuery.trim()?' matching':'')):'';
     document.getElementById('uncatAll').disabled=!list.length;
@@ -9104,10 +9367,16 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     updateBar();
     watchMore(shown.length<list.length);
   }
+  function renderBarChips(){
+    var el=document.getElementById('uncatChips');if(!el)return;
+    el.innerHTML=chipsHtml(6)+moreSelect('uncatBulk')+'<button type="button" class="uncat-chip plus" id="uncatPlus"><i>+</i> New category</button>';
+  }
   function updateBar(){
     var bar=document.getElementById('uncatBar'),n=uncatSel.size;
+    if(n&&bar.hidden)renderBarChips();                       /* fresh category buttons each time the bar opens */
     bar.hidden=!n;document.getElementById('uncatSelN').textContent=fmt(n);
-    if(n){var sel=document.getElementById('uncatBulk');if(!sel.options.length||sel.options[0].value!=='')sel.innerHTML=bulkOptions();sel.value=''}
+    document.getElementById('uncatNewGo').textContent='Create and move '+fmt(n);
+    if(!n)document.getElementById('uncatNewRow').hidden=true;
   }
   function watchMore(active){
     var sentinel=document.getElementById('uncatMore');
@@ -9118,17 +9387,12 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     },{rootMargin:'400px'});
     uncatIO.observe(sentinel);
   }
-  /* one save for the whole selection (the single-image save re-draws the page every time) */
-  function saveCategoryBatch(indices,key){
-    indices.forEach(function(idx){
-      var img=IMAGES[idx];if(!img)return;
-      imageCategoryKeys(img.file).forEach(function(k){MANUAL_IMAGE_CATS[k]=key});
-      learnCategoryFrom(img.name+' '+(img.relPath||''),key);
-      var info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;
-    });
-    saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();
-    if(typeof refreshModal==='function')refreshModal();
-    var st=document.getElementById('smartStatus');if(st)st.textContent='💾 Saved the category for '+fmt(indices.length)+' image'+(indices.length===1?'':'s');
+  function toggleTile(t){
+    var i=parseInt(t.getAttribute('data-i'),10);
+    if(uncatSel.has(i))uncatSel.delete(i);else uncatSel.add(i);
+    t.classList.toggle('on',uncatSel.has(i));t.setAttribute('aria-pressed',uncatSel.has(i));
+    t.querySelector('.tk').innerHTML=uncatSel.has(i)?'&#10003;':'';
+    updateBar();
   }
   (function(){
     var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
@@ -9136,12 +9400,24 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     box.addEventListener('toggle',function(){if(box.open){uncatLimit=UNCAT_STEP}renderUncat()});
     grid.addEventListener('click',function(e){
       var t=e.target.closest('.uncat-tile');if(!t)return;
-      var i=parseInt(t.getAttribute('data-i'),10);
-      if(uncatSel.has(i))uncatSel.delete(i);else uncatSel.add(i);
-      t.classList.toggle('on',uncatSel.has(i));t.setAttribute('aria-pressed',uncatSel.has(i));
-      t.querySelector('.tk').innerHTML=uncatSel.has(i)?'&#10003;':'';
-      updateBar();
+      var add=e.target.closest('.addc');
+      if(add){
+        e.stopPropagation();
+        if(add.classList.contains('open')){closePop();return}
+        openPop(parseInt(t.getAttribute('data-i'),10),t,add);return;
+      }
+      toggleTile(t);
     });
+    grid.addEventListener('keydown',function(e){
+      var t=e.target.closest('.uncat-tile');
+      if(t&&e.target===t&&(e.key===' '||e.key==='Enter')){e.preventDefault();toggleTile(t)}
+    });
+    document.addEventListener('click',function(e){
+      var pop=document.getElementById('uncatPop');
+      if(document.getElementById('catPicker'))return;                       /* the category picker is open: keep the pop-up behind it */
+      if(pop&&!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.addc'))closePop();
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
     var timer=0;
     document.getElementById('uncatSearch').addEventListener('input',function(e){
       clearTimeout(timer);var v=e.target.value;
@@ -9152,24 +9428,27 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     });
     document.getElementById('uncatClear').addEventListener('click',function(){uncatSel.clear();renderUncat()});
     document.getElementById('uncatShowAll').addEventListener('click',function(){uncatLimit=1e9;renderUncat()});
-    document.getElementById('uncatBulk').addEventListener('change',function(e){
-      var v=e.target.value;if(!v||!uncatSel.size)return;
-      var label;
-      if(v==='__new__'){
-        var name=(window.prompt('New category name:')||'').trim();
-        if(!name){e.target.value='';return}
-        var key=categorySlug(name);
-        if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name])){e.target.value='';return}
-        v=key;
+    /* the bar at the bottom */
+    var chips=document.getElementById('uncatChips');
+    chips.addEventListener('click',function(e){
+      var chip=e.target.closest('.uncat-chip[data-k]');
+      if(chip){applyCategory(Array.from(uncatSel),chip.getAttribute('data-k'));return}
+      if(e.target.closest('#uncatPlus')){
+        var row=document.getElementById('uncatNewRow');row.hidden=false;
+        var inp=document.getElementById('uncatNewInput');inp.value='';inp.focus();
       }
-      label=(CATEGORY_DEFS[v]&&CATEGORY_DEFS[v].label)||v;
-      var picked=Array.from(uncatSel),n=picked.length;
-      if(n>=100&&!window.confirm('Move '+fmt(n)+' images to '+label+'?')){e.target.value='';return}      /* big moves ask first */
-      uncatSel.clear();
-      saveCategoryBatch(picked,v);
-      renderUncat();
-      if(typeof toast==='function')toast('Moved '+fmt(n)+' image'+(n===1?'':'s')+' to '+label+'.','s',5000);
     });
+    chips.addEventListener('change',function(e){
+      var sel=e.target.closest('select');if(sel&&sel.value)applyCategory(Array.from(uncatSel),sel.value);
+    });
+    function barAdd(){
+      var name=document.getElementById('uncatNewInput').value.trim();if(!name)return;
+      var key=ensureCategory(name);if(!key)return;
+      applyCategory(Array.from(uncatSel),key);
+    }
+    document.getElementById('uncatNewGo').addEventListener('click',barAdd);
+    document.getElementById('uncatNewInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();barAdd()}});
+    document.getElementById('uncatNewCancel').addEventListener('click',function(){document.getElementById('uncatNewRow').hidden=true});
     if(typeof window.renderLibraryCategorySummary==='function'){
       var orig=window.renderLibraryCategorySummary;
       window.renderLibraryCategorySummary=function(){var out=orig.apply(this,arguments);try{renderUncat()}catch(e){}return out};
