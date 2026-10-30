@@ -866,6 +866,26 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
 .uncat-tile figcaption{font-size:.68rem;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .uncat-tile select{width:100%;font-size:.74rem}
 body:not(.admin-tools) #uncatSimple{display:none!important}
+.uncat-help{margin:8px 0 10px;font-size:.8rem;color:var(--mu)}
+.uncat-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.uncat-search{background:var(--sur2);border:1.5px solid var(--bd);border-radius:999px;color:var(--tx);padding:7px 16px;font-size:.82rem;min-width:240px;outline:none}
+.uncat-search:focus{border-color:var(--or)}
+.uncat-link{background:none;border:0;padding:0;color:var(--tx);font:inherit;font-size:.8rem;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.uncat-link:disabled{opacity:.4;cursor:default;text-decoration:none}
+.uncat-count{font-size:.78rem;color:var(--mu);margin-left:auto}
+.uncat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.uncat-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:5px;min-width:0}
+.uncat-tile .pic{position:relative;display:block;border-radius:10px;overflow:hidden;border:3px solid transparent;background:var(--sur2)}
+.uncat-tile img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.uncat-tile .nm{font-size:.68rem;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uncat-tile .tk{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.28);display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff}
+.uncat-tile.on .pic{border-color:var(--or)}
+.uncat-tile.on .tk{background:var(--or);border-color:var(--or)}
+.uncat-tile:focus-visible .pic{outline:3px solid var(--or);outline-offset:2px}
+.uncat-more{padding:12px 0;text-align:center;font-size:.78rem;color:var(--mu)}
+.uncat-bar{position:sticky;bottom:12px;z-index:30;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:10px 16px;background:var(--sur);border:1px solid var(--bd2);border-radius:14px;box-shadow:var(--shl)}
+.uncat-bar[hidden]{display:none}
+.uncat-bar select{min-width:220px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -881,7 +901,6 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 .rcard{border-radius:16px}
 .thumb{border-radius:12px}
 #railZipBtn{display:none}
-/* bottom bar: always in view while there are results */
 .dock{position:fixed;left:268px;right:0;bottom:0;z-index:45;background:var(--sur);border-top:1px solid var(--bd);box-shadow:0 -8px 24px rgba(0,0,0,.16)}
 .dock[hidden]{display:none}
 .dock-in{display:flex;align-items:center;gap:18px;padding:12px 28px}
@@ -990,7 +1009,20 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <div class="category-summary" id="libraryCategorySummary" style="display:none"></div>
     <details class="uncat-simple" id="uncatSimple" hidden>
       <summary id="uncatTitle">Uncategorized Images</summary>
+      <p class="uncat-help">Click pictures to select them, then choose a category. Search by file name to find similar ones, then select them all at once.</p>
+      <div class="uncat-tools">
+        <input type="search" id="uncatSearch" class="uncat-search" placeholder="Search by file name…" autocomplete="off" aria-label="Search uncategorized images by file name">
+        <button type="button" class="uncat-link" id="uncatAll"></button>
+        <button type="button" class="uncat-link" id="uncatShowAll" hidden></button>
+        <span class="uncat-count" id="uncatCount"></span>
+      </div>
       <div class="uncat-grid" id="uncatGrid"></div>
+      <div id="uncatMore" class="uncat-more"></div>
+      <div class="uncat-bar" id="uncatBar" hidden>
+        <span><b id="uncatSelN">0</b> selected</span>
+        <select id="uncatBulk" class="fsel" aria-label="Move the selected images to a category"></select>
+        <button type="button" class="uncat-link" id="uncatClear">Clear selection</button>
+      </div>
     </details>
     <div class="prog" id="loadProg">
       <div class="pt"><span id="lLbl">Loading…</span><span class="pp" id="lPct">0%</span></div>
@@ -9030,48 +9062,113 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   }
   window.dupScanCard=scanCard;
 
-  /* ---------- "Uncategorized Images": pick a category, that's all ---------- */
-  var UNCAT_PAGE=12;
+  /* ---------- "Uncategorized Images": see them all, select, choose a category ---------- */
+  var UNCAT_STEP=60,uncatLimit=UNCAT_STEP,uncatSel=new Set(),uncatQuery='',uncatIO=null;
   function isUncat(im){return !!im&&!(im.categories||[]).length}
-  function uncatTotal(){var n=0;for(var i=0;i<IMAGES.length;i++)if(isUncat(IMAGES[i]))n++;return n}
-  function uncatFirst(){var out=[];for(var i=0;i<IMAGES.length&&out.length<UNCAT_PAGE;i++)if(isUncat(IMAGES[i]))out.push(i);return out}
+  function uncatAll(){var out=[];for(var i=0;i<IMAGES.length;i++)if(isUncat(IMAGES[i]))out.push(i);return out}
+  function natural(a,b){return String(a).localeCompare(String(b),undefined,{numeric:true,sensitivity:'base'})}
+  function uncatFiltered(){
+    var q=uncatQuery.trim().toLowerCase(),list=uncatAll();
+    if(q)list=list.filter(function(i){var im=IMAGES[i];return (im.name+' '+(im.relPath||'')).toLowerCase().indexOf(q)>=0});
+    list.sort(function(x,y){return natural(IMAGES[x].name,IMAGES[y].name)});          /* similar names end up side by side */
+    return list;
+  }
   function thumbFor(im){
     if(im.remoteId&&typeof driveImageUrl==='function')return driveImageUrl(im.remoteId,240);
     return typeof objectSrc==='function'?objectSrc(im):'';
   }
   function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function fmt(n){return Number(n).toLocaleString()}
+  function bulkOptions(){return '<option value="">Move selected to…</option>'+categoryOptions('',false)+'<option value="__new__">➕ New category…</option>'}
   function renderUncat(){
     var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
     if(!box||!grid||typeof IMAGES==='undefined'||typeof categoryOptions!=='function')return;
-    var total=uncatTotal();
-    if(!total){box.hidden=true;grid.innerHTML='';return}
+    var all=uncatAll(),total=all.length;
+    if(!total){box.hidden=true;grid.innerHTML='';uncatSel.clear();return}
     box.hidden=false;
-    document.getElementById('uncatTitle').textContent='Uncategorized Images ('+total.toLocaleString()+')';
-    if(!box.open)return;                                   /* the pictures are only built while the panel is open */
-    var opts='<option value="">Choose category…</option>'+categoryOptions('',false)+'<option value="__new__">➕ New category…</option>';
-    grid.innerHTML=uncatFirst().map(function(i){
-      var im=IMAGES[i];
-      return '<figure class="uncat-tile"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'">'+
-        '<figcaption dir="auto" title="'+esc2(im.relPath||im.name)+'">'+esc2(im.name)+'</figcaption>'+
-        '<select class="fsel" data-i="'+i+'" aria-label="Category for '+esc2(im.name)+'">'+opts+'</select></figure>';
+    document.getElementById('uncatTitle').textContent='Uncategorized Images ('+fmt(total)+')';
+    if(!box.open)return;                                    /* pictures are only built while the panel is open */
+    var list=uncatFiltered();
+    uncatSel.forEach(function(i){if(!isUncat(IMAGES[i]))uncatSel.delete(i)});
+    var shown=list.slice(0,uncatLimit);
+    grid.innerHTML=shown.map(function(i){
+      var im=IMAGES[i],on=uncatSel.has(i);
+      return '<button type="button" class="uncat-tile'+(on?' on':'')+'" data-i="'+i+'" aria-pressed="'+on+'" title="'+esc2(im.relPath||im.name)+'"><span class="pic"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'"><span class="tk">'+(on?'&#10003;':'')+'</span></span><span class="nm"><bdi>'+esc2(im.name)+'</bdi></span></button>';
     }).join('');
+    document.getElementById('uncatAll').textContent=list.length?('Select all '+fmt(list.length)+(uncatQuery.trim()?' matching':'')):'';
+    document.getElementById('uncatAll').disabled=!list.length;
+    document.getElementById('uncatCount').textContent=list.length?('Showing '+fmt(shown.length)+' of '+fmt(list.length)):'No file names match';
+    document.getElementById('uncatMore').textContent=shown.length<list.length?'Keep scrolling to load more…':(list.length?'That is all of them.':'');
+    var sa=document.getElementById('uncatShowAll');
+    if(shown.length<list.length){sa.hidden=false;sa.textContent='Show all '+fmt(list.length)+' at once'}else sa.hidden=true;
+    updateBar();
+    watchMore(shown.length<list.length);
+  }
+  function updateBar(){
+    var bar=document.getElementById('uncatBar'),n=uncatSel.size;
+    bar.hidden=!n;document.getElementById('uncatSelN').textContent=fmt(n);
+    if(n){var sel=document.getElementById('uncatBulk');if(!sel.options.length||sel.options[0].value!=='')sel.innerHTML=bulkOptions();sel.value=''}
+  }
+  function watchMore(active){
+    var sentinel=document.getElementById('uncatMore');
+    if(uncatIO){uncatIO.disconnect();uncatIO=null}
+    if(!active||typeof IntersectionObserver==='undefined')return;
+    uncatIO=new IntersectionObserver(function(es){
+      if(es.some(function(e){return e.isIntersecting})){uncatLimit+=UNCAT_STEP;renderUncat()}
+    },{rootMargin:'400px'});
+    uncatIO.observe(sentinel);
+  }
+  /* one save for the whole selection (the single-image save re-draws the page every time) */
+  function saveCategoryBatch(indices,key){
+    indices.forEach(function(idx){
+      var img=IMAGES[idx];if(!img)return;
+      imageCategoryKeys(img.file).forEach(function(k){MANUAL_IMAGE_CATS[k]=key});
+      learnCategoryFrom(img.name+' '+(img.relPath||''),key);
+      var info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;
+    });
+    saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();
+    if(typeof refreshModal==='function')refreshModal();
+    var st=document.getElementById('smartStatus');if(st)st.textContent='💾 Saved the category for '+fmt(indices.length)+' image'+(indices.length===1?'':'s');
   }
   (function(){
     var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
     if(!box||!grid)return;
-    box.addEventListener('toggle',renderUncat);
-    grid.addEventListener('change',function(e){
-      var sel=e.target;if(!sel||sel.tagName!=='SELECT')return;
-      var i=parseInt(sel.getAttribute('data-i'),10),v=sel.value;if(!v)return;
+    box.addEventListener('toggle',function(){if(box.open){uncatLimit=UNCAT_STEP}renderUncat()});
+    grid.addEventListener('click',function(e){
+      var t=e.target.closest('.uncat-tile');if(!t)return;
+      var i=parseInt(t.getAttribute('data-i'),10);
+      if(uncatSel.has(i))uncatSel.delete(i);else uncatSel.add(i);
+      t.classList.toggle('on',uncatSel.has(i));t.setAttribute('aria-pressed',uncatSel.has(i));
+      t.querySelector('.tk').innerHTML=uncatSel.has(i)?'&#10003;':'';
+      updateBar();
+    });
+    var timer=0;
+    document.getElementById('uncatSearch').addEventListener('input',function(e){
+      clearTimeout(timer);var v=e.target.value;
+      timer=setTimeout(function(){uncatQuery=v;uncatLimit=UNCAT_STEP;uncatSel.clear();renderUncat()},180);   /* a new search starts a new selection */
+    });
+    document.getElementById('uncatAll').addEventListener('click',function(){
+      uncatFiltered().forEach(function(i){uncatSel.add(i)});renderUncat();
+    });
+    document.getElementById('uncatClear').addEventListener('click',function(){uncatSel.clear();renderUncat()});
+    document.getElementById('uncatShowAll').addEventListener('click',function(){uncatLimit=1e9;renderUncat()});
+    document.getElementById('uncatBulk').addEventListener('change',function(e){
+      var v=e.target.value;if(!v||!uncatSel.size)return;
+      var label;
       if(v==='__new__'){
         var name=(window.prompt('New category name:')||'').trim();
-        if(!name){sel.value='';return}
+        if(!name){e.target.value='';return}
         var key=categorySlug(name);
-        if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name])){sel.value='';return}
+        if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name])){e.target.value='';return}
         v=key;
       }
-      saveImageCategory(i,v);                              /* same save the rest of the page uses; it also refreshes this list */
+      label=(CATEGORY_DEFS[v]&&CATEGORY_DEFS[v].label)||v;
+      var picked=Array.from(uncatSel),n=picked.length;
+      if(n>=100&&!window.confirm('Move '+fmt(n)+' images to '+label+'?')){e.target.value='';return}      /* big moves ask first */
+      uncatSel.clear();
+      saveCategoryBatch(picked,v);
       renderUncat();
+      if(typeof toast==='function')toast('Moved '+fmt(n)+' image'+(n===1?'':'s')+' to '+label+'.','s',5000);
     });
     if(typeof window.renderLibraryCategorySummary==='function'){
       var orig=window.renderLibraryCategorySummary;
