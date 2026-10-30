@@ -610,7 +610,7 @@ textarea::placeholder{color:var(--mu)}
 .cat-lb-box{position:relative;max-width:min(92vw,900px);max-height:88vh;background:var(--sur);
   border-radius:var(--rs);padding:12px;box-shadow:var(--shl);display:flex;flex-direction:column;gap:9px}
 .cat-lb-box img{max-width:100%;max-height:66vh;object-fit:contain;border-radius:var(--rx);background:var(--sur2)}
-.cat-lb-cap{font-size:1.3rem;font-weight:600;line-height:1.35;color:var(--tx);word-break:break-word;padding:2px 4px 4px}
+.cat-lb-cap{font-size:1.45rem;font-weight:600;line-height:1.35;color:var(--tx);word-break:break-word;padding:2px 4px 4px}
 .cat-lb-cap small{display:block;margin-top:2px;font-size:.85rem;font-weight:400;color:var(--tx2)}
 .cat-lb-x{position:absolute;top:-11px;right:-11px;width:30px;height:30px;border-radius:50%;
   border:1px solid var(--bd2);background:var(--sur);color:var(--tx);cursor:pointer;
@@ -633,6 +633,10 @@ textarea::placeholder{color:var(--mu)}
   color:var(--tx2);cursor:pointer;user-select:none}
 .cat-only input{width:14px;height:14px;accent-color:var(--or);cursor:pointer}
 .cat-tile.picked{border-color:var(--or);background:var(--orl);box-shadow:0 0 0 1px var(--or) inset}
+.cat-selrow{display:flex;align-items:center;gap:6px}
+.cat-selrow .cat-tile-sel{flex:1 1 auto;min-width:0;width:auto}
+.cat-addc{flex:none;width:32px;height:32px;padding:0;border-radius:50%;border:1.5px dashed var(--or);background:transparent;color:var(--tx);font:inherit;font-size:1.25rem;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center}
+.cat-addc:hover,.cat-addc.open{background:var(--or);color:#fff;border-style:solid}
 .cat-pick{display:flex;align-items:center;gap:6px;font-size:.64rem;font-weight:800;
   color:var(--tx2);cursor:pointer;user-select:none;margin-bottom:2px;min-width:0}
 .cat-pick span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -813,8 +817,8 @@ body.show-cloud-sync #cloudSyncPanel{display:block}
 .adm-d{margin-top:8px;color:var(--tx2)}
 .adm-d>summary{cursor:pointer;font-size:.7rem;color:var(--mu)}
 .adm-act{display:flex;gap:8px;align-items:center;margin-top:11px}
-.adm-btn{background:var(--or);color:#fff;border:0;border-radius:8px;padding:7px 13px;font-weight:800;font-size:.76rem;cursor:pointer}
-.adm-btn.arm{background:var(--re)}
+.adm-btn{background:linear-gradient(135deg,#D2490A,#B23C00);color:#fff;border:0;border-radius:8px;padding:7px 13px;font-weight:800;font-size:.76rem;cursor:pointer}
+.adm-btn.arm{background:#B3261E}
 .adm-btn:disabled{opacity:.55;cursor:default}
 .adm-link{background:none;border:0;color:var(--mu);cursor:pointer;font-size:.68rem;text-decoration:underline;padding:4px 0}
 .adm-msg{margin-top:9px;font-size:.72rem;line-height:1.45;min-height:1em;color:var(--tx2)}
@@ -822,6 +826,7 @@ body.show-cloud-sync #cloudSyncPanel{display:block}
 .adm-hist{margin-top:8px;border-top:1px solid var(--bd);padding-top:7px}
 .adm-hist-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0;font-size:.7rem;color:var(--tx2)}
 .adm-hist-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-ver{margin-top:10px;font-size:.62rem;color:var(--mu)}
 .adm-chk{display:flex;align-items:center;gap:6px;margin-top:10px;color:var(--mu);font-size:.66rem;cursor:pointer}
 </style>
 <style id="altMoreStyle">
@@ -852,6 +857,7 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
 .alt-wrap{position:relative}
 .dup-badge{position:absolute;top:-6px;left:-4px;z-index:2;background:var(--ye);color:#1a1200;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:99px;box-shadow:0 1px 4px rgba(0,0,0,.4);pointer-events:none}
 .dup-badge.best{background:var(--gn);color:#06210f}
+[data-theme="light"] .dup-badge,[data-theme="light"] .dup-badge.best{color:#fff}
 .dup-note{margin:5px 0 2px;font-size:.7rem;color:var(--ye);font-weight:600}
 .noimg{margin:0 0 14px;padding:12px 16px;border:1px solid var(--bd2);border-radius:10px;background:var(--sur)}
 .noimg h3{margin:0 0 8px;font-size:.95rem;font-weight:800;color:var(--tx)}
@@ -893,8 +899,8 @@ body:not(.admin-tools) #uncatSimple{display:none!important}
 .uncat-tile .addc.open{background:var(--or)}
 @media (hover:none){.uncat-tile .addc{opacity:1}}
 .uncat-tile{cursor:pointer}
-.uncat-tile:focus-visible{outline:none}
-.uncat-tile:focus-visible .pic{outline:3px solid var(--or);outline-offset:2px}
+.uncat-tile .usel{all:unset;display:block;width:100%;cursor:pointer}
+.uncat-tile .usel:focus-visible{outline:3px solid var(--or);outline-offset:-3px}
 .uncat-mv{color:var(--mu);font-size:.8rem}
 .uncat-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1}
 .uncat-chip{border:1px solid var(--bd2);background:var(--sur2);color:var(--tx);border-radius:999px;font:inherit;font-size:.78rem;font-weight:600;padding:6px 14px;cursor:pointer}
@@ -945,6 +951,11 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 [data-theme="light"]{--bg:#F7F0E6;--sur:#FFFFFF;--sur2:#F3EADD;--bd:#E6DACB;--bd2:#D8C9B5;--tx:#2D1216;--tx2:#5E4E4A;--mu:#6B5B57;--orl:#FFE7D8;--mar:#431316;
   --sh:0 1px 2px rgba(45,18,22,.06);--shl:0 10px 30px rgba(45,18,22,.14);
   --gn:#1F7A44;--gnb:#E7F4EC;--gnbd:#BFE0CC;--ye:#8A5A00;--yeb:#FFF1CC;--yebd:#F1D58A;--re:#B3261E;--reb:#FDECEA;--rebd:#F2C3BF}
+/* orange TEXT on pale backgrounds is too faint in the light theme: use a deeper orange for the words only */
+[data-theme="light"] .name-label,[data-theme="light"] .cat-chip-auto,[data-theme="light"] .cat-chip-auto b,
+[data-theme="light"] .rnav.on,[data-theme="light"] .rnav.on .rn-badge,[data-theme="light"] .rp-head span:last-child,
+[data-theme="light"] .src-pill.on,[data-theme="light"] .category-summary-note b,[data-theme="light"] .lock-chip b{color:#A83600}
+.rcard.c5{opacity:.78}      /* no-match cards stay dimmed, but their text is easier to read */
 .btn{border-radius:999px}
 .card{border-top-width:1px;border-radius:18px}
 .rcard{border-radius:16px}
@@ -1110,7 +1121,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <div class="covers-toolbar" id="coverToolbar" style="display:none">
       <div class="covers-summary" id="coverSummaryText">📁 0 cover images</div>
       <div class="covers-actions">
-        <input class="fi-" style="padding:4px 8px;font-size:.72rem;min-width:170px;margin:0" id="coverSearchInput" placeholder="🔍 Search covers or categories…" oninput="setCoverSearch(this.value)"/ aria-label="Search the cover library">
+        <input class="fi-" style="padding:4px 8px;font-size:.72rem;min-width:170px;margin:0" id="coverSearchInput" placeholder="🔍 Search covers or categories…" oninput="setCoverSearch(this.value)" aria-label="Search the cover library">
         <button class="btn bs bsm" onclick="loadDriveLibrary(true)">☁ Refresh covers from Drive</button>
         <button class="btn bd- bsm" onclick="clearAllCovers()">🗑️ Clear library</button>
       </div>
@@ -1131,7 +1142,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
       <div class="cvsearch-actions">
         <button class="btn bp bsm" onclick="runCoverSearch()">🔍 Search covers</button>
         <button class="btn bs bsm" onclick="clearCoverSearch()">🗑️ Clear</button>
-        <select class="scope-select" id="coverScopeMode" onchange="setCoverScope(this.value)" title="Which covers to search">
+        <select class="scope-select" id="coverScopeMode" onchange="setCoverScope(this.value)" title="Which covers to search" aria-label="Which covers to search">
           <option value="all">🌐 All covers</option>
           <option value="auto">🤖 Auto category of each item</option>
           <option value="selected">🎯 Selected categories only</option>
@@ -1221,7 +1232,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <div class="smart-grid">
       <div class="smart-panel">
         <div class="smart-label">Menu file import</div>
-        <input id="menuFileInput" type="file" accept=".csv,.tsv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onchange="importMenuFile(event)"/>
+        <input id="menuFileInput" aria-label="Import a menu file" type="file" accept=".csv,.tsv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onchange="importMenuFile(event)"/>
         <button class="btn bs" onclick="document.getElementById('menuFileInput').click()">📥 Import CSV / Excel</button>
         <div class="smart-help">Reads the first useful column and adds it to the pasted items.</div>
       </div>
@@ -1250,8 +1261,8 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
           <div class="pc-body">
           <div class="backup-label">Add a custom category (it joins the classifier)</div>
           <div class="custom-category-edit-grid">
-            <input id="customCategoryName" placeholder="Category name (e.g. Crepe)"/ aria-label="New custom category name">
-            <input id="customCategoryWords" placeholder="Keywords: crepe, كريب"/ aria-label="Words that belong to this category">
+            <input id="customCategoryName" placeholder="Category name (e.g. Crepe)" aria-label="New custom category name">
+            <input id="customCategoryWords" placeholder="Keywords: crepe, كريب" aria-label="Words that belong to this category">
             <button class="btn bg- bsm" onclick="addCustomCategory()">＋ Add category</button>
           </div>
           <div id="customCategoriesList" class="custom-categories-list"></div>
@@ -1294,7 +1305,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
       <div class="smart-panel">
         <div class="memory-backup">
           <div class="backup-label">Everything it has learned</div>
-          <input id="memoryBackupInput" type="file" accept=".csv,text/csv" onchange="importMemoryBackup(event)"/>
+          <input id="memoryBackupInput" aria-label="Restore a memory backup file" type="file" accept=".csv,text/csv" onchange="importMemoryBackup(event)"/>
           <div class="brow smart-actions">
             <button class="btn bp bsm" onclick="exportMemoryBackup()">⬇ Backup memory</button>
             <button class="btn bs bsm" onclick="document.getElementById('memoryBackupInput').click()">⬆ Restore backup</button>
@@ -1319,7 +1330,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
   "projectId": "your-project",
   "appId": "1:…:web:…"
 }' aria-label="Firebase configuration JSON"></textarea></div>
-              <div class="cloud-field"><label>Workspace name — must be identical for every teammate</label><input id="cloudFbWs" value="default" dir="ltr"/ aria-label="Workspace name"></div>
+              <div class="cloud-field"><label>Workspace name — must be identical for every teammate</label><input id="cloudFbWs" value="default" dir="ltr" aria-label="Workspace name"></div>
             </div>
             <div id="cloudGithubFields" hidden>
               <div class="cloud-field"><label>Repository (owner/name) — the shared file lives in this repo</label><input id="cloudGhRepo" dir="ltr" placeholder="androssyoussef/ToolsTest"/></div>
@@ -1390,7 +1401,7 @@ Create a bin on a JSON-storage service or point it at your own API / Cloudflare 
   <div id="resWrap" style="display:none">
     <div class="rtb">
       <h2>Results <span class="rcnt" id="rcnt"></span></h2>
-      <input class="fi-" id="ftxt" placeholder="🔍 Search item or image…" oninput="doFilter()"/ aria-label="Filter results by text">
+      <input class="fi-" id="ftxt" placeholder="🔍 Search item or image…" oninput="doFilter()" aria-label="Filter results by text">
       <select class="fsel" id="fsel" onchange="doFilter()" aria-label="Filter by selection state">
         <option value="all">All</option>
         <option value="c">✅ Selected</option>
@@ -1896,6 +1907,62 @@ const SYN=[
   ['grilled','mashwy','mashwya','mashwyat','mashwi','mashwiyat','meshwy'],
   ['rice','roz','rozz','ruz'],
 ];
+/* ---- Egyptian and colloquial menu words, in Arabic, English and franco spellings -------------------------
+   Each group is merged into an existing group when it shares a word with it, otherwise it becomes a new group.
+   A word that already belongs to some group is never moved, so nothing that works today can change. */
+const EXTRA_SYN=[
+  ['crispy','كريسبي','كرسبي','كريسبى','كرسبى','crispi','krispy','krispi','crispie'],
+  ['pane','بانيه','بانية','بانى','panee','paneh','panne','escalope','اسكالوب','سكالوب'],
+  ['bechamel','بشاميل','بيشاميل','beshamel','bashamel','bechamel'],
+  ['pasta','macaroni','makarona','makarouna','maccheroni','مكرونه','مكرونة'],
+  ['grape leaves','ورق عنب','warak enab','warak 3enab','wara2 3enab','wara2 enab','dolma','دولما','vine leaves'],
+  ['mint','نعناع','نعنع','بنعناع','بنعنع','naanaa'],
+  ['beef','بيف','bief'],
+  ['trotters','كوارع','kawareh','kawar3','kwar3','cow feet','trotter'],
+  ['liver','كبده','كبدة','kebda','kibda'],
+  ['sausage','سجق','سوسيس','sogo2','sogo3','sujuk','sosis'],
+  ['orzo','لسان عصفور','لسان العصفور','lesan asfour','lisan asfour'],
+  ['crepe','كريب','كريبه','كريبة','crepes','krep'],
+  ['wedges','ودجز','ويدجز','ودجيز','wedgez'],
+  ['nuggets','ناجتس','ناجتز','ناغتس','nugget'],
+  ['strips','ستربس','استربس','سترابس','strip','fingers','فنجرز'],
+  ['wings','وينجز','ونجز','وينغز','اجنحة','أجنحة','جوانح'],
+  ['popcorn','بوب كورن','بوبكورن','pop corn'],
+  ['coleslaw','كولسلو','كول سلو','cole slaw'],
+  ['sauce','صوص','صلصه','صلصة'],
+  ['garlic','ثوم','توم','toum','تومية','toumiya'],
+  ['bbq','باربكيو','بربكيو','بي بي كيو','باربيكيو','barbecue'],
+  ['cheddar','شيدر','تشيدر'],
+  ['double','دبل','دوبل','دابل'],
+  ['triple','تريبل'],
+  ['jumbo','جامبو','جمبو'],
+  ['spicy','سبايسي','سبايسى','سبايس','حار','حارة','حاره'],
+  ['extra','اكسترا','إكسترا','زيادة'],
+  ['pepperoni','بيبروني','ببروني','بيبيروني'],
+  ['margherita','مارجريتا','مارغريتا'],
+  ['cheesecake','تشيز كيك','تشيزكيك','cheese cake'],
+  ['brownies','براونيز','براوني','brownie'],
+  ['waffle','وافل','وافلز','waffles'],
+  ['milkshake','ميلك شيك','ميلكشيك','milk shake'],
+  ['smoothie','سموذي','سموزي','سموثي'],
+  ['americano','امريكانو','أمريكانو'],
+  ['espresso','اسبريسو','إسبريسو'],
+  ['mocha','موكا','موكة'],
+  ['frappe','فرابيه','فرابي','frappuccino','فرابتشينو'],
+  ['tamarind','تمر هندي','تمر هندى','tamr hindi','tamarhindi'],
+  ['sugarcane','قصب','عصير قصب','asab','3asab'],
+  ['guava','جوافه','جوافة','guafa','gawafa'],
+  ['hibiscus','كركديه','كركدية','karkade','karkadeh']
+];
+(function(){
+  const idx=new Map();SYN.forEach((cl,i)=>cl.forEach(w=>idx.set(normWord(w),i)));
+  EXTRA_SYN.forEach(cl=>{
+    let at=-1;
+    for(const w of cl){const k=idx.get(normWord(w));if(k!==undefined){at=k;break}}
+    if(at<0){SYN.push([]);at=SYN.length-1}
+    cl.forEach(w=>{const k=normWord(w);if(!idx.has(k)){SYN[at].push(w);idx.set(k,at)}});
+  });
+})();
 const SYNMAP=(()=>{const m=new Map();SYN.forEach((cl,i)=>cl.forEach(w=>m.set(normWord(w),i)));return m;})();
 
 /* ═══════════════════════════════════════
@@ -1909,11 +1976,21 @@ const ALIAS_SHORT=new Map([['chk','chicken'],['chkn','chicken'],['brg','burger']
 let CUSTOM_DICT={};
 function loadDictionary(){try{CUSTOM_DICT=lsObj('tif_dictionary_v1')}catch(e){CUSTOM_DICT={}}}
 function dictionaryMap(){const m=new Map(BUILTIN_ALIAS);ALIAS_SHORT.forEach((v,k)=>m.set(k,norm(v)));return m}
+/* look a word up; if it is an Arabic word with a prefix (ب / بال / لل) and the rest is a known word, use that */
+function aliasLookup(map,w){
+  let m=map.get(w);if(m)return m;
+  if(w.length>3&&/^[\u0621-\u064A]+$/.test(w)){
+    if(w.length>5&&w.startsWith('بال')){m=map.get(w.slice(3));if(m)return m}
+    if(w.startsWith('ب')){m=map.get(w.slice(1));if(m)return m}
+    if(w.length>4&&w.startsWith('لل')){m=map.get(w.slice(2));if(m)return m}
+  }
+  return undefined;
+}
 function smartNorm(text){
   let base=norm(text),map=dictionaryMap();
   for(const[k,v]of map)if(k.includes(' '))base=base.replace(new RegExp('(^| )'+k.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+'(?= |$)','g'),' $1'+v+' ');
   return base.split(' ').filter(Boolean).flatMap(w=>{
-    const m=map.get(w);return (m||w).split(' ');
+    const m=aliasLookup(map,w);return (m||w).split(' ');
   }).filter(w=>w.length>1&&!STOPWORDS.has(w)).join(' ');
 }
 function smartTokens(text){return smartNorm(text).split(' ').filter(Boolean)}
@@ -2794,11 +2871,11 @@ function catFootHtml(list,shownCount){
        </div>`
     : `<div class="cat-foot">Showing all ${list.length.toLocaleString()}${CAT_FILTER?' matching':''} image${list.length===1?'':'s'}.</div>`;
 }
-let CAT_SCROLL_SIG='';
+let CAT_SCROLL_SIG='',CAT_KEEP_TOP=0;
 function renderCategoryBrowser(keepFocus){
   const box=document.getElementById('categoryBrowser');if(!box)return;
   /* remember where the grid was scrolled, so a redraw (a tick, a new category for one picture...) does not throw you back to the top */
-  const prevGrid=box.querySelector('.cat-grid'),prevTop=prevGrid?prevGrid.scrollTop:0;
+  const prevGrid=box.querySelector('.cat-grid'),prevTop=prevGrid?prevGrid.scrollTop:CAT_KEEP_TOP;
   const scrollSig=String(OPEN_CATEGORY)+'|'+CAT_FILTER+'|'+CAT_PICKED_ONLY;
   const keepScroll=scrollSig===CAT_SCROLL_SIG;CAT_SCROLL_SIG=scrollSig;
   invalidateImageResultMap();
@@ -2846,6 +2923,7 @@ function renderCategoryBrowser(keepFocus){
   const more=catFootHtml(list,shown.length);
   box.innerHTML=head+`<div class="cat-grid">${tiles}</div><div id="catFootWrap">${more}</div>`;
   if(keepScroll){const g2=box.querySelector('.cat-grid');if(g2)g2.scrollTop=prevTop}
+  CAT_KEEP_TOP=0;
   if(keepFocus)focusCatSearch();
   hookFulls(box);
   requestAnimationFrame(()=>{hookFulls(box);catAutoLoad()});
@@ -2872,7 +2950,7 @@ function catRefreshTile(i){
     if(!clr&&bar){clr=document.createElement('button');clr.type='button';clr.className='btn bs bsm cat-clear-all';clr.title='Forget every image picked straight from the library, in every category';clr.setAttribute('onclick','catClearAllPicks()');bar.appendChild(clr)}
     if(clr)clr.textContent='🗑 Clear all library picks ('+LIBRARY_PICKS.size.toLocaleString()+')';
   }else if(clr)clr.remove();
-  catRefreshDupFlags();
+  catRefreshDupFlags([i,...LIBRARY_PICKS.keys(),...RESULTS.map(r=>r.confirmed).filter(x=>x>=0)]);
   return true;
 }
 function catTileHtml({img,i},resDups,libDups){
@@ -2925,8 +3003,9 @@ function catTileHtml({img,i},resDups,libDups){
       ${nameHtml}
       <div class="cat-saves${dup?' dup':''}" id="catsv-${i}">${picked?`Saves as: <b>${esc(savesAs)}</b>`:'&nbsp;'}</div>
       ${dup?`<div class="cat-dupw">⚠️ Duplicate file name</div>`:''}
-      <select class="cat-tile-sel" aria-label="Category for ${esc(img.name)}"
+      <div class="cat-selrow"><select class="cat-tile-sel" aria-label="Category for ${esc(img.name)}"
         onchange="saveImageCategory(${i},this.value)">${categoryOptions(sel)}</select>
+        <button type="button" class="cat-addc" aria-label="Choose a category, or create a new one, for ${esc(img.name)}" title="Choose a category, or create a new one">+</button></div>
     </figure>`;
   }
 }
@@ -3001,9 +3080,12 @@ function catResetName(i){
   updPrev(link.ri);chkDups();catNameInput(i,link.r.exportName);
 }
 /* repaint duplicate warnings without rebuilding the grid */
-function catRefreshDupFlags(){
+function catRefreshDupFlags(only){
   const resDups=getDups(),libDups=getLibDups();
-  document.querySelectorAll('#categoryBrowser .cat-tile').forEach(t=>{
+  let tiles;
+  if(only){tiles=[];for(const k of new Set(only)){const sv=document.getElementById('catsv-'+k),t=sv&&sv.closest('.cat-tile');if(t)tiles.push(t)}}
+  else tiles=document.querySelectorAll('#categoryBrowser .cat-tile');
+  tiles.forEach(t=>{
     const sv=t.querySelector('.cat-saves');if(!sv)return;
     const i=Number(sv.id.slice(6));
     const link=resultForImage(i);
@@ -3076,6 +3158,7 @@ function closeCatLightbox(){
 
 function renderLibraryCategorySummary(){
   const box=document.getElementById('libraryCategorySummary');if(!box)return;
+  {const g0=document.querySelector('#categoryBrowser .cat-grid');if(g0)CAT_KEEP_TOP=g0.scrollTop}
   const {counts,uncategorized}=categoryCounts();
   const card=(key,label,count)=>`<button type="button" class="category-stat${OPEN_CATEGORY===key?' open':''}" data-cat="${esc(key)}" aria-expanded="${OPEN_CATEGORY===key?'true':'false'}" onclick="toggleCategoryBrowser('${esc(key)}')" title="Click to see the ${count.toLocaleString()} image${count===1?'':'s'} in ${esc(label)}"><strong>${count.toLocaleString()}</strong><span dir="auto">${esc(label)}</span></button>`;
   const used=categoryEntriesGrouped().filter(([k])=>counts[k]>0);
@@ -3807,7 +3890,9 @@ async function loadDriveLibrary(force=false){
       let payload=null,fromCache=false;
       if(!force){
         const saved=await idbGet(DRIVE_CATALOG_KEY);
-        if(saved&&saved.payload&&Date.now()-Number(saved.savedAt||0)<DRIVE_CATALOG_TTL){
+        const savedImgs=saved&&saved.payload&&saved.payload.images;
+        const hasSizes=Array.isArray(savedImgs)&&(!savedImgs.length||'size' in savedImgs[0]);
+        if(saved&&saved.payload&&hasSizes&&Date.now()-Number(saved.savedAt||0)<DRIVE_CATALOG_TTL){
           /* Ask the script (a tiny call) whether the library changed since this browser saved it:
              a new folder or a fresh index means everyone re-downloads, otherwise the cache is used. */
           let stale=false;
@@ -3822,7 +3907,7 @@ async function loadDriveLibrary(force=false){
         payload=await driveJsonp({action:'library',refresh:force?'1':'0'});
         if(payload&&payload.ok!==false&&Array.isArray(payload.images)){
           // Keep just the compact catalogue, not image blobs, in this browser.
-          await idbPut(DRIVE_CATALOG_KEY,{savedAt:Date.now(),payload:{ok:true,folderName:payload.folderName||'Shared image library',version:String(payload.version||''),indexedAt:String(payload.indexedAt||''),images:payload.images.map(x=>({id:x.id,name:x.name,mimeType:x.mimeType,relPath:x.relPath||x.name}))}});
+          await idbPut(DRIVE_CATALOG_KEY,{savedAt:Date.now(),payload:{ok:true,folderName:payload.folderName||'Shared image library',version:String(payload.version||''),indexedAt:String(payload.indexedAt||''),images:payload.images.map(x=>({id:x.id,name:x.name,mimeType:x.mimeType,relPath:x.relPath||x.name,size:Number(x.size||0),modifiedTime:x.modifiedTime||''}))}});
         }
       }
       if(!payload||payload.ok===false)throw new Error(payload?.error||'Apps Script returned an invalid response');
@@ -3911,7 +3996,9 @@ function importMemoryBackup(e){
   }).catch(err=>{document.getElementById('smartStatus').textContent='❌ Memory CSV import failed · '+err.message;toast('Memory CSV import failed: '+err.message,'e',7000)}).finally(()=>{e.target.value=''})
 }
 function imageCategoryKeys(file){const name=String(file?.name||'').toLowerCase(),size=file?.size||0,rel=String(file?.webkitRelativePath||file?.name||'').toLowerCase(),fp=file?.__fingerprint||'';return [...(fp?['sha256:'+fp]:[]),...(rel===name?[name+'|'+size]:[rel+'|'+size,name+'|'+size])]}
-function imageManualCategory(img){if(!img||!img.file)return'';for(const k of imageCategoryKeys(img.file))if(MANUAL_IMAGE_CATS[k])return MANUAL_IMAGE_CATS[k];return''}
+/* older versions saved choices made after a reload under a size of 0: still honour those (read only, never written) */
+function imageLegacyKeys(file){return [String(file?.name||'').toLowerCase()+'|0']}
+function imageManualCategory(img){if(!img||!img.file)return'';for(const k of imageCategoryKeys(img.file))if(MANUAL_IMAGE_CATS[k])return MANUAL_IMAGE_CATS[k];if(img.file.size)for(const k of imageLegacyKeys(img.file))if(MANUAL_IMAGE_CATS[k])return MANUAL_IMAGE_CATS[k];return''}
 
 /* ── resolution order, everywhere in the app: MANUAL → AUTO → none ──
    A human assignment is never overwritten, and an auto guess below the
@@ -8945,6 +9032,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function h(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  var BUILD_ID='2026-10-30 · final';
   var TOOLS_KEY='tif_admin_tools';
   if(lsGet(SYNC_KEY)==='1')document.body.classList.add('show-cloud-sync');
   if(lsGet(TOOLS_KEY)==='1')document.body.classList.add('admin-tools');
@@ -9025,6 +9113,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       '<label class="adm-chk"><input type="checkbox" id="admTools"> Show advanced tools (categories, workspaces) in this browser</label>'+
       '<label class="adm-chk"><input type="checkbox" id="admSync"> Show team sync settings</label>'+
       '<button type="button" class="adm-link" id="admSyncNow">Sync categories with the team now</button>'+
+      '<div class="adm-ver">Version '+BUILD_ID+'</div>'+
       '<div class="adm-hist"><div class="adm-l" style="margin-top:0">Offline mode (this computer only)</div>'+
       '<button type="button" class="adm-link" id="admLocalImgs">Use a local images folder</button><br>'+
       '<button type="button" class="adm-link" id="admLocalCovs">Use a local covers folder</button></div></div>';
@@ -9215,7 +9304,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     function open(sel){
       close(false);cur=sel;groups=collect(sel);
       overlay=document.createElement('div');overlay.className='cp-back';overlay.id='catPicker';
-      overlay.innerHTML='<div class="cp-box" role="dialog" aria-modal="true" aria-label="Choose a category"><div class="cp-h"><input type="search" class="cp-s" placeholder="Type to find a category…" autocomplete="off" aria-label="Find a category"><button type="button" class="cp-x" aria-label="Close">✕</button></div><div class="cp-l" role="listbox"></div></div>';
+      overlay.innerHTML='<div class="cp-box" role="dialog" aria-modal="true" aria-label="Choose a category"><div class="cp-h"><input type="search" class="cp-s" placeholder="Type to find a category…" autocomplete="off" aria-label="Find a category"><button type="button" class="cp-x" aria-label="Close">✕</button></div><div class="cp-l" role="listbox" aria-label="Categories"></div></div>';
       document.body.appendChild(overlay);
       listEl=overlay.querySelector('.cp-l');inputEl=overlay.querySelector('.cp-s');
       inputEl.addEventListener('input',render);
@@ -9268,6 +9357,8 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function chipsHtml(n){return topCats(n).map(function(k){return '<button type="button" class="uncat-chip" data-k="'+esc2(k)+'">'+esc2(labelOf(k))+'</button>'}).join('')}
   function moreSelect(id){return '<select class="uncat-chip" '+(id?'id="'+id+'" ':'')+'aria-label="More categories"><option value="">More ▾</option>'+categoryOptions('',false)+'</select>'}
   function ensureCategory(name){
+    name=String(name||'').replace(/[<>"`]/g,'').replace(/\s+/g,' ').trim().slice(0,40);
+    if(!name)return '';
     var key=categorySlug(name);
     if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name]))return '';
     return key;
@@ -9325,11 +9416,11 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function closePop(){
     var pop=document.getElementById('uncatPop');if(pop)pop.hidden=true;
     uncatPopFor=-1;
-    document.querySelectorAll('#uncatGrid .addc.open').forEach(function(b){b.classList.remove('open')});
+    document.querySelectorAll('#uncatGrid .addc.open,#categoryBrowser .cat-addc.open').forEach(function(b){b.classList.remove('open')});
   }
-  function openPop(i,tile,btn){
-    var pop=ensurePop(),targets=popTargets(i),many=targets.length>1;
-    document.querySelectorAll('#uncatGrid .addc.open').forEach(function(b){b.classList.remove('open')});
+  function openPop(i,tile,btn,single){
+    var pop=ensurePop(),targets=single?[i]:popTargets(i),many=targets.length>1;
+    document.querySelectorAll('#uncatGrid .addc.open,#categoryBrowser .cat-addc.open').forEach(function(b){b.classList.remove('open')});
     uncatPopFor=i;uncatPopTargets=targets.slice();btn.classList.add('open');
     pop.innerHTML='<div class="pt">'+(many?('Category for <b>'+fmt(targets.length)+' selected images</b>'):('Category for <b>'+esc2(IMAGES[i].name)+'</b>'))+'</div>'+
       '<div class="pc">'+chipsHtml(5)+moreSelect()+'</div>'+
@@ -9356,7 +9447,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     var shown=list.slice(0,uncatLimit);
     grid.innerHTML=shown.map(function(i){
       var im=IMAGES[i],on=uncatSel.has(i);
-      return '<div class="uncat-tile'+(on?' on':'')+'" data-i="'+i+'" role="button" tabindex="0" aria-pressed="'+on+'" title="'+esc2(im.relPath||im.name)+'"><span class="pic"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'"><span class="tk">'+(on?'&#10003;':'')+'</span><button type="button" class="addc" aria-label="Choose a category for '+esc2(im.name)+'">+</button></span><span class="nm"><bdi>'+esc2(im.name)+'</bdi></span></div>';
+      return '<div class="uncat-tile'+(on?' on':'')+'" data-i="'+i+'" title="'+esc2(im.relPath||im.name)+'"><span class="pic"><button type="button" class="usel" aria-pressed="'+on+'" aria-label="Select '+esc2(im.name)+'"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'"><span class="tk">'+(on?'&#10003;':'')+'</span></button><button type="button" class="addc" aria-label="Choose a category for '+esc2(im.name)+'">+</button></span><span class="nm"><bdi>'+esc2(im.name)+'</bdi></span></div>';
     }).join('');
     document.getElementById('uncatAll').textContent=list.length?('Select all '+fmt(list.length)+(uncatQuery.trim()?' matching':'')):'';
     document.getElementById('uncatAll').disabled=!list.length;
@@ -9390,7 +9481,8 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function toggleTile(t){
     var i=parseInt(t.getAttribute('data-i'),10);
     if(uncatSel.has(i))uncatSel.delete(i);else uncatSel.add(i);
-    t.classList.toggle('on',uncatSel.has(i));t.setAttribute('aria-pressed',uncatSel.has(i));
+    t.classList.toggle('on',uncatSel.has(i));
+    const u=t.querySelector('.usel');if(u)u.setAttribute('aria-pressed',uncatSel.has(i));
     t.querySelector('.tk').innerHTML=uncatSel.has(i)?'&#10003;':'';
     updateBar();
   }
@@ -9408,16 +9500,21 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       }
       toggleTile(t);
     });
-    grid.addEventListener('keydown',function(e){
-      var t=e.target.closest('.uncat-tile');
-      if(t&&e.target===t&&(e.key===' '||e.key==='Enter')){e.preventDefault();toggleTile(t)}
-    });
     document.addEventListener('click',function(e){
       var pop=document.getElementById('uncatPop');
       if(document.getElementById('catPicker'))return;                       /* the category picker is open: keep the pop-up behind it */
-      if(pop&&!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.addc'))closePop();
+      if(pop&&!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.addc,.cat-addc'))closePop();
     });
     document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
+    /* "+ Category" on the pictures of the category browser (the list you get from Library categories) */
+    document.addEventListener('click',function(e){
+      var b=e.target.closest&&e.target.closest('.cat-addc');if(!b)return;
+      var tile=b.closest('.cat-tile'),sv=tile&&tile.querySelector('.cat-saves');if(!sv)return;
+      e.stopPropagation();
+      if(b.classList.contains('open')){closePop();return}
+      openPop(parseInt(sv.id.slice(6),10),tile,b,true);
+    },true);
+    document.addEventListener('scroll',function(e){if(uncatPopFor>=0&&e.target&&e.target.classList&&e.target.classList.contains('cat-grid'))closePop()},true);
     var timer=0;
     document.getElementById('uncatSearch').addEventListener('input',function(e){
       clearTimeout(timer);var v=e.target.value;
