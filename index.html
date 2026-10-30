@@ -5005,7 +5005,7 @@ async function doCoverZip() {
     setP("coverZFill", "coverZPct", "coverZLbl", "coverZMsg", Math.round((i / total) * 70), "Reading " + (i + 1) + "/" + total, fn);
     try {
       const output = await makeCoverOutputImage(item.file);
-      entries.push({ name: "Cover Images/" + fn, file: output });
+      entries.push({ name: fn, file: output });
       logCoverLine("✅ " + item.coverName + " → " + fn + " (750×300 high-quality JPG)", "lok");
       ok++;
     } catch (err) {
@@ -6198,7 +6198,7 @@ async function doZip(){
       const{img,fn,label}=jobs[i];
       try{
         const output=await makeOutputImage(await getImageBlob(img));
-        entries[i]={name:'Menu Images/'+fn,file:output};ok++;
+        entries[i]={name:fn,file:output};ok++;
         logLine('✅ '+label+' → '+fn+' (810×540 high-quality JPG)','lok');
       }catch(err){entries[i]=null;fail++;logLine('❌ '+label+' — '+String(err.message),'ler');}
       done++;
@@ -8151,7 +8151,7 @@ async function downloadConfirmedCovers(){
     const fn=san(r.item||item.exportName||item.coverName||'Cover')+'.jpg';
     try{
       const blob=await makeCoverOutputImage(item.file);
-      entries.push({name:'Cover Images/'+fn,file:blob});
+      entries.push({name:fn,file:blob});
       ok++;
     }catch(err){ fail++; console.warn('[covers] pack failed',r.item,err) }
     if((i+1)%5===0)await sleep(0);
