@@ -867,6 +867,32 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
 .uncat-tile select{width:100%;font-size:.74rem}
 body:not(.admin-tools) #uncatSimple{display:none!important}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="newLook">
+/* ===== NEW LOOK, step 1: type, light palette, rounder controls, bottom download bar. Dark colours are unchanged. ===== */
+html{font-size:15px}
+body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
+[data-theme="light"]{--bg:#F7F0E6;--sur:#FFFFFF;--sur2:#F3EADD;--bd:#E6DACB;--bd2:#D8C9B5;--tx:#2D1216;--tx2:#5E4E4A;--mu:#6B5B57;--orl:#FFE7D8;--mar:#431316;
+  --sh:0 1px 2px rgba(45,18,22,.06);--shl:0 10px 30px rgba(45,18,22,.14);
+  --gn:#1F7A44;--gnb:#E7F4EC;--gnbd:#BFE0CC;--ye:#8A5A00;--yeb:#FFF1CC;--yebd:#F1D58A;--re:#B3261E;--reb:#FDECEA;--rebd:#F2C3BF}
+.btn{border-radius:999px}
+.card{border-top-width:1px;border-radius:18px}
+.rcard{border-radius:16px}
+.thumb{border-radius:12px}
+#railZipBtn{display:none}
+/* bottom bar: always in view while there are results */
+.dock{position:fixed;left:268px;right:0;bottom:0;z-index:45;background:var(--sur);border-top:1px solid var(--bd);box-shadow:0 -8px 24px rgba(0,0,0,.16)}
+.dock[hidden]{display:none}
+.dock-in{display:flex;align-items:center;gap:18px;padding:12px 28px}
+.dock-n{font-size:.95rem;color:var(--tx)}
+.dock-n strong{font-weight:700}
+.dock-s{font-size:.78rem;color:var(--mu)}
+.dock-sp{flex:1}
+.has-dock{padding-bottom:84px}
+.has-dock .toasts{bottom:92px}
+@media(max-width:820px){.dock{left:0}.dock-in{padding:10px 16px}.dock-s{display:none}}
+</style>
 </head>
 <body>
 <h1 class="sr-only">Talabat Images Finder — menu image matching and cataloguing</h1>
@@ -9089,6 +9115,41 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       .observe(grid,{childList:true,subtree:true});
     watch(grid);
   }
+})();
+</script>
+<script id="newLookScript">
+(function(){
+  "use strict";
+  var bar=document.createElement('div');bar.className='dock';bar.id='dock';bar.hidden=true;
+  bar.innerHTML='<div class="dock-in"><span class="dock-n"><strong id="dockN">0</strong> <span id="dockT">selected</span></span><span class="dock-s">Menu images are saved as 810 × 540 JPG</span><span class="dock-sp"></span><button type="button" class="btn bp" id="dockBtn">Download ZIP</button></div>';
+  document.body.appendChild(bar);
+  var btn=document.getElementById('dockBtn');
+  btn.addEventListener('click',function(){if(typeof doZip==='function')doZip()});
+  function refresh(){
+    try{
+      var has=typeof RESULTS!=='undefined'&&RESULTS.length>0;
+      bar.hidden=!has;document.body.classList.toggle('has-dock',has);
+      if(!has)return;
+      var confirmed=0;
+      for(var i=0;i<RESULTS.length;i++){var r=RESULTS[i];if(r&&r.confirmed>=0&&!EXCLUDED_RESULTS.has(i))confirmed++}
+      var extras=0;
+      if(typeof LIBRARY_PICKS!=='undefined'&&typeof resultForImage==='function'){
+        LIBRARY_PICKS.forEach(function(_,k){var l=resultForImage(k);if(IMAGES[k]&&!(l&&l.r.confirmed===k))extras++})
+      }
+      var n=confirmed+extras;
+      document.getElementById('dockN').textContent=n;
+      document.getElementById('dockT').textContent=extras?'selected':('of '+RESULTS.length+' selected');
+      btn.textContent='Download ZIP'+(n?' ('+n+')':'');
+      btn.disabled=!n;
+    }catch(e){}
+  }
+  ['updateStats','renderResults'].forEach(function(name){
+    if(typeof window[name]==='function'){
+      var orig=window[name];
+      window[name]=function(){var out=orig.apply(this,arguments);try{refresh()}catch(e){}return out};
+    }
+  });
+  setInterval(refresh,1500);refresh();
 })();
 </script>
 </body>
