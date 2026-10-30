@@ -864,6 +864,11 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
 .noimg ul{margin:0;padding:0 0 0 20px;font-size:.84rem;line-height:1.7;color:var(--tx2)}
 .noimg li{break-inside:avoid}
 .noimg .more{margin-top:6px;font-size:.75rem;color:var(--mu)}
+.noimg .guess{margin-inline-start:8px;font-size:.74rem;color:var(--mu);user-select:none;-webkit-user-select:none}
+.noimg-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.noimg-head h3{margin:0}
+.rcard.weak .noimg-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:118px;padding:12px;border:2px dashed var(--bd2);border-radius:12px;color:var(--mu);font-size:.8rem;text-align:center}
+.rcard.weak .noimg-box .ni-i{font-size:1.6rem}
 .uncat-simple{margin-top:10px;border:1px solid var(--bd2);border-radius:10px;background:var(--sur);padding:8px 12px}
 .uncat-simple[hidden]{display:none}
 .uncat-simple>summary{cursor:pointer;font-weight:800;font-size:.85rem;color:var(--tx)}
@@ -968,10 +973,15 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 .dock-n strong{font-weight:700}
 .dock-s{font-size:.78rem;color:var(--mu)}
 .dock-sp{flex:1}
+.dock-ex{font-size:.74rem;color:var(--tx2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dock-ex b{color:var(--tx)}
+.dock-clear{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--tx);text-decoration:underline;cursor:pointer}
+.dock.has-extra .dock-s{display:none}
 .has-dock{padding-bottom:84px}
 .has-dock .toasts{bottom:92px}
 @media(max-width:820px){.dock{left:0}.dock-in{padding:10px 16px}.dock-s{display:none}}
 </style>
+<style id="oneZipStyle">#zipBtn{display:none}</style>
 </head>
 <body>
 <h1 class="sr-only">Talabat Images Finder — menu image matching and cataloguing</h1>
@@ -2698,7 +2708,9 @@ const LIBRARY_PICKS=new Map();
    (relPath|size and name|size), so picks survive re-loading the folder.
    key -> export name ('' = keep the original file name). */
 let LIBRARY_PICK_MEM={};
-try{LIBRARY_PICK_MEM=lsObj('tif_library_picks_v1')}catch(e){LIBRARY_PICK_MEM={}}
+/* Picks live only for this visit. They used to be remembered between visits, so an old pick (or two) slipped into the next ZIP
+   without the person knowing: search 1 item and the ZIP had 2 or 3 files. Anything saved by the old version is discarded here. */
+try{localStorage.removeItem('tif_library_picks_v1')}catch(e){}
 function saveLibraryPicks(){persist('tif_library_picks_v1',LIBRARY_PICK_MEM,'your library picks')}
 let PICK_SAVE_T=null;
 function saveLibraryPicksSoon(){clearTimeout(PICK_SAVE_T);PICK_SAVE_T=setTimeout(saveLibraryPicks,400)}
@@ -2928,6 +2940,26 @@ function renderCategoryBrowser(keepFocus){
   hookFulls(box);
   requestAnimationFrame(()=>{hookFulls(box);catAutoLoad()});
   CAT_HAS_MORE=list.length>shown.length;
+}
+/* pictures were given a category: fix the open list in place. Returns false when a full redraw is needed instead. */
+let CAT_FAST_IDX=null,CAT_STATS_T=0;
+function catApplyChanged(idxs){
+  const box=document.getElementById('categoryBrowser');
+  if(!box||!OPEN_CATEGORY||CAT_PICKED_ONLY)return false;          /* in "Selected only" the full redraw is kept */
+  const grid=box.querySelector('.cat-grid');if(!grid)return false;
+  const list=catBrowserList(),inList=new Set(list.map(e=>e.i));
+  for(const i of idxs){
+    const sv=document.getElementById('catsv-'+i),tile=sv&&sv.closest('.cat-tile');
+    if(tile){if(inList.has(i)){if(!catRefreshTile(i))return false}else tile.remove()}
+    else if(inList.has(i))return false;                          /* it now belongs here but was never drawn: redraw */
+  }
+  const shown=grid.querySelectorAll('.cat-tile').length;
+  if(!shown)return false;                                          /* the list became empty: the full redraw shows the message */
+  const total=categoryImageList(OPEN_CATEGORY).length,chip=box.querySelector('.cat-browser-title .cat-browser-count');
+  if(chip)chip.textContent=total.toLocaleString()+' image'+(total===1?'':'s');
+  const foot=document.getElementById('catFootWrap');if(foot)foot.innerHTML=catFootHtml(list,shown);
+  CAT_HAS_MORE=list.length>shown;
+  return true;
 }
 /* redraw a single picture and the two counters in the header, nothing else */
 function catRefreshTile(i){
@@ -3163,13 +3195,25 @@ function renderLibraryCategorySummary(){
   const card=(key,label,count)=>`<button type="button" class="category-stat${OPEN_CATEGORY===key?' open':''}" data-cat="${esc(key)}" aria-expanded="${OPEN_CATEGORY===key?'true':'false'}" onclick="toggleCategoryBrowser('${esc(key)}')" title="Click to see the ${count.toLocaleString()} image${count===1?'':'s'} in ${esc(label)}"><strong>${count.toLocaleString()}</strong><span dir="auto">${esc(label)}</span></button>`;
   const used=categoryEntriesGrouped().filter(([k])=>counts[k]>0);
   const open=CAT_SUMMARY_OPEN||!!OPEN_CATEGORY;
-  box.innerHTML='<details class="pro-collapse summary-collapse"'+(open?' open':'')+' ontoggle="CAT_SUMMARY_OPEN=this.open">'
+  const fastIdx=CAT_FAST_IDX;CAT_FAST_IDX=null;
+  const detailsHtml='<details class="pro-collapse summary-collapse"'+(open?' open':'')+' ontoggle="CAT_SUMMARY_OPEN=this.open">'
     +'<summary><span class="pc-t">📊 Library categories</span><span class="pc-n">'+used.length+' in use · '+uncategorized.toLocaleString()+' uncategorized</span></summary>'
     +'<div class="pc-body"><div class="category-summary-grid">'
     +used.map(([k,v])=>card(k,v.label,counts[k])).join('')
     +card('__uncat__','Uncategorized',uncategorized)
-    +'</div></div></details><div id="categoryBrowser" class="cat-browser"></div>'
+    +'</div></div></details>';
+  const noteHtml='<div id="categoryBrowser" class="cat-browser"></div>'
     +'<div class="category-summary-note">Open the list above and click any category to browse its images. Every image is <b>auto-classified</b> from its file name and folder the moment it loads; anything you set by hand overrides the classifier and is saved on this device.</div>';
+  const oldDetails=fastIdx&&OPEN_CATEGORY?box.querySelector(':scope > details.summary-collapse'):null,br0=document.getElementById('categoryBrowser');
+  if(oldDetails&&br0&&br0.querySelector('.cat-grid')){
+    oldDetails.outerHTML=detailsHtml;                 /* only the numbers at the top change; the open list is kept and fixed in place */
+    box.style.display='block';
+    if(!catApplyChanged(fastIdx))renderCategoryBrowser();
+    renderCategoryChoices();
+    clearTimeout(CAT_STATS_T);CAT_STATS_T=setTimeout(renderAutoStats,200);
+    return;
+  }
+  box.innerHTML=detailsHtml+noteHtml;
   box.style.display='block';renderCategoryBrowser();renderCategoryChoices();renderAutoStats();
 }
 function updateScopeEstimate(){
@@ -4256,7 +4300,7 @@ function categoryOptions(selected,includeAuto=true){
   }
   return h+(g?'</optgroup>':'');
 }
-function saveImageCategory(idx,key){const img=IMAGES[idx];if(!img)return;if(key==='auto')for(const k of imageCategoryKeys(img.file))delete MANUAL_IMAGE_CATS[k];else for(const k of imageCategoryKeys(img.file))MANUAL_IMAGE_CATS[k]=key;if(key!=='auto')learnCategoryFrom(learnTextFor(img),key);const info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();refreshModal();document.getElementById('smartStatus').textContent=(key==='auto'?'🤖 Back to auto for ':'💾 Saved image category for ')+img.name}
+function saveImageCategory(idx,key){const img=IMAGES[idx];if(!img)return;if(key==='auto')for(const k of imageCategoryKeys(img.file))delete MANUAL_IMAGE_CATS[k];else for(const k of imageCategoryKeys(img.file))MANUAL_IMAGE_CATS[k]=key;if(key!=='auto')learnCategoryFrom(learnTextFor(img),key);const info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;saveCategoryMemory();CAT_FAST_IDX=[idx];renderLibraryCategorySummary();renderResults();refreshModal();document.getElementById('smartStatus').textContent=(key==='auto'?'🤖 Back to auto for ':'💾 Saved image category for ')+img.name}
 /* one assignment, both sides. The operator never cared about the
    difference between "the item is a pizza" and "the photo is a pizza". */
 function cardCategoryValue(r){
@@ -5775,6 +5819,8 @@ function resultCardHtml(gi,dups){
     const previewFn=buildFn(r);
     const excluded=EXCLUDED_RESULTS.has(gi);
     const selected=r.confirmed>=0&&!excluded;
+    /* under 80% the picture is only a guess: say "No matching image" and keep the guess behind a button */
+    const weak=r.confirmed<0&&r.bestIdx>=0&&(Number(r.score)||0)<0.80&&!r.showGuess;
 
     /* Main thumbnail */
     const thumbHtml=thumbUrl
@@ -5787,6 +5833,9 @@ function resultCardHtml(gi,dups){
         </div>`
       :`<div class="nothumb">🖼️</div>`;
 
+    const none=r.bestIdx<0;           /* nothing at all was found */
+    const thumbOut=(weak||none)?`<div class="tarea noimg-ph"><div class="noimg-box"><span class="ni-i">🚫</span><b>No matching image</b></div></div>`:thumbHtml;
+
     /* Status text */
     const tieHtml=(r.tie&&r.confirmed<0)?`<div style="margin-top:4px;font-size:.66rem;font-weight:700;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:5px;padding:3px 6px" title="Top candidates scored within 0.03 of each other">⚠️ Tied with another image — please choose</div>`:'';
     const stHtml=selected
@@ -5794,6 +5843,8 @@ function resultCardHtml(gi,dups){
       :r.bestIdx>=0
         ?`<span style="color:var(--mu);font-size:.7rem;font-weight:700">⬜ Not selected</span>`
         :`<span style="color:var(--mu);font-size:.7rem">❌ No match</span>`;
+
+    const stOut=(weak||none)?`<span style="color:var(--re);font-size:.72rem;font-weight:800">❌ No matching image</span>`:stHtml;
 
     /* Method chip */
     const mc=r.method
@@ -5848,26 +5899,34 @@ function resultCardHtml(gi,dups){
           ${isDup?`<div class="dupw">⚠️ Duplicate filename — please rename</div>`:''}
         </div>`:'';
 
-    return`<div class="rcard ${tm.rc}${excluded?' excluded':''}" id="card-${gi}">
-      ${thumbHtml}
+    return`<div class="rcard ${(weak||none)?TM[5].rc+' weak':tm.rc}${excluded?' excluded':''}" id="card-${gi}">
+      ${thumbOut}
       <div class="cbody">
         <div class="crow">
-          <span class="mname"><span class="name-label">Item:</span> ${esc(r.menuItem)} ${catChipHtml(itemCategoryInfo(r.menuItem))}${r.bestIdx>=0?catChipHtml(imageCategoryInfo(IMAGES[r.bestIdx]),'img'):''}</span>
-          <label class="download-check" title="Check to include this image in the ZIP"><input type="checkbox" ${selected?'checked':''} ${r.bestIdx<0?'disabled':''} onchange="toggleSelected(${gi},this.checked)"/> Download</label>
+          <span class="mname"><span class="name-label">Item:</span> ${esc(r.menuItem)} ${catChipHtml(itemCategoryInfo(r.menuItem))}${(r.bestIdx>=0&&!weak)?catChipHtml(imageCategoryInfo(IMAGES[r.bestIdx]),'img'):''}</span>
+          <label class="download-check" title="Check to include this image in the ZIP"><input type="checkbox" ${selected?'checked':''} ${(r.bestIdx<0||weak)?'disabled':''} onchange="toggleSelected(${gi},this.checked)"/> Download</label>
           <span class="sel-pro-wrap" title="One category for this row — it is saved for the menu item AND for the matched image"><select class="sel-pro card-cat-select" aria-label="Category for ${esc(r.item)}" onchange="saveCardCategory(${gi},this.value)">${categoryOptions(cardCategoryValue(r))}</select></span>
           <button class="btn bs bxs card-new-cat" title="Create a new category from this row" onclick="createCategoryFromCard(${gi})">＋</button>
-          ${r.score>0?`<span class="badge ${tm.badge}">${pct}%</span>`:''}
-          ${mc}${tieHtml}${stHtml}
-          ${r.bestIdx>=0?`<button class="btn bs bxs" onclick="openModal(${gi})">👁 Preview</button>`:''}
+          ${(r.score>0&&!weak)?`<span class="badge ${tm.badge}">${pct}%</span>`:''}
+          ${weak?'':mc}${weak?'':tieHtml}${stOut}
+          ${weak?`<button class="btn bs bxs" onclick="showGuess(${gi})" title="Only a guess, below 80%">Show closest guess (${pct}%)</button>`:(r.bestIdx>=0?`<button class="btn bs bxs" onclick="openModal(${gi})">👁 Preview</button>`:'')}
         </div>
-        <div class="srow">
+        ${(weak||none)?'':`<div class="srow">
           <div class="sbg"><div class="sbf ${tm.bar}" style="width:${pct}%"></div></div>
           <span class="sfile" title="${esc(imgFileName)}"><span class="name-label">Image:</span> ${esc(imgFileName||'—')}</span>
-        </div>
-        <div class="cactions"><span class="smart-help">${selected?'Checked — this image will be downloaded.':'Unchecked — this image will be ignored.'}</span></div>
-        ${altHtml}${exHtml}
+        </div>`}
+        <div class="cactions"><span class="smart-help">${weak?'No image in the library reaches 80% for this item. It is not included in the ZIP.':none?'No image in the library matches this item. It is not included in the ZIP.':(selected?'Checked — this image will be downloaded.':'Unchecked — this image will be ignored.')}</span></div>
+        ${weak?'':altHtml}${exHtml}
       </div>
     </div>`;
+}
+
+/* look at the closest guess of an item that has no match at 80% or more */
+function showGuess(gi){
+  const r=RESULTS[gi];if(!r)return;
+  r.showGuess=true;
+  const dk=dupKey();
+  if(!repaintResultCard(gi,dk))renderResults();
 }
 
 /* Signature of the duplicate-filename set. Changing one row can create
@@ -6001,7 +6060,7 @@ function bulkReviewAction(action){
   const ids=visibleResultIndices();if(!ids.length){toast('No visible results to update.','i');return}
   let changed=0;
   for(const i of ids){const r=RESULTS[i];if(!r)continue;
-    if(action==='confirm'&&r.bestIdx>=0){EXCLUDED_RESULTS.delete(i);r.confirmed=r.bestIdx;r.useMenuName=true;r.exportName=san(r.menuItem);rememberMatch(r.menuItem,r.bestIdx);changed++}
+    if(action==='confirm'&&r.bestIdx>=0&&!(r.confirmed<0&&(Number(r.score)||0)<0.80&&!r.showGuess)){EXCLUDED_RESULTS.delete(i);r.confirmed=r.bestIdx;r.useMenuName=true;r.exportName=san(r.menuItem);rememberMatch(r.menuItem,r.bestIdx);changed++}
     else if(action==='reject'&&r.bestIdx>=0){r.confirmed=-1;EXCLUDED_RESULTS.add(i);changed++}
     else if(action==='clear'){r.confirmed=-1;EXCLUDED_RESULTS.delete(i);changed++}
   }
@@ -6035,7 +6094,7 @@ function previewRequired(){return !!document.getElementById('requirePreview')?.c
 function confirmAllTop(){
   let n=0;
   RESULTS.forEach((r,i)=>{
-    if(r.confirmed<0&&!EXCLUDED_RESULTS.has(i)&&r.bestIdx>=0&&r.tier<=2&&!r.tie&&(!previewRequired()||PREVIEWED.has(i))){
+    if(r.confirmed<0&&!EXCLUDED_RESULTS.has(i)&&r.bestIdx>=0&&r.tier<=2&&(Number(r.score)||0)>=0.80&&!r.tie&&(!previewRequired()||PREVIEWED.has(i))){
       r.confirmed=r.bestIdx;r.useMenuName=true;r.exportName=san(r.menuItem);rememberMatch(r.menuItem,r.bestIdx);n++;
     }
   });
@@ -6483,7 +6542,7 @@ function resetSession(){
     IMAGES.forEach(img=>{try{URL.revokeObjectURL(img.objectUrl)}catch(e){}});
     IMAGES=[];WIDX=new Map();EMAP=new Map();
   }
-  RESULTS=[];PREVIEWED.clear();EXCLUDED_RESULTS.clear();LIBRARY_PICKS.clear();RENDER_LIMIT=240;MODAL_IDX=-1;MODAL_ALT=-1;
+  RESULTS=[];PREVIEWED.clear();EXCLUDED_RESULTS.clear();LIBRARY_PICKS.clear();LIBRARY_PICK_MEM={};RENDER_LIMIT=240;MODAL_IDX=-1;MODAL_ALT=-1;
   document.getElementById('folderInput').value='';document.getElementById('menuFileInput').value='';document.getElementById('menuTA').value='';
   document.getElementById('fldCount').textContent=keepLibrary?IMAGES.length.toLocaleString()+' images':'0 images';
   document.getElementById('dz').style.display=keepLibrary?'none':'block';document.getElementById('fl').style.display=keepLibrary?'flex':'none';
@@ -9371,7 +9430,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       learnCategoryFrom(learnTextFor(img),key);
       var info=imageCategoryInfo(img);img.categories=info.key?[info.key]:[];img.catKey=info.key;img.catConf=info.score;img.catSrc=info.source;
     });
-    saveCategoryMemory();renderAutoStats();renderLibraryCategorySummary();renderResults();
+    saveCategoryMemory();CAT_FAST_IDX=indices.slice();renderLibraryCategorySummary();renderResults();
     if(typeof refreshModal==='function')refreshModal();
     var st=document.getElementById('smartStatus');if(st)st.textContent='💾 Saved the category for '+fmt(indices.length)+' image'+(indices.length===1?'':'s');
   }
@@ -9556,19 +9615,40 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   /* ---------- "Items Without Images": a plain list under the toolbar ---------- */
   function renderNoImageList(){
     var box=document.getElementById('noImgList');if(!box||typeof RESULTS==='undefined')return;
-    var names=[];
+    var names=[],esc1=function(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
     RESULTS.forEach(function(r){
       if(!r)return;
-      if(r.bestIdx>=0&&(Number(r.score)||0)>=0.30)return;          /* has an image, or at least a plausible one */
-      var n=String(r.menuItem||r.item||'').replace(/\s+/g,' ').trim();if(n)names.push(n);
+      var sc=Number(r.score)||0;
+      if(r.bestIdx>=0&&sc>=0.80)return;                            /* has a confident image (80% or more) */
+      var n=String(r.menuItem||r.item||'').replace(/\s+/g,' ').trim();if(!n)return;
+      /* a weak guess is still shown, so you can check it, but the item counts as "not available" */
+      var g=(r.bestIdx>=0&&sc>=0.15&&IMAGES[r.bestIdx])?' <span class="guess">closest guess: <bdi>'+esc1(IMAGES[r.bestIdx].name)+'</bdi> ('+Math.round(sc*100)+'%)</span>':'';
+      names.push({n:n,g:g});
     });
-    if(!names.length){box.hidden=true;box.innerHTML='';return}
+    if(!names.length){box.hidden=true;box.innerHTML='';window.NOIMG_NAMES=[];return}
+    window.NOIMG_NAMES=names.map(function(x){return x.n});
     var shown=names.slice(0,200);
-    box.innerHTML='<h3>Items Without Images ('+names.length+')</h3><ul>'+
-      shown.map(function(n){return '<li><bdi>'+n.replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})+'</bdi></li>'}).join('')+'</ul>'+
+    box.innerHTML='<div class="noimg-head"><h3>Items Without Images ('+names.length+')</h3><button type="button" class="btn bs bsm noimg-copy" id="noImgCopy" title="Copies only the item names, one per line, ready to paste into your sheet">📋 Copy list</button></div><ul>'+
+      shown.map(function(x){return '<li><bdi>'+esc1(x.n)+'</bdi>'+x.g+'</li>'}).join('')+'</ul>'+
       (names.length>shown.length?'<div class="more">…and '+(names.length-shown.length)+' more</div>':'');
     box.hidden=false;
   }
+  /* copy only the names, one per line: pastes straight into Google Sheets / Excel as one row per item */
+  function copyNoImages(){
+    var names=window.NOIMG_NAMES||[];if(!names.length)return;
+    var text=names.join('\n'),btn=document.getElementById('noImgCopy');
+    function done(){
+      if(btn){var old=btn.dataset.t||btn.textContent;btn.dataset.t=old;btn.textContent='✓ Copied '+names.length;setTimeout(function(){btn.textContent=old},2200)}
+      if(typeof toast==='function')toast('Copied '+names.length+' item'+(names.length===1?'':'s')+'. Paste them into your sheet.','s',4000);
+    }
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+      ta.remove();if(ok)done();else if(typeof toast==='function')toast('Could not copy automatically. Select the list and press Ctrl+C.','e',6000);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback)}else fallback();
+  }
+  document.addEventListener('click',function(e){if(e.target&&e.target.id==='noImgCopy'){e.preventDefault();copyNoImages()}});
   if(typeof window.renderResults==='function'){
     var origRender=window.renderResults;
     window.renderResults=function(){var out=origRender.apply(this,arguments);try{renderNoImageList()}catch(e){}return out};
@@ -9594,10 +9674,12 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
 (function(){
   "use strict";
   var bar=document.createElement('div');bar.className='dock';bar.id='dock';bar.hidden=true;
-  bar.innerHTML='<div class="dock-in"><span class="dock-n"><strong id="dockN">0</strong> <span id="dockT">selected</span></span><span class="dock-s">Menu images are saved as 810 × 540 JPG</span><span class="dock-sp"></span><button type="button" class="btn bp" id="dockBtn">Download ZIP</button></div>';
+  bar.innerHTML='<div class="dock-in"><span class="dock-n"><strong id="dockN">0</strong> <span id="dockT">selected</span></span><span class="dock-ex" id="dockEx" hidden></span><span class="dock-s">Menu images are saved as 810 × 540 JPG</span><span class="dock-sp"></span><button type="button" class="btn bp" id="dockBtn">Download ZIP</button></div>';
   document.body.appendChild(bar);
   var btn=document.getElementById('dockBtn');
   btn.addEventListener('click',function(){if(typeof doZip==='function')doZip()});
+  bar.addEventListener('click',function(e){if(e.target&&e.target.id==='dockClear'&&typeof catClearAllPicks==='function'){e.preventDefault();catClearAllPicks()}});
+  var busy=false;
   function refresh(){
     try{
       var has=typeof RESULTS!=='undefined'&&RESULTS.length>0;
@@ -9612,8 +9694,13 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       var n=confirmed+extras;
       document.getElementById('dockN').textContent=n;
       document.getElementById('dockT').textContent=extras?'selected':('of '+RESULTS.length+' selected');
-      btn.textContent='Download ZIP'+(n?' ('+n+')':'');
-      btn.disabled=!n;
+      var ex=document.getElementById('dockEx');
+      if(ex){
+        if(extras){ex.hidden=false;ex.innerHTML=confirmed+' from this search + <b>'+extras+'</b> picked from the library <button type="button" class="dock-clear" id="dockClear">Remove</button>'}
+        else{ex.hidden=true;ex.textContent=''}
+        bar.classList.toggle('has-extra',!!extras);
+      }
+      if(!busy){btn.textContent='Download ZIP'+(n?' ('+n+')':'');btn.disabled=!n}
     }catch(e){}
   }
   ['updateStats','renderResults'].forEach(function(name){
@@ -9622,6 +9709,17 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       window[name]=function(){var out=orig.apply(this,arguments);try{refresh()}catch(e){}return out};
     }
   });
+  var zb=document.getElementById('zipBtn'),zp=document.getElementById('zPct'),zl=document.getElementById('zLbl');
+  function paint(){
+    if(zb&&zb.disabled){busy=true;btn.disabled=true;btn.textContent=((zl&&zl.textContent)||'Packing…')+' '+((zp&&zp.textContent)||'')}
+    else if(busy){busy=false;refresh()}
+  }
+  if(window.MutationObserver){
+    var mo=new MutationObserver(paint);
+    if(zb)mo.observe(zb,{attributes:true,attributeFilter:['disabled']});
+    if(zp)mo.observe(zp,{childList:true,characterData:true,subtree:true});
+    if(zl)mo.observe(zl,{childList:true,characterData:true,subtree:true});
+  }
   setInterval(refresh,1500);refresh();
 })();
 </script>
