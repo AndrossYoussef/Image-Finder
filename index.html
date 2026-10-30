@@ -852,6 +852,20 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
 .dup-badge{position:absolute;top:-6px;left:-4px;z-index:2;background:var(--ye);color:#1a1200;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:99px;box-shadow:0 1px 4px rgba(0,0,0,.4);pointer-events:none}
 .dup-badge.best{background:var(--gn);color:#06210f}
 .dup-note{margin:5px 0 2px;font-size:.7rem;color:var(--ye);font-weight:600}
+.noimg{margin:0 0 14px;padding:12px 16px;border:1px solid var(--bd2);border-radius:10px;background:var(--sur)}
+.noimg h3{margin:0 0 8px;font-size:.95rem;font-weight:800;color:var(--tx)}
+.noimg ul{margin:0;padding:0 0 0 20px;font-size:.84rem;line-height:1.7;color:var(--tx2)}
+.noimg li{break-inside:avoid}
+.noimg .more{margin-top:6px;font-size:.75rem;color:var(--mu)}
+.uncat-simple{margin-top:10px;border:1px solid var(--bd2);border-radius:10px;background:var(--sur);padding:8px 12px}
+.uncat-simple[hidden]{display:none}
+.uncat-simple>summary{cursor:pointer;font-weight:800;font-size:.85rem;color:var(--tx)}
+.uncat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px}
+.uncat-tile{margin:0;display:flex;flex-direction:column;gap:5px;min-width:0}
+.uncat-tile img{width:100%;aspect-ratio:3/2;object-fit:contain;background:var(--sur2);border:1px solid var(--bd);border-radius:8px}
+.uncat-tile figcaption{font-size:.68rem;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.uncat-tile select{width:100%;font-size:.74rem}
+body:not(.admin-tools) #uncatSimple{display:none!important}
 </style>
 </head>
 <body>
@@ -948,6 +962,10 @@ body:not(.admin-tools) button[onclick="clearAllCovers()"]{display:none!important
       <button class="btn bs bsm" style="margin-left:auto" onclick="loadDriveLibrary(true)">↻ Refresh library</button>
     </div>
     <div class="category-summary" id="libraryCategorySummary" style="display:none"></div>
+    <details class="uncat-simple" id="uncatSimple" hidden>
+      <summary id="uncatTitle">Uncategorized Images</summary>
+      <div class="uncat-grid" id="uncatGrid"></div>
+    </details>
     <div class="prog" id="loadProg">
       <div class="pt"><span id="lLbl">Loading…</span><span class="pp" id="lPct">0%</span></div>
       <div class="pb"><div class="pf" id="lFill"></div></div>
@@ -1317,6 +1335,7 @@ Create a bin on a JSON-storage service or point it at your own API / Cloudflare 
         </details>
       </div>
     </div>
+    <div id="noImgList" class="noimg" hidden></div>
     <div id="grid"></div>
   </div>
 
@@ -8984,6 +9003,77 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     }
   }
   window.dupScanCard=scanCard;
+
+  /* ---------- "Uncategorized Images": pick a category, that's all ---------- */
+  var UNCAT_PAGE=12;
+  function isUncat(im){return !!im&&!(im.categories||[]).length}
+  function uncatTotal(){var n=0;for(var i=0;i<IMAGES.length;i++)if(isUncat(IMAGES[i]))n++;return n}
+  function uncatFirst(){var out=[];for(var i=0;i<IMAGES.length&&out.length<UNCAT_PAGE;i++)if(isUncat(IMAGES[i]))out.push(i);return out}
+  function thumbFor(im){
+    if(im.remoteId&&typeof driveImageUrl==='function')return driveImageUrl(im.remoteId,240);
+    return typeof objectSrc==='function'?objectSrc(im):'';
+  }
+  function esc2(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function renderUncat(){
+    var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
+    if(!box||!grid||typeof IMAGES==='undefined'||typeof categoryOptions!=='function')return;
+    var total=uncatTotal();
+    if(!total){box.hidden=true;grid.innerHTML='';return}
+    box.hidden=false;
+    document.getElementById('uncatTitle').textContent='Uncategorized Images ('+total.toLocaleString()+')';
+    if(!box.open)return;                                   /* the pictures are only built while the panel is open */
+    var opts='<option value="">Choose category…</option>'+categoryOptions('',false)+'<option value="__new__">➕ New category…</option>';
+    grid.innerHTML=uncatFirst().map(function(i){
+      var im=IMAGES[i];
+      return '<figure class="uncat-tile"><img loading="lazy" alt="" src="'+esc2(thumbFor(im))+'">'+
+        '<figcaption dir="auto" title="'+esc2(im.relPath||im.name)+'">'+esc2(im.name)+'</figcaption>'+
+        '<select class="fsel" data-i="'+i+'" aria-label="Category for '+esc2(im.name)+'">'+opts+'</select></figure>';
+    }).join('');
+  }
+  (function(){
+    var box=document.getElementById('uncatSimple'),grid=document.getElementById('uncatGrid');
+    if(!box||!grid)return;
+    box.addEventListener('toggle',renderUncat);
+    grid.addEventListener('change',function(e){
+      var sel=e.target;if(!sel||sel.tagName!=='SELECT')return;
+      var i=parseInt(sel.getAttribute('data-i'),10),v=sel.value;if(!v)return;
+      if(v==='__new__'){
+        var name=(window.prompt('New category name:')||'').trim();
+        if(!name){sel.value='';return}
+        var key=categorySlug(name);
+        if(!(key in CATEGORY_DEFS)&&!addCustomCategoryValues(name,[name])){sel.value='';return}
+        v=key;
+      }
+      saveImageCategory(i,v);                              /* same save the rest of the page uses; it also refreshes this list */
+      renderUncat();
+    });
+    if(typeof window.renderLibraryCategorySummary==='function'){
+      var orig=window.renderLibraryCategorySummary;
+      window.renderLibraryCategorySummary=function(){var out=orig.apply(this,arguments);try{renderUncat()}catch(e){}return out};
+    }
+    renderUncat();
+  })();
+
+  /* ---------- "Items Without Images": a plain list under the toolbar ---------- */
+  function renderNoImageList(){
+    var box=document.getElementById('noImgList');if(!box||typeof RESULTS==='undefined')return;
+    var names=[];
+    RESULTS.forEach(function(r){
+      if(!r)return;
+      if(r.bestIdx>=0&&(Number(r.score)||0)>=0.30)return;          /* has an image, or at least a plausible one */
+      var n=String(r.menuItem||r.item||'').replace(/\s+/g,' ').trim();if(n)names.push(n);
+    });
+    if(!names.length){box.hidden=true;box.innerHTML='';return}
+    var shown=names.slice(0,200);
+    box.innerHTML='<h3>Items Without Images ('+names.length+')</h3><ul>'+
+      shown.map(function(n){return '<li><bdi>'+n.replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})+'</bdi></li>'}).join('')+'</ul>'+
+      (names.length>shown.length?'<div class="more">…and '+(names.length-shown.length)+' more</div>':'');
+    box.hidden=false;
+  }
+  if(typeof window.renderResults==='function'){
+    var origRender=window.renderResults;
+    window.renderResults=function(){var out=origRender.apply(this,arguments);try{renderNoImageList()}catch(e){}return out};
+  }
 
   var grid=document.getElementById('grid');
   if(grid&&typeof IntersectionObserver!=='undefined'){
