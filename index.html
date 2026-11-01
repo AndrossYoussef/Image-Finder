@@ -462,6 +462,33 @@ textarea::placeholder{color:var(--mu)}
 .category-summary{margin-top:10px;padding:12px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs)}
 .category-summary-title{font-size:.78rem;font-weight:800;color:var(--tx);margin-bottom:8px}
 .category-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+body:not(.show-uncat-panel) #uncatSimple{display:none!important}
+.rail-prog{display:none}
+#dlCard .ctitle,#dlCard .csub,#dlCard .dlst{display:none}
+#dlCard:not(:has(.prog.show)):not(:has(#dlLog:not(:empty))){display:none}
+body:not(.admin-tools) .mchip{display:none}
+.cat-cell{position:relative;min-width:0}
+.cat-cell .category-stat{width:100%}
+.cat-thumb-btn{position:relative}
+.msel-tk{display:none;position:absolute;top:8px;left:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.5);border:2px solid #fff;color:transparent;place-items:center;font-weight:900;font-size:.85rem;z-index:2}
+.cat-browser.selecting .msel-tk{display:grid}
+.cat-tile.msel-on .msel-tk{background:var(--or);border-color:var(--or);color:#fff}
+.cat-tile.msel-on{outline:3px solid var(--or);outline-offset:-3px}
+.cat-selmode.on{background:linear-gradient(135deg,#D2490A,#B23C00);color:#fff;border-color:#B23C00}
+.cat-movebar{margin-top:10px;padding:10px 12px;border:1px solid var(--or);border-radius:12px;background:var(--sur2);display:flex;flex-direction:column;gap:9px}
+.cat-movebar.empty .cmb-row{opacity:.6}
+.cmb-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:.86rem}
+.cmb-top b{color:var(--or);font-size:1rem}
+.cmb-link{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--tx);text-decoration:underline;cursor:pointer}
+.cmb-tip{font-size:.72rem;color:var(--mu);margin-inline-start:auto}
+.cmb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cmb-l{font-size:.74rem;color:var(--mu);font-weight:700}
+.cmb-new{display:flex;gap:8px;flex-wrap:wrap}
+.cmb-new[hidden]{display:none}
+.cmb-new input{flex:1 1 220px;min-width:0;padding:8px 12px;border-radius:999px;border:1.5px solid var(--or);background:var(--sur);color:var(--tx);font:inherit;font-size:.85rem}
+.cat-del{display:none;position:absolute;top:4px;right:4px;width:22px;height:22px;padding:0;border-radius:50%;border:0;background:var(--sur2);color:var(--tx2);font:inherit;font-size:15px;font-weight:700;line-height:1;cursor:pointer;place-items:center;z-index:2}
+body.admin-tools .cat-del{display:grid}
+.cat-del:hover,.cat-del:focus-visible{background:var(--re);color:#fff}
 .category-stat{padding:7px 8px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rx);min-width:0}
 .category-stat strong{display:block;font-size:.86rem;color:var(--or)}
 .category-stat span{display:block;font-size:.64rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1017,8 +1044,6 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <button class="rnav" data-target="resWrap" onclick="goToStep('resWrap')">
       <span class="rn-ico">🔍</span><span class="rn-tx">Results</span>
       <span class="rn-badge" id="navResults">—</span></button>
-    <button class="rnav" data-target="dlCard" onclick="goToStep('dlCard')">
-      <span class="rn-ico">📦</span><span class="rn-tx">Export</span></button>
   </nav>
 
   <div class="rail-prog" id="railProg">
@@ -2661,6 +2686,15 @@ function createCategoryFromCard(i){
   const raw=window.prompt('Keywords, separated by commas:',label);if(raw===null)return;
   addCustomCategoryValues(label,raw.split(','));
 }
+/* the × on one of your own categories at the top: ask first, then free its pictures (they are never deleted from Drive) */
+function deleteCategoryFromCard(key){
+  const def=CUSTOM_CATEGORY_DEFS[key];if(!def)return;
+  const n=categoryCounts().counts[key]||0;
+  const msg='Delete the category “'+def.label+'”?\n\n'+(n?n.toLocaleString()+' picture'+(n===1?'':'s')+' will go back to automatic categorization. Nothing is deleted from Drive.':'It has no pictures.');
+  if(!window.confirm(msg))return;
+  if(OPEN_CATEGORY===key)OPEN_CATEGORY=null;
+  removeCustomCategory(key);
+}
 function editCustomCategory(key){
   const item=CUSTOM_CATEGORY_DEFS[key];if(!item)return;
   const label=window.prompt('Edit category name:',item.label);if(label===null)return;
@@ -2671,7 +2705,10 @@ function editCustomCategory(key){
 }
 function removeCustomCategory(key){
   if(!CUSTOM_CATEGORY_DEFS[key])return;
-  delete CUSTOM_CATEGORY_DEFS[key];delete CATEGORY_DEFS[key];delete MANUAL_IMAGE_CATS[key];delete MANUAL_ITEM_CATS[key];persistCustomCategories();saveCategoryMemory();rebuildCategoryWords();
+  delete CUSTOM_CATEGORY_DEFS[key];delete CATEGORY_DEFS[key];
+  for(const m of [MANUAL_IMAGE_CATS,MANUAL_ITEM_CATS])for(const k of Object.keys(m))if(m[k]===key||k===key)delete m[k];
+  if(typeof LEARNED_CATS!=='undefined'&&LEARNED_CATS[key]){delete LEARNED_CATS[key];try{saveLearnedCats()}catch(e){}}
+  persistCustomCategories();saveCategoryMemory();rebuildCategoryWords();
   for(const img of IMAGES)if(img.file)img.categories=imageCategoriesForFile(img.file);
   renderCustomCategories();renderCategoryChoices();renderLibraryCategorySummary();renderResults();toast('Custom category removed.','i');
 }
@@ -2910,6 +2947,7 @@ function renderCategoryBrowser(keepFocus){
       <button type="button" class="btn bs bsm" onclick="closeCategoryBrowser()">✕ Close</button>
     </div>
     <div class="cat-browser-bar">
+      <button type="button" class="btn bs bsm cat-selmode${window.CAT_SELECT_MODE?' on':''}" id="catSelMode" aria-pressed="${window.CAT_SELECT_MODE?'true':'false'}" title="Tick several pictures, then give them a category in one go" onclick="catToggleSelectMode()">${window.CAT_SELECT_MODE?'✓ Done selecting':'☑ Select several'}</button>
       <button type="button" class="btn bs bsm" onclick="catSelectAllShown(true)">☑ Select all shown</button>
       <button type="button" class="btn bs bsm" onclick="catSelectAllShown(false)">☐ Clear shown</button>
       <label class="cat-only"><input type="checkbox" ${CAT_PICKED_ONLY?'checked':''}
@@ -3021,12 +3059,12 @@ function catTileHtml({img,i},resDups,libDups){
         :`<div class="cat-hint">No menu item matched</div>`;
     }
 
-    return `<figure class="cat-tile${picked?' picked':''}">
+    return `<figure class="cat-tile${picked?' picked':''}${(window.CAT_SEL&&window.CAT_SEL.has(i))?' msel-on':''}">
       <label class="cat-pick" title="Include this image in the ZIP">
         <input type="checkbox" ${picked?'checked':''} onchange="catTogglePick(${i},this.checked)"/>
         <span>${picked?'Selected for ZIP':'Select for ZIP'}</span></label>
-      <button type="button" class="cat-thumb-btn" onclick="catLightbox(${i})"
-        title="Open a larger preview of ${esc(img.name)}">
+      <button type="button" class="cat-thumb-btn" onclick="catLightbox(${i})"${window.CAT_SELECT_MODE?` aria-pressed="${window.CAT_SEL&&window.CAT_SEL.has(i)?'true':'false'}"`:''}
+        title="Open a larger preview of ${esc(img.name)}"><span class="msel-tk" aria-hidden="true">✓</span>
         ${hasPreview(img)?`<img class="cat-thumb" src="${esc(BLOB_OK?objectSrc(img):(DATA_CACHE.get(i)||THUMB_BLANK))}" ${BLOB_OK?'':`data-fi="${i}"`} loading="lazy" decoding="async" alt="${esc(img.name)}"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'cat-thumb nothumb',textContent:'🖼️'}))"/>`
           :`<div class="cat-thumb nothumb">🖼️</div>`}
@@ -3193,13 +3231,17 @@ function renderLibraryCategorySummary(){
   {const g0=document.querySelector('#categoryBrowser .cat-grid');if(g0)CAT_KEEP_TOP=g0.scrollTop}
   const {counts,uncategorized}=categoryCounts();
   const card=(key,label,count)=>`<button type="button" class="category-stat${OPEN_CATEGORY===key?' open':''}" data-cat="${esc(key)}" aria-expanded="${OPEN_CATEGORY===key?'true':'false'}" onclick="toggleCategoryBrowser('${esc(key)}')" title="Click to see the ${count.toLocaleString()} image${count===1?'':'s'} in ${esc(label)}"><strong>${count.toLocaleString()}</strong><span dir="auto">${esc(label)}</span></button>`;
-  const used=categoryEntriesGrouped().filter(([k])=>counts[k]>0);
+  /* your own categories always show (even empty), so they can be deleted from here */
+  const used=categoryEntriesGrouped().filter(([k])=>counts[k]>0||CUSTOM_CATEGORY_DEFS[k]);
+  const cell=(key,label,count)=>CUSTOM_CATEGORY_DEFS[key]
+    ?`<div class="cat-cell">${card(key,label,count)}<button type="button" class="cat-del" onclick="deleteCategoryFromCard('${esc(key)}')" title="Delete this category" aria-label="Delete the category ${esc(label)}">×</button></div>`
+    :card(key,label,count);
   const open=CAT_SUMMARY_OPEN||!!OPEN_CATEGORY;
   const fastIdx=CAT_FAST_IDX;CAT_FAST_IDX=null;
   const detailsHtml='<details class="pro-collapse summary-collapse"'+(open?' open':'')+' ontoggle="CAT_SUMMARY_OPEN=this.open">'
-    +'<summary><span class="pc-t">📊 Library categories</span><span class="pc-n">'+used.length+' in use · '+uncategorized.toLocaleString()+' uncategorized</span></summary>'
+    +'<summary><span class="pc-t">📊 Library categories</span><span class="pc-n">'+used.filter(([k])=>counts[k]>0).length+' in use · '+uncategorized.toLocaleString()+' uncategorized</span></summary>'
     +'<div class="pc-body"><div class="category-summary-grid">'
-    +used.map(([k,v])=>card(k,v.label,counts[k])).join('')
+    +used.map(([k,v])=>cell(k,v.label,counts[k])).join('')
     +card('__uncat__','Uncategorized',uncategorized)
     +'</div></div></details>';
   const noteHtml='<div id="categoryBrowser" class="cat-browser"></div>'
@@ -5829,7 +5871,6 @@ function resultCardHtml(gi,dups){
             onclick="openModal(${gi})"
             onerror="thumbFailed(this,${r.bestIdx})">
           ${selected?'<div class="download-confirm">✅ Will download</div>':''}
-          <div class="img-name" title="${esc(imgFileName)}">${esc(imgFileName)}</div>
         </div>`
       :`<div class="nothumb">🖼️</div>`;
 
@@ -5903,7 +5944,7 @@ function resultCardHtml(gi,dups){
       ${thumbOut}
       <div class="cbody">
         <div class="crow">
-          <span class="mname"><span class="name-label">Item:</span> ${esc(r.menuItem)} ${catChipHtml(itemCategoryInfo(r.menuItem))}${(r.bestIdx>=0&&!weak)?catChipHtml(imageCategoryInfo(IMAGES[r.bestIdx]),'img'):''}</span>
+          <span class="mname"><span class="name-label">Item:</span> ${esc(r.menuItem)} ${catChipHtml(itemCategoryInfo(r.menuItem))}${(r.bestIdx>=0&&!weak&&imageCategoryInfo(IMAGES[r.bestIdx]).key!==itemCategoryInfo(r.menuItem).key)?catChipHtml(imageCategoryInfo(IMAGES[r.bestIdx]),'img'):''}</span>
           <label class="download-check" title="Check to include this image in the ZIP"><input type="checkbox" ${selected?'checked':''} ${(r.bestIdx<0||weak)?'disabled':''} onchange="toggleSelected(${gi},this.checked)"/> Download</label>
           <span class="sel-pro-wrap" title="One category for this row — it is saved for the menu item AND for the matched image"><select class="sel-pro card-cat-select" aria-label="Category for ${esc(r.item)}" onchange="saveCardCategory(${gi},this.value)">${categoryOptions(cardCategoryValue(r))}</select></span>
           <button class="btn bs bxs card-new-cat" title="Create a new category from this row" onclick="createCategoryFromCard(${gi})">＋</button>
@@ -5915,7 +5956,7 @@ function resultCardHtml(gi,dups){
           <div class="sbg"><div class="sbf ${tm.bar}" style="width:${pct}%"></div></div>
           <span class="sfile" title="${esc(imgFileName)}"><span class="name-label">Image:</span> ${esc(imgFileName||'—')}</span>
         </div>`}
-        <div class="cactions"><span class="smart-help">${weak?'No image in the library reaches 80% for this item. It is not included in the ZIP.':none?'No image in the library matches this item. It is not included in the ZIP.':(selected?'Checked — this image will be downloaded.':'Unchecked — this image will be ignored.')}</span></div>
+        ${(weak||none)?`<div class="cactions"><span class="smart-help">${weak?'No image in the library reaches 80% for this item. It is not included in the ZIP.':'No image in the library matches this item. It is not included in the ZIP.'}</span></div>`:''}
         ${weak?'':altHtml}${exHtml}
       </div>
     </div>`;
@@ -9091,7 +9132,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function h(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-  var BUILD_ID='2026-10-30 · final';
+  var BUILD_ID='2026-11-01 · final 2';
   var TOOLS_KEY='tif_admin_tools';
   if(lsGet(SYNC_KEY)==='1')document.body.classList.add('show-cloud-sync');
   if(lsGet(TOOLS_KEY)==='1')document.body.classList.add('admin-tools');
@@ -9612,6 +9653,103 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     renderUncat();
   })();
 
+  /* ---------- several pictures at once, in the category lists at the top ---------- */
+  var catSel=window.CAT_SEL=new Set(),catLast=-1,catLastCat=null;
+  window.CAT_SELECT_MODE=false;
+  function cBox(){return document.getElementById('categoryBrowser')}
+  function tIdx(t){var sv=t&&t.querySelector('.cat-saves');return sv?parseInt(sv.id.slice(6),10):-1}
+  function cTiles(){var b=cBox();return b?Array.prototype.slice.call(b.querySelectorAll('.cat-tile')):[]}
+  function listIdx(){return catBrowserList().map(function(e){return e.i})}
+  function paintTile(t){
+    var i=tIdx(t),on=catSel.has(i),u=t.querySelector('.cat-thumb-btn');
+    t.classList.toggle('msel-on',on);
+    if(u){if(window.CAT_SELECT_MODE)u.setAttribute('aria-pressed',String(on));else u.removeAttribute('aria-pressed')}
+  }
+  function paintAll(){cTiles().forEach(paintTile)}
+  function updateMoveBar(){
+    var n=document.getElementById('catMvN');if(!n)return;
+    n.textContent=fmt(catSel.size);
+    var go=document.getElementById('catMvGo');if(go)go.textContent='Create and move '+fmt(catSel.size);
+    var bar=document.getElementById('catMoveBar');if(bar)bar.classList.toggle('empty',!catSel.size);
+  }
+  function renderMoveBar(){
+    var b=cBox(),bar=document.getElementById('catMoveBar');
+    if(!b||!window.CAT_SELECT_MODE||!OPEN_CATEGORY){if(bar)bar.remove();return}
+    if(!bar){bar=document.createElement('div');bar.id='catMoveBar';bar.className='cat-movebar';b.appendChild(bar)}
+    var total=listIdx().length;
+    bar.innerHTML='<div class="cmb-top"><span><b id="catMvN">0</b> selected</span>'
+      +'<button type="button" class="cmb-link" id="catMvAll">Select all '+fmt(total)+' in this list</button>'
+      +'<button type="button" class="cmb-link" id="catMvClear">Clear</button>'
+      +'<span class="cmb-tip">Tip: click one picture, then Shift+click another to select everything in between.</span></div>'
+      +'<div class="cmb-row"><span class="cmb-l">Move to</span>'+chipsHtml(6)+moreSelect('catMvMore')
+      +'<button type="button" class="uncat-chip plus" id="catMvPlus"><i>+</i> New category</button></div>'
+      +'<div class="cmb-new" id="catMvNew" hidden><input id="catMvName" type="text" dir="auto" maxlength="40" placeholder="New category name" aria-label="New category name"><button type="button" class="uncat-chip" id="catMvGo">Create and move 0</button></div>';
+    updateMoveBar();
+  }
+  function afterCatRender(){
+    var b=cBox();if(!b)return;
+    b.classList.toggle('selecting',!!window.CAT_SELECT_MODE);
+    renderMoveBar();
+  }
+  var origRCB=window.renderCategoryBrowser;
+  window.renderCategoryBrowser=function(){
+    if(catLastCat!==OPEN_CATEGORY){catSel.clear();catLast=-1;catLastCat=OPEN_CATEGORY;if(!OPEN_CATEGORY)window.CAT_SELECT_MODE=false}
+    var out=origRCB.apply(this,arguments);
+    try{afterCatRender()}catch(e){}
+    return out;
+  };
+  window.catToggleSelectMode=function(){
+    window.CAT_SELECT_MODE=!window.CAT_SELECT_MODE;
+    if(!window.CAT_SELECT_MODE){catSel.clear();catLast=-1}
+    var bt=document.getElementById('catSelMode');
+    if(bt){bt.textContent=window.CAT_SELECT_MODE?'✓ Done selecting':'☑ Select several';bt.setAttribute('aria-pressed',String(window.CAT_SELECT_MODE));bt.classList.toggle('on',window.CAT_SELECT_MODE)}
+    var b=cBox();if(b)b.classList.toggle('selecting',window.CAT_SELECT_MODE);
+    paintAll();renderMoveBar();
+  };
+  function applyList(key){
+    var targets=Array.from(catSel);
+    if(!targets.length){if(typeof toast==='function')toast('Click some pictures first, then choose a category.','e');return}
+    var label=labelOf(key);
+    if(targets.length>=100&&!window.confirm('Move '+fmt(targets.length)+' images to '+label+'?'))return;     /* big moves ask first */
+    targets.forEach(function(i){catSel.delete(i)});
+    saveCategoryBatch(targets,key);                  /* the open list is fixed in place, only these pictures change */
+    paintAll();updateMoveBar();
+    if(typeof toast==='function')toast('Moved '+fmt(targets.length)+' image'+(targets.length===1?'':'s')+' to '+label+'.','s',5000);
+  }
+  /* click a picture while "Select several" is on: tick it instead of opening the big preview */
+  document.addEventListener('click',function(e){
+    if(!window.CAT_SELECT_MODE)return;
+    var u=e.target.closest&&e.target.closest('#categoryBrowser .cat-thumb-btn');if(!u)return;
+    e.preventDefault();e.stopPropagation();
+    var t=u.closest('.cat-tile'),i=tIdx(t);if(i<0)return;
+    if(e.shiftKey&&catLast>=0){
+      var tiles=cTiles(),a=tiles.findIndex(function(x){return tIdx(x)===catLast}),z=tiles.indexOf(t);
+      if(a>=0&&z>=0){var lo=Math.min(a,z),hi=Math.max(a,z);for(var k=lo;k<=hi;k++)catSel.add(tIdx(tiles[k]))}
+    }else{if(catSel.has(i))catSel.delete(i);else catSel.add(i)}
+    catLast=i;paintAll();updateMoveBar();
+  },true);
+  document.addEventListener('click',function(e){
+    var bar=document.getElementById('catMoveBar');if(!bar||!bar.contains(e.target))return;
+    var chip=e.target.closest('.uncat-chip[data-k]');
+    if(chip){applyList(chip.getAttribute('data-k'));return}
+    if(e.target.closest('#catMvAll')){listIdx().forEach(function(i){catSel.add(i)});paintAll();updateMoveBar();return}
+    if(e.target.closest('#catMvClear')){catSel.clear();catLast=-1;paintAll();updateMoveBar();return}
+    if(e.target.closest('#catMvPlus')){var r=document.getElementById('catMvNew');r.hidden=!r.hidden;if(!r.hidden)document.getElementById('catMvName').focus();return}
+    if(e.target.closest('#catMvGo'))catNewGo();
+  });
+  function catNewGo(){
+    var inp=document.getElementById('catMvName'),name=inp?inp.value.trim():'';
+    if(!name){if(inp)inp.focus();return}
+    if(!catSel.size){if(typeof toast==='function')toast('Click some pictures first, then create the category.','e');return}
+    var key=ensureCategory(name);if(!key)return;
+    inp.value='';document.getElementById('catMvNew').hidden=true;
+    applyList(key);
+  }
+  document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='catMvName'){e.preventDefault();catNewGo()}});
+  document.addEventListener('change',function(e){
+    if(e.target&&e.target.id==='catMvMore'){var v=e.target.value;e.target.value='';if(v)applyList(v)}
+  });
+
   /* ---------- "Items Without Images": a plain list under the toolbar ---------- */
   function renderNoImageList(){
     var box=document.getElementById('noImgList');if(!box||typeof RESULTS==='undefined')return;
@@ -9682,7 +9820,8 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   var busy=false;
   function refresh(){
     try{
-      var has=typeof RESULTS!=='undefined'&&RESULTS.length>0;
+      var hasRes=typeof RESULTS!=='undefined'&&RESULTS.length>0;
+      var has=hasRes||(typeof LIBRARY_PICKS!=='undefined'&&LIBRARY_PICKS.size>0);   /* ticked pictures in a category are enough, no search needed */
       bar.hidden=!has;document.body.classList.toggle('has-dock',has);
       if(!has)return;
       var confirmed=0;
@@ -9696,7 +9835,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       document.getElementById('dockT').textContent=extras?'selected':('of '+RESULTS.length+' selected');
       var ex=document.getElementById('dockEx');
       if(ex){
-        if(extras){ex.hidden=false;ex.innerHTML=confirmed+' from this search + <b>'+extras+'</b> picked from the library <button type="button" class="dock-clear" id="dockClear">Remove</button>'}
+        if(extras){ex.hidden=false;ex.innerHTML=(confirmed?confirmed+' from this search + ':'')+'<b>'+extras+'</b> picked from the library <button type="button" class="dock-clear" id="dockClear">Remove</button>'}
         else{ex.hidden=true;ex.textContent=''}
         bar.classList.toggle('has-extra',!!extras);
       }
