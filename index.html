@@ -1022,8 +1022,8 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 @media(max-width:820px){.howto-steps{grid-template-columns:1fr}}
 #menuTA.mr-drop{outline:3px dashed var(--or);outline-offset:-3px}
 .mr-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:95;display:grid;place-items:center;padding:16px}
-.mr-box{width:min(520px,94vw);max-height:88vh;overflow:auto;background:var(--sur);color:var(--tx);border:1px solid var(--bd);border-radius:18px;padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.mr-box.mr-wide{width:min(760px,96vw)}
+.mr-box{box-sizing:border-box;width:min(520px,100%);max-height:88vh;overflow:auto;background:var(--sur);color:var(--tx);border:1px solid var(--bd);border-radius:18px;padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.mr-box.mr-wide{width:min(760px,100%)}
 .mr-box h3{margin:0 0 8px;font-size:1.05rem}
 .mr-st{font-size:.85rem;color:var(--tx2);margin:6px 0 10px;min-height:1.3em}
 .mr-bar{height:8px;border-radius:99px;background:var(--sur2);overflow:hidden}
@@ -1042,6 +1042,32 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 .mr-why{flex:none;font-size:.68rem;color:var(--mu);max-width:34%}
 .mr-rep{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.8rem;color:var(--tx2)}
 .mr-wide .btn.bp:disabled{opacity:.5;cursor:default}
+
+.mr-langs{display:flex;gap:16px;flex-wrap:wrap;border:1px solid var(--bd);border-radius:12px;padding:8px 12px;margin:10px 0 0}
+.mr-langs legend{font-size:.72rem;color:var(--mu);padding:0 6px}
+.mr-langs label{display:flex;align-items:center;gap:6px;font-size:.84rem;cursor:pointer}
+.mr-langs input{accent-color:#D2490A}
+.mr-type{flex:none;width:112px;padding:6px 8px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--tx);font:inherit;font-size:.78rem}
+.mr-txts{flex:1 1 auto;display:flex;gap:8px;min-width:0}
+.mr-txts input{flex:1 1 0;min-width:0;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--tx);font:inherit;font-size:.86rem}
+.mr-row.k-section{background:var(--orl);border-left:4px solid #D2490A;margin-top:8px}
+.mr-row.k-section .mr-txts input{font-weight:800}
+.mr-row.k-desc{padding-inline-start:34px}
+.mr-row.k-desc .mr-txts input{font-size:.8rem;color:var(--tx2)}
+.mr-row.k-other .mr-txts input{color:var(--tx2);font-style:italic}
+.mr-del{flex:none;width:26px;height:26px;padding:0;border-radius:50%;border:0;background:var(--sur2);color:var(--tx2);cursor:pointer;font-size:15px;line-height:1}
+.mr-del:hover,.mr-del:focus-visible{background:var(--re);color:#fff}
+.mr-acts{flex-wrap:wrap;justify-content:flex-start;align-items:center}
+.mr-sp{flex:1}
+
+@media(max-width:620px){
+  .mr-row{flex-wrap:wrap;gap:6px 8px}
+  .mr-type{flex:1 1 auto;width:auto;max-width:170px}
+  .mr-del{margin-inline-start:auto}
+  .mr-txts{flex:1 1 100%;order:3;flex-direction:column}
+  .mr-row.k-desc{padding-inline-start:14px}
+  .mr-box{padding:16px}
+}
 </style>
 </head>
 <body>
@@ -9186,7 +9212,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function h(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-  var BUILD_ID='2026-11-03 · final 3';
+  var BUILD_ID='2026-11-04 · final 4';
   var TOOLS_KEY='tif_admin_tools';
   if(lsGet(SYNC_KEY)==='1')document.body.classList.add('show-cloud-sync');
   if(lsGet(TOOLS_KEY)==='1')document.body.classList.add('admin-tools');
@@ -9927,28 +9953,29 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
 <script id="menuReaderScript">
 (function(){
   "use strict";
-  /* ---------- reading item names from a PDF or a picture; the how-to card ---------- */
+  /* ---------- reading a menu (PDF or picture): sections, items and descriptions, in English and/or Arabic ---------- */
   var PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   var PDFJS_WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   var TESS_URL='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
-  var MAX_PAGES=40,MAX_FILES=10,MAX_LINES=600;
+  var MAX_PAGES=40,MAX_FILES=10,PAGE_GAP=100000;
   function $(id){return document.getElementById(id)}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function say(msg,kind,ms){if(typeof toast==='function')toast(msg,kind||'s',ms||5000)}
 
-  /* ======================= 1. turning raw lines into item names ======================= */
+  /* ======================= 1. understanding the layout ======================= */
   var AR_DIG={'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9','۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9'};
   function latinDigits(s){return s.replace(/[٠-٩۰-۹]/g,function(c){return AR_DIG[c]})}
   var CUR='(?:EGP|E\\.?G\\.?P\\.?|L\\.?E\\.?|E£|£E|SAR|SR|AED|USD|KWD|\\$|€|£|جنيه|جنية|ج\\.?م\\.?|ج|ريال|ر\\.?س|درهم|د\\.?إ)';
-  var SEP='[\\s.\\-–—_·…:|/\\\\]';
+  var SEP='[\\s.\\-–—_·…:|/\\\\+]';
   var TAIL=new RegExp('(?:'+SEP+'+|^)((?:'+CUR+'\\s*)?(\\d{1,5})([.,]\\d{1,3})?(?:\\s*'+CUR+')?)\\s*$','i');
   var HEAD=new RegExp('^((?:'+CUR+'\\s*)?(\\d{1,5})([.,]\\d{1,3})?(?:\\s*'+CUR+')?)'+SEP+'+(?=\\S)','i');
   var HAS_CUR=new RegExp(CUR,'i');
   var AR=/[\u0600-\u06FF]/,LAT=/[A-Za-z]/,LETTER=/[A-Za-z\u0600-\u06FF]/;
-  var SECTION_EN=/^(menu|our menu|starters?|appetizers?|mains?|main course|main dishes|desserts?|drinks?|beverages?|sides?|side dishes|salads?|soups?|sandwiches|burgers?|pizzas?|pastas?|breakfast|lunch|dinner|combos?|kids|kids menu|extras|add[- ]?ons|hot drinks|cold drinks|specials?|offers?|shakes|coffee|juices|smoothies|mojitos?|menu items?|food menu|drinks menu)$/i;
-  var SECTION_AR=/^(القائمة|المنيو|قائمة الطعام|المقبلات|الطبق الرئيسي|الاطباق الرئيسية|الأطباق الرئيسية|الحلويات|المشروبات|مشروبات ساخنة|مشروبات باردة|السلطات|الشوربة|الشوربات|السندوتشات|ساندويتشات|البرجر|البيتزا|المعكرونة|الفطار|الإفطار|إضافات|وجبات|العروض|الوجبات)$/;
-  var DROP_LINE=/(https?:\/\/|www\.|@\w|\.com\b|\.net\b|\.org\b|^\s*(tel|phone|call|hotline|address|opening hours|open daily|delivery|follow us|instagram|facebook|whatsapp|order now)\b|^\s*(الرقم|العنوان|اتصل|للطلب|تليفون|هاتف))/i;
-  var DESC_WORDS=/\b(with|served|topped|includes?|choice of|comes with|made with|filled with|stuffed with|garnished)\b|يقدم|تقدم|يحتوي|مصنوع|مكونات|محشو|يُقدم/i;
+  var SECTION_EN=/^(menu|our menu|starters?|appetizers?|mains?|main course|main dishes|desserts?|drinks?|beverages?|sides?|side dishes|salads?|soups?|sandwiches|burgers?|pizzas?|pastas?|breakfast|lunch|dinner|combos?|kids|kids menu|extras|add[- ]?ons|hot drinks|cold drinks|specials?|offers?|shakes|coffee|juices|smoothies|mojitos?|bakery|pita breakfast|mini box)$/i;
+  var SECTION_AR=/^(القائمة|المنيو|قائمة الطعام|المقبلات|الطبق الرئيسي|الاطباق الرئيسية|الأطباق الرئيسية|الحلويات|المشروبات|مشروبات ساخنة|مشروبات باردة|السلطات|الشوربة|الشوربات|السندوتشات|ساندويتشات|البرجر|البيتزا|المعكرونة|الفطار|الإفطار|إضافات|وجبات|العروض|الوجبات|المخبوزات|العصائر)$/;
+  var DROP_LINE=/(https?:\/\/|www\.|@\w|\.com\b|\.net\b|\.org\b|^\s*(tel|phone|call|hotline|address|opening hours|open daily|delivery|follow us|instagram|facebook|whatsapp|order now)\b|^\s*(الرقم|العنوان|اتصل|للطلب|تليفون|هاتف)|all prices include|prices include|including vat|\bvat\b)/i;
+  var DESC_WORDS=/\b(with|served|topped|includes?|choice of|comes with|made with|filled with|stuffed with|garnished|add|extra)\b|يقدم|تقدم|يحتوي|مصنوع|مكونات|محشو|يُقدم|اختيار|إضافة/i;
+  var CONNECT=/(?:\b(?:with|and|of|the|in|on|a|an|or|for|to)|[&+,،\-–])\s*$/i;
   function titleCaseIfShouting(t){
     if(LAT.test(t)&&!/[a-z]/.test(t)&&!AR.test(t)&&t.replace(/[^A-Z]/g,'').length>=3)
       return t.toLowerCase().replace(/(^|[\s(\-\/&])([a-z])/g,function(_,a,b){return a+b.toUpperCase()});
@@ -9957,25 +9984,24 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function cleanLine(raw){
     var s=latinDigits(String(raw||'').normalize('NFKC')).replace(/\u200f|\u200e|\u202a|\u202b|\u202c/g,'').replace(/[\t\u00a0]+/g,' ');
     s=s.replace(/[|\[\]{}<>«»=~^\\]/g,' ');
-    s=s.replace(/[.·…_\-–—]{3,}/g,'  ');                       /* dot leaders between a name and its price */
+    s=s.replace(/[.·…_\-–—]{3,}/g,'  ');
     s=s.replace(/^[\s•·●○■□◆◇▪▫►▶➤✓✔*+\-–—_>~]+/,'');
-    s=s.replace(/^\(?\d{1,2}[.)\-]\s+(?=[A-Za-z\u0600-\u06FF])/,''); /* "1. Name" */
+    s=s.replace(/^\(?\d{1,2}[.)\-]\s+(?=[A-Za-z\u0600-\u06FF])/,'');
     s=s.replace(/\(?\s*\d{2,4}\s*(?:kcal|cal|calories)\s*\)?/ig,' ');
     return s.replace(/\s+/g,' ').trim();
   }
-  /* take prices off the end (or the start of Arabic lines). Returns {text,priced} */
   function stripPrices(line){
     var s=line,priced=false;
     for(var k=0;k<4;k++){
       var m=TAIL.exec(s);if(!m)break;
       var num=parseFloat(m[2]+(m[3]?m[3].replace(',','.'):'')),hasCur=HAS_CUR.test(m[1])&&/\D/.test(m[1].replace(/[\d.,\s]/g,'')),
-          sepBefore=/^[\s.\-–—_·…:|/\\]{2,}|[.\-–—_·…:|/\\]/.test(s.slice(m.index,m.index+Math.max(1,s.length-m.index-m[1].length)));
+          sepBefore=/[\s.\-–—_·…:|/\\+]/.test(s.charAt(m.index)||'')&&/[.\-–—_·…:|/\\+]|\s{2,}/.test(s.slice(m.index,m.index+Math.max(1,s.length-m.index-m[1].length)));
       var looksPrice=hasCur||!!m[3]||num>=10||sepBefore||m.index===0;
       if(!looksPrice)break;
-      s=s.slice(0,m.index).replace(/[\s.\-–—_·…:|/\\]+$/,'');priced=true;
+      s=s.slice(0,m.index).replace(/[\s.\-–—_·…:|/\\+]+$/,'');priced=true;
     }
     var cm=new RegExp('(?:^|\\s)'+CUR+'\\s*$','i').exec(s);
-    if(cm&&s.replace(cm[0],'').trim()){s=s.slice(0,cm.index).replace(/[\s.\-–—_·…:|/\\]+$/,'');priced=true}
+    if(cm&&s.replace(cm[0],'').trim()){s=s.slice(0,cm.index).replace(/[\s.\-–—_·…:|/\\+]+$/,'');priced=true}
     if(AR.test(s)){
       var h=HEAD.exec(s);
       if(h){var n2=parseFloat(h[2]+(h[3]?h[3].replace(',','.'):''));
@@ -9983,45 +10009,244 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     }
     return {text:s.replace(/\s+/g,' ').trim(),priced:priced};
   }
-  function parseMenu(rawLines){
-    var items=[],prev=null;
-    (rawLines||[]).slice(0,MAX_LINES*3).forEach(function(raw){
-      var marked=/\uE000/.test(raw);raw=String(raw||'').replace(/\uE000/g,' ');
-      var base=cleanLine(raw);if(!base)return;
-      if(DROP_LINE.test(base))return;
-      var sp=stripPrices(base);if(marked)sp.priced=true;
-      var text=sp.text.replace(/^[\s:\-–—,.]+|[\s:\-–—,]+$/g,'');
-      if(!LETTER.test(text)){                                    /* only a price, a number or a symbol */
-        if(sp.priced||/\d/.test(base)){if(prev&&!prev.priced)prev.priced=true}
-        return;
-      }
-      if(/^\d{7,}$/.test(text.replace(/\D/g,''))&&!LETTER.test(text))return;
-      if(text.replace(/[^A-Za-z\u0600-\u06FF]/g,'').length<2)return;
-      var words=text.split(/\s+/).filter(Boolean),commas=(text.match(/[,،]/g)||[]).length;
-      var desc=words.length>8||commas>=2||(/[.!؟?]$/.test(text)&&words.length>3)||(DESC_WORDS.test(text)&&words.length>5)||text.length>80;
-      var it={text:text,priced:sp.priced,desc:desc,words:words.length};
-      items.push(it);prev=it;
+  function langOf(t){var a=(t.match(/[\u0600-\u06FF]/g)||[]).length,l=(t.match(/[A-Za-z]/g)||[]).length,n=a+l;if(!n)return '';return a/n>.7?'ar':(l/n>.7?'en':'mixed')}
+  /* one line that holds both scripts ("Chicken Burger  برجر دجاج") → its English part and its Arabic part */
+  function parts(t){
+    var out={en:'',ar:''},cur='';
+    t.split(/\s+/).forEach(function(w){
+      var a=AR.test(w),l=LAT.test(w),sc=(a&&!l)?'ar':((l&&!a)?'en':cur);
+      if(!sc)sc=AR.test(t)&&!LAT.test(t)?'ar':'en';
+      cur=sc;out[sc]+=(out[sc]?' ':'')+w;
     });
-    var cands=items.filter(function(i){return!i.desc});
-    var nPriced=cands.filter(function(i){return i.priced}).length;
-    var pricedMenu=cands.length>=4&&nPriced/cands.length>=0.35;
-    var anyLower=cands.some(function(i){return /[a-z]/.test(i.text)});
-    var seen={},out=[];
-    items.forEach(function(it){
-      var t=it.text,key=t.toLowerCase();
-      if(seen[key])return;seen[key]=1;
-      var head=SECTION_EN.test(t)||SECTION_AR.test(t)||/:$/.test(t)||(!it.priced&&anyLower&&LAT.test(t)&&!/[a-z]/.test(t)&&!AR.test(t)&&t.replace(/[^A-Za-z]/g,'').length>=4);   /* ALL CAPS only counts as a heading from 4 letters, so 7UP stays */
-      var keep=true,why='';
-      if(it.desc){keep=false;why='looks like a description'}
-      else if(head&&!it.priced){keep=false;why='looks like a heading'}
-      else if(pricedMenu&&!it.priced){keep=false;why='no price on this line: heading or description?'}
-      out.push({text:titleCaseIfShouting(t.replace(/:$/,'')),keep:keep,why:why,priced:it.priced});
-    });
-    return out.slice(0,MAX_LINES);
+    return out;
   }
-  window.TIF_parseMenu=parseMenu;
+  function median(a){a=a.slice().sort(function(x,y){return x-y});return a.length?a[Math.floor(a.length/2)]:0}
+  /* a lone currency or number (a price the reader broke: "LE", "45", "60LE", "SOLE") */
+  function priceLike(t){
+    var s=latinDigits(String(t||'').normalize('NFKC')).replace(/\s+/g,'');
+    if(!s||s.length>9)return false;
+    if(/^[\d.,]+$/.test(s))return true;
+    if(/^[\dOoSsBbIl.,]{0,5}(?:L\.?E\.?|SLE|SOLE|EGP|ج\.?م\.?|جنيه|جنية)$/i.test(s))return true;
+    return /^[LESOI]{2,4}$/i.test(s)&&/[LS]/i.test(s)&&!/^(SO|LO|IS|OS|ES|EL|LI|SI|OIL|SEE|LESS|LOSE|SOIL|ISLE)$/i.test(s)?false:/^(LE|SLE|SOLE|LLE|ELE|ILE)$/i.test(s);
+  }
 
-  /* ======================= 2. getting lines out of files ======================= */
+  /* pieces: [{t,x0,x1,y0,y1,h,ink,p}] in any order (ink = how heavy the letters are, p = a price was seen).  Returns rows: [{kind,text,lang,why}] */
+  function structureMenu(pieces){
+    var P=[];
+    pieces.forEach(function(pc){
+      var raw=String(pc.t||''),marked=/\uE000/.test(raw)||!!pc.p;raw=raw.replace(/\uE000/g,' ');
+      var base=cleanLine(raw);if(!base)return;
+      var h=pc.h||Math.max(1,pc.y1-pc.y0);
+      var o={x0:pc.x0,x1:pc.x1,y0:pc.y0,y1:pc.y1,h:h,cx:(pc.x0+pc.x1)/2,cy:(pc.y0+pc.y1)/2,ink:pc.ink||0,priced:marked,drop:DROP_LINE.test(base),base:base};
+      if(priceLike(base)){o.pricePiece=true;o.t=''}
+      P.push(o);
+    });
+    /* does a lone price piece sit on the same line, beside this piece?  (then a number at the end of the name is part of the name) */
+    var lone=P.filter(function(p){return p.pricePiece});
+    P.forEach(function(o){
+      if(o.pricePiece)return;
+      o.hasPartner=lone.some(function(pr){return Math.abs(pr.cy-o.cy)<=Math.max(o.h,pr.h)*.7&&((pr.x0>=o.x1-pr.h&&pr.x0-o.x1<o.h*14)||(o.x0>=pr.x1-pr.h&&o.x0-pr.x1<o.h*14))});
+      var sp=stripPrices(o.base);
+      if(o.hasPartner){
+        /* keep the digits, but still drop a currency word stuck to the end */
+        var keep=o.base.replace(new RegExp('(?:^|\\s)'+CUR+'\\s*$','i'),'').replace(/[\s.\-–—_·…:|/\\+]+$/,'').trim();
+        o.t=(sp.priced&&keep===o.base?sp.text:keep).replace(/^[\s:\-–—,.]+|[\s:\-–—,]+$/g,'');
+        if(sp.priced&&/\d$/.test(o.base)&&!HAS_CUR.test(o.base))o.t=o.base.replace(/^[\s:\-–—,.]+|[\s:\-–—,.]+$/g,'');
+      }else{o.t=sp.text.replace(/^[\s:\-–—,.]+|[\s:\-–—,]+$/g,'');o.priced=o.priced||sp.priced}
+      o.letters=LETTER.test(o.t);
+    });
+    P=P.filter(function(o){if(o.pricePiece)return true;if(o.letters)return true;if(/\d/.test(o.base)){o.pricePiece=true;return true}return false});
+    var named=P.filter(function(p){return !p.pricePiece&&p.t.replace(/[^A-Za-z\u0600-\u06FF]/g,'').length>=2});
+    /* a price stands to the right of its name (to the left in Arabic) on the same line */
+    P.filter(function(p){return p.pricePiece}).forEach(function(pr){
+      var left=null,right=null,lg=1e9,rg=1e9;
+      named.forEach(function(n){
+        if(Math.abs(n.cy-pr.cy)>Math.max(n.h,pr.h)*.7)return;
+        var gl=pr.x0-n.x1,gr=n.x0-pr.x1;
+        if(gl>=-pr.h&&gl<lg){lg=gl;left=n}
+        if(gr>=-pr.h&&gr<rg){rg=gr;right=n}
+      });
+      var arabicSide=right&&AR.test(right.t)&&!LAT.test(right.t);
+      var best=arabicSide?(right||left):(left||right);
+      if(best)best.priced=true;
+    });
+    /* the same short text printed again and again (a logo strip) is decoration */
+    var seen={};named.forEach(function(p){var k=p.t.toLowerCase().replace(/[^a-z\u0600-\u06FF]/g,'');p.key=k;seen[k]=(seen[k]||0)+1});
+    var decorShown={};
+    var T=[];
+    named.forEach(function(p){
+      if(seen[p.key]>=3&&p.t.split(/\s+/).length<=3){if(!decorShown[p.key]){decorShown[p.key]=1;p.kind='other';p.why='printed several times (logo or decoration)';p.drop=true;T.push(p)}return}
+      T.push(p);
+    });
+    /* pieces on one line that the reader split (a name in two fragments) are put back together */
+    T.sort(function(a,b){return a.cy-b.cy||a.x0-b.x0});
+    var M=[];
+    T.forEach(function(p){
+      var prev=M[M.length-1];
+      if(prev&&!prev.drop&&!p.drop&&Math.abs(prev.cy-p.cy)<Math.min(prev.h,p.h)*.45&&!prev.priced&&p.x0-prev.x1<Math.min(prev.h,p.h)*.9&&p.x0>=prev.x0-2&&AR.test(prev.t)===AR.test(p.t)){
+        prev.t+=' '+p.t;prev.x1=Math.max(prev.x1,p.x1);prev.priced=prev.priced||p.priced;prev.y0=Math.min(prev.y0,p.y0);prev.y1=Math.max(prev.y1,p.y1);prev.cx=(prev.x0+prev.x1)/2;
+      }else M.push(p);
+    });
+    T=M;
+    if(!T.length)return [];
+    var live=T.filter(function(p){return !p.drop});
+    var mh=median(live.filter(function(p){return p.priced}).map(function(p){return p.h}))||median(live.map(function(p){return p.h}))||median(T.map(function(p){return p.h}));
+    var nPriced=live.filter(function(p){return p.priced}).length,pricedMenu=live.length>=4&&nPriced/live.length>=.3;
+    var anyLower=live.some(function(p){return /[a-z]/.test(p.t)});
+    /* is the heaviness of the letters known (pictures)?  then bold lines are names, light lines are descriptions */
+    var inkKnown=live.filter(function(p){return p.ink>0}).length>=live.length*.6,boldMin=0;
+    if(inkKnown){var pi=live.filter(function(p){return p.priced&&p.ink>0}).map(function(p){return p.ink}),mi=median(pi.length?pi:live.map(function(p){return p.ink}));boldMin=Math.max(.2,mi*.68)}
+    live.forEach(function(p){p.bold=inkKnown?p.ink>=boldMin:null});
+    /* headings */
+    live.forEach(function(p){
+      var words=p.t.split(/\s+/).length,caps=LAT.test(p.t)&&!/[a-z]/.test(p.t)&&!AR.test(p.t)&&p.t.replace(/[^A-Za-z]/g,'').length>=4;
+      p.kind=null;
+      if(p.drop){p.kind='other';p.why=p.why||'contact, web or tax note';return}
+      var big=p.h>=mh*1.3,bigAndHeavy=big&&(!inkKnown||p.bold===true);
+      if(!p.priced&&words<=7&&(SECTION_EN.test(p.t)||SECTION_AR.test(p.t)||/:$/.test(p.t)||bigAndHeavy||(caps&&anyLower)))p.kind='section';
+      else if(!p.priced&&words<=7&&big)p.kind='section',p.soft=true;      /* big but light (a logo line): a heading only if it sits right under another heading */
+    });
+    /* columns: where the names line up. Only the main script of the page counts (English names on an English-and-Arabic page),
+       because Arabic lines are right-aligned and their left edges are all over the place */
+    var pricedAll=live.filter(function(p){return p.priced&&p.kind!=='section'});
+    var arCnt=pricedAll.filter(function(p){return AR.test(p.t)&&!LAT.test(p.t)}).length,latCnt=pricedAll.length-arCnt;
+    var arMajor=pricedAll.length?arCnt>latCnt:(live.filter(function(p){return AR.test(p.t)&&!LAT.test(p.t)}).length>live.length/2);
+    var mainScript=function(p){var onlyAr=AR.test(p.t)&&!LAT.test(p.t);return arMajor?onlyAr:!onlyAr};
+    var body0=live.filter(function(p){return p.kind!=='section'&&p.kind!=='other'});
+    /* lines that carry a price are the safest anchors; lines the reader garbled must not create columns */
+    var anchors=body0.filter(function(p){return mainScript(p)&&p.priced});
+    var edges=(anchors.length>=3?anchors:body0.filter(function(p){return mainScript(p)&&(p.priced||p.bold)})).map(function(p){return arMajor?p.x1:p.x0}).sort(function(a,b){return a-b});
+    if(!edges.length)edges=body0.filter(mainScript).map(function(p){return arMajor?p.x1:p.x0}).sort(function(a,b){return a-b});
+    if(!edges.length)edges=body0.map(function(p){return arMajor?p.x1:p.x0}).sort(function(a,b){return a-b});
+    var cols=[],gapMin=Math.max(mh*2.2,20);
+    edges.forEach(function(x){var c=cols[cols.length-1];if(c&&x-c.last<=gapMin){c.list.push(x);c.last=x}else cols.push({list:[x],last:x})});
+    cols.forEach(function(c){c.at=median(c.list)});
+    var ctol=mh*1.5;
+    function colOf(p){
+      var cx=(p.x0+p.x1)/2,k;
+      if(!cols.length)return 0;
+      if(!arMajor){for(k=cols.length-1;k>=0;k--)if(cx>=cols[k].at-ctol)return k;return 0}
+      for(k=0;k<cols.length;k++)if(cx<=cols[k].at+ctol)return k;return cols.length-1;
+    }
+    function colsOfHeading(s){
+      var set=new Set();
+      if(!cols.length){set.add(0);return set}
+      if(!arMajor){
+        var i0=0;cols.forEach(function(c,i){if(c.at<=s.x0+mh)i0=i});
+        var left=cols[i0].at,right=2*s.cx-left;
+        cols.forEach(function(c,i){if(c.at>=left-1&&c.at<right)set.add(i)});
+        set.add(i0);
+      }else{
+        var i1=cols.length-1;for(var k=0;k<cols.length;k++){if(cols[k].at>=s.x1-mh){i1=k;break}}
+        var right2=cols[i1].at,left2=2*s.cx-right2;
+        cols.forEach(function(c,i){if(c.at<=right2+1&&c.at>left2)set.add(i)});
+        set.add(i1);
+      }
+      return set;
+    }
+    /* two stacked heading lines (COLD / SANDWICHES, BURGERS by / Butcher's Burger) are one heading */
+    var secs=live.filter(function(p){return p.kind==='section'}).sort(function(a,b){return a.y0-b.y0||a.x0-b.x0});
+    function ovl(a,b){var o=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0);return o>0?o/Math.max(1,Math.min(a.x1-a.x0,b.x1-b.x0)):0}
+    for(var i=0;i<secs.length;i++){
+      var a=secs[i];if(a.merged)continue;
+      for(var j=i+1;j<secs.length;j++){
+        var b=secs[j];if(b.merged)continue;
+        if(ovl(a,b)>.3&&b.y0-a.y1<Math.max(a.h,b.h)*.9&&b.y0>=a.y0){a.t=a.t+' '+b.t;a.y1=b.y1;a.x0=Math.min(a.x0,b.x0);a.x1=Math.max(a.x1,b.x1);a.cx=(a.x0+a.x1)/2;b.merged=true}
+      }
+    }
+    live.forEach(function(p){if(p.soft&&!p.merged)p.kind=null});
+    var body=live.filter(function(p){return !p.merged});
+    var H=body.filter(function(p){return p.kind==='section'});
+    H.forEach(function(s){s.cols=colsOfHeading(s)});
+    function headingAbove(p){var c=colOf(p),best=null;H.forEach(function(s){if(s===p)return;if(s.y1<=p.y0+p.h*.4&&s.cols.has(c)){if(!best||s.y1>best.y1)best=s}});return best}
+    /* items, descriptions, wrapped names — top to bottom */
+    var order=body.filter(function(p){return p.kind!=='section'&&p.kind!=='other'}).sort(function(a,b){return a.y0-b.y0||a.x0-b.x0});
+    order.forEach(function(p){p.col=colOf(p)});
+    function above(p){var best=null;order.forEach(function(q){if(q===p||q.merged||!(q.kind==='item'||q.kind==='desc')||q.col!==p.col)return;if(q.y1<=p.y0+p.h*.3){var gap=p.y0-q.y1;if(gap<=mh*1.6&&(!best||q.y1>best.y1))best=q}});return best}
+    function below(p){var best=null;order.forEach(function(q){if(q===p||q.merged||q.col!==p.col)return;if(q.y0>=p.y1-q.h*.3){var gap=q.y0-p.y1;if(gap<=mh*1.6&&(!best||q.y0<best.y0))best=q}});return best}
+    function descLike(p){
+      var w=p.t.split(/\s+/).length;
+      if(p.bold===false)return true;
+      return /[\/،]/.test(p.t)||/^\(.*\)$/.test(p.t)||(/,/.test(p.t)&&w>=3)||w>=7||/^[a-z]/.test(p.t)||(DESC_WORDS.test(p.t)&&w>=3);
+    }
+    order.forEach(function(p){
+      if(p.merged)return;
+      var up=above(p);
+      if(p.priced){p.kind='item';return}
+      if(up){
+        var listy=/,\s*[^,\s]+(?:\s+[^,\s]+){0,2}$/.test(up.t);
+        var cont=(up.kind==='item'&&up.priced&&!up.wrapped&&(CONNECT.test(up.t)||listy||/^[a-z]/.test(p.t))&&(p.bold!==false)&&!descLike(p));
+        if(cont){
+          var nx0=below(p),labelHere=nx0&&nx0.priced&&nx0.bold===false&&p.t.split(/\s+/).length<=3;
+          if(!labelHere){up.t+=' '+p.t;up.y1=p.y1;up.x1=Math.max(up.x1,p.x1);up.wrapped=true;p.merged=true;return}
+        }
+        /* light lines under a light, priced line are its siblings (the variants of a pâté), not its description */
+        if(up.kind==='item'&&up.bold===false&&up.priced&&p.bold===false){p.kind='item';return}
+        if(descLike(p)){p.kind='desc';p.owner=up.kind==='desc'?(up.owner||up):up;return}
+        var nx=below(p);
+        if(nx&&nx.priced&&p.t.split(/\s+/).length<=4){p.kind='item';return}
+        /* a heavy line is a name even when its price was not read */
+        if(p.bold===true){p.kind='item';return}
+        if(!pricedMenu&&p.bold!==false){p.kind='item';return}                /* a list of names without prices: every line is a name */
+        p.kind='desc';p.owner=up.kind==='desc'?(up.owner||up):up;return;
+      }
+      var hd=headingAbove(p);
+      if(hd&&(descLike(p)||(p.cy>hd.y0-hd.h*.2&&p.cy<hd.y1+hd.h*.4&&p.x0>hd.x1-hd.h*.2)||(pricedMenu&&p.h<=mh*1.05&&p.bold!==true))){p.kind='desc';p.owner=hd;p.note=true;return}
+      p.kind='item';
+    });
+    var descs=order.filter(function(p){return p.kind==='desc'&&!p.merged}).sort(function(a,b){return a.y0-b.y0||a.x0-b.x0});
+    descs.forEach(function(d){
+      if(d.merged)return;
+      var nx=descs.find(function(q){return q!==d&&!q.merged&&q.owner===d.owner&&q.col===d.col&&q.y0>=d.y1-q.h*.3&&q.y0-d.y1<=mh*1.0});
+      if(nx){
+        d.t=d.t+(/[,(]$/.test(d.t)||/^[(a-z]/.test(nx.t)?' ':', ')+nx.t;d.y1=nx.y1;d.x1=Math.max(d.x1,nx.x1);nx.merged=true;
+      }
+    });
+    var kept=body.filter(function(p){return !p.merged});
+    /* sections own what is under them in their own column */
+    var secOf=new Map();
+    kept.forEach(function(p){if(p.kind==='item'||p.kind==='desc'){var hd=p.note?p.owner:headingAbove(p);secOf.set(p,hd||null)}});
+    var bands=[];
+    H.slice().sort(function(a,b){return a.y0-b.y0||a.x0-b.x0}).forEach(function(s){var b=bands.find(function(x){return Math.abs(x.y-s.y0)<Math.max(s.h,x.h)*1.2});if(b)b.list.push(s);else bands.push({y:s.y0,h:s.h,list:[s]})});
+    var ordered=[];bands.forEach(function(b){b.list.sort(function(p,q){return arMajor?(q.x0-p.x0):(p.x0-q.x0)}).forEach(function(s){ordered.push(s)})});
+    var rows=[];
+    function pushRows(chunk){
+      var notes=chunk.filter(function(p){return p.kind==='desc'&&p.note}),items=chunk.filter(function(p){return p.kind==='item'}),descs=chunk.filter(function(p){return p.kind==='desc'&&!p.note});
+      var seq=[];
+      var R=function(kind,p,t){return {kind:kind,text:t,lang:langOf(t),p:p}};
+      notes.forEach(function(n){seq.push(R('desc',n,n.t))});
+      items.forEach(function(it){
+        seq.push(R('item',it,titleCaseIfShouting(it.t)));
+        descs.filter(function(d){return d.owner===it}).sort(function(a,b){return a.y0-b.y0}).forEach(function(d){seq.push(R('desc',d,d.t))});
+      });
+      descs.filter(function(d){return !items.includes(d.owner)}).forEach(function(d){seq.push(R('desc',d,d.t))});
+      /* the Arabic name printed right under the English name (or the other way round) is the same line of the menu: one row, two languages */
+      var out=[];
+      seq.forEach(function(r){
+        var prev=out[out.length-1];
+        if(prev&&prev.kind===r.kind&&(r.kind==='item'||r.kind==='desc')&&prev.p&&r.p&&((prev.lang==='en'&&r.lang==='ar')||(prev.lang==='ar'&&r.lang==='en'))
+           &&prev.p.col===r.p.col&&r.p.y0>=prev.p.y0&&r.p.y0-prev.p.y1<=mh*1.0&&!(prev.p.priced&&r.p.priced)&&!prev.paired){
+          prev.text=prev.text+' '+r.text;prev.lang='mixed';prev.paired=true;prev.p.y1=r.p.y1;
+        }else out.push(r);
+      });
+      out.forEach(function(r){rows.push({kind:r.kind,text:r.text,lang:r.lang})});
+    }
+    var byPos=function(a,b){return a.y0-b.y0||a.x0-b.x0};
+    var loose=kept.filter(function(p){return (p.kind==='item'||p.kind==='desc')&&!secOf.get(p)}).sort(byPos);
+    if(loose.length){rows.push({kind:'section',text:'(no section found)',lang:''});pushRows(loose)}
+    ordered.forEach(function(s){
+      var chunk=kept.filter(function(p){return (p.kind==='item'||p.kind==='desc')&&secOf.get(p)===s}).sort(byPos);
+      if(!chunk.length){rows.push({kind:'other',text:titleCaseIfShouting(s.t),lang:langOf(s.t),why:'a heading with nothing under it (title, logo or note?)'});return}
+      rows.push({kind:'section',text:titleCaseIfShouting(s.t),lang:langOf(s.t)});pushRows(chunk);
+    });
+    kept.filter(function(p){return p.kind==='other'}).forEach(function(p){rows.push({kind:'other',text:p.t,lang:langOf(p.t),why:p.why})});
+    /* lines that were set aside (a logo printed many times, phone numbers, tax notes) are still listed, as "Ignore", so nothing disappears silently */
+    T.filter(function(p){return p.drop}).forEach(function(p){rows.push({kind:'other',text:p.t,lang:langOf(p.t),why:p.why||'contact, web or tax note'})});
+    return rows;
+  }
+  window.TIF_structureMenu=structureMenu;
+
+  /* ======================= 2. getting text with positions out of files ======================= */
   var libs={},runToken=0,workerGen=0,ocrWorker=null,ocrReady=null,onProgress=function(){};
   function alive(t){return t===runToken}
   function cancelErr(){var e=new Error('cancelled');e.code='cancelled';return e}
@@ -10035,7 +10260,6 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     if(window.Tesseract)return Promise.resolve();
     return libs.tess||(libs.tess=loadScript(TESS_URL).then(function(){if(!window.Tesseract)throw new Error('tesseract')}).catch(function(e){libs.tess=null;throw e}));
   }
-  /* a download that fails inside the reading tool does not always report an error: never wait forever */
   function withTimeout(promise,ms,what){
     return new Promise(function(res,rej){
       var t=setTimeout(function(){rej(new Error('timeout '+what))},ms);
@@ -10051,14 +10275,18 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
         if(m&&m.status==='recognizing text')onProgress(null,m.progress);
         else if(m&&/loading/.test(m.status||''))onProgress('Getting the reading tool ready (first time only)…',null);
       }}),window.TIF_MR_WORKER_TIMEOUT||150000,'worker');
-    }).then(function(w){if(gen!==workerGen){try{w.terminate()}catch(x){}throw cancelErr()}ocrWorker=w;return w}).catch(function(e){
+    }).then(function(w){
+      if(gen!==workerGen){try{w.terminate()}catch(x){}throw cancelErr()}
+      /* "sparse text" finds every piece of text on a designed page, whatever the columns and boxes */
+      return w.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'}).then(function(){ocrWorker=w;return w});
+    }).catch(function(e){
       try{if(ocrWorker)ocrWorker.terminate()}catch(x){}
       ocrWorker=null;ocrReady=null;throw e});
     return ocrReady;
   }
-  function isArabicRow(strs){var a=0,l=0;strs.forEach(function(s){a+=(s.match(/[\u0600-\u06FF]/g)||[]).length;l+=(s.match(/[A-Za-z]/g)||[]).length});return a>l}
-  /* a PDF page → short text pieces in reading order; pieces far apart on one row (name … price, or two columns) stay separate */
-  function pdfRows(items){
+  function isArabicRow(strs){var a=0,l=0;strs.forEach(function(s){a+=(s.match(/[\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/g)||[]).length;l+=(s.match(/[A-Za-z]/g)||[]).length});return a>l}
+  /* a PDF page → text pieces with their position (y counted from the top of the page) */
+  function pdfPieces(items,pageH,off){
     var its=items.filter(function(i){return i&&i.str&&i.str.trim()}).map(function(i){return{s:i.str,x:i.transform[4],y:i.transform[5],w:i.width||0,h:Math.abs(i.height)||Math.abs(i.transform[3])||10}});
     its.sort(function(a,b){return b.y-a.y||a.x-b.x});
     var rows=[],cur=null;
@@ -10069,13 +10297,12 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       var segs=[],seg=[r.items[0]];
       for(var k=1;k<r.items.length;k++){var p=r.items[k-1],it=r.items[k],gap=it.x-(p.x+p.w);if(gap>Math.max(14,r.h*1.8)){segs.push(seg);seg=[it]}else seg.push(it)}
       segs.push(seg);
-      var rowRtl=isArabicRow(r.items.map(function(i){return i.s}));
       var isAr=function(it){return /[\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(it.s)};
-      var texts=segs.map(function(sg){
-        var baseRtl=isArabicRow(sg.map(function(i){return i.s})),runs=[],cur=null;
+      segs.forEach(function(sg){
+        var baseRtl=isArabicRow(sg.map(function(i){return i.s})),runs=[],cur2=null;
         sg.forEach(function(it){var a=isAr(it),neutral=!/[A-Za-z\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(it.s);
-          if(!cur||(!neutral&&cur.ar!==a)){cur={ar:a,items:[]};runs.push(cur)}cur.items.push(it)});
-        var parts=runs.map(function(run){
+          if(!cur2||(!neutral&&cur2.ar!==a)){cur2={ar:a,items:[]};runs.push(cur2)}cur2.items.push(it)});
+        var ps=runs.map(function(run){
           var arr=run.ar?run.items.slice().reverse():run.items,t='';
           arr.forEach(function(it,ix){
             if(ix>0){var q=arr[ix-1],g=run.ar?(q.x-(it.x+it.w)):(it.x-(q.x+q.w));t+=g>r.h*.15?' ':''}
@@ -10083,15 +10310,16 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
           });
           return {x:run.items[0].x,t:t};
         });
-        if(baseRtl)parts.reverse();
-        return parts.map(function(q){return q.t}).join(' ').normalize('NFKC').replace(/\s+/g,' ').trim();
+        if(baseRtl)ps.reverse();
+        var txt=ps.map(function(q){return q.t}).join(' ').normalize('NFKC').replace(/\s+/g,' ').trim();
+        if(!txt)return;
+        var x0=Math.min.apply(null,sg.map(function(i){return i.x})),x1=Math.max.apply(null,sg.map(function(i){return i.x+i.w})),base=pageH-r.y+off;
+        out.push({t:txt,x0:x0,x1:x1,y0:base-r.h,y1:base,h:r.h});
       });
-      if(rowRtl)texts.reverse();
-      texts.forEach(function(t){if(t)out.push(t)});
     });
     return out;
   }
-  /* menus often join a name to its price with a dotted line. Letters next to it get misread, so rub out rows of dots and long thin lines first */
+  /* an eraser for dotted lines (they make letters next to them unreadable) */
   function eraseLeaders(c){
     try{
       var w=c.width,h=c.height,n=w*h,ctx=c.getContext('2d'),img=ctx.getImageData(0,0,w,h),d=img.data;
@@ -10120,7 +10348,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
         if(parent[k]!==k||area[k]===0)continue;
         var bw=maxx[k]-minx[k]+1,bh=maxy[k]-miny[k]+1;
         if(bw<=D&&bh<=D)dots.push({k:k,cx:(minx[k]+maxx[k])/2,cy:(miny[k]+maxy[k])/2});
-        else if(bh<=Math.max(3,D*0.7)&&bw>=D*8&&bw>=bh*12)kill.push(k);          /* a long thin line: underline, rule, dashes */
+        else if(bh<=Math.max(3,D*0.7)&&bw>=D*8&&bw>=bh*12)kill.push(k);
       }
       dots.sort(function(a,b){return a.cy-b.cy});
       var rows=[],cur=null;
@@ -10128,7 +10356,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       rows.forEach(function(row){
         row.sort(function(a,b){return a.cx-b.cx});
         var run=[row[0]];
-        function flush(){if(run.length>=5)run.forEach(function(dt){kill.push(dt.k)});}
+        function flush(){if(run.length>=5)run.forEach(function(dt){kill.push(dt.k)})}
         for(var m=1;m<row.length;m++){if(row[m].cx-run[run.length-1].cx<=D*5)run.push(row[m]);else{flush();run=[row[m]]}}
         flush();
       });
@@ -10139,68 +10367,126 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     }catch(e){}
     return c;
   }
+  /* black letters on white paper: coloured boxes, shadows and uneven light disappear (light letters on a dark page are turned round first) */
+  function binarize(c){
+    try{
+      var w=c.width,h=c.height,n=w*h,ctx=c.getContext('2d'),img=ctx.getImageData(0,0,w,h),d=img.data;
+      var g=new Uint8Array(n),i,j,sumAll=0;
+      for(i=0,j=0;i<n;i++,j+=4){var v=(d[j]*299+d[j+1]*587+d[j+2]*114)/1000|0;g[i]=v;sumAll+=v}
+      var invert=(sumAll/n)<110;                                   /* a mostly dark page: letters are the light part */
+      if(invert)for(i=0;i<n;i++)g[i]=255-g[i];
+      var W=w+1,integ=new Float64Array((w+1)*(h+1)),x,y;
+      for(y=1;y<=h;y++){var row=0;for(x=1;x<=w;x++){row+=g[(y-1)*w+(x-1)];integ[y*W+x]=integ[(y-1)*W+x]+row}}
+      var r=Math.max(15,Math.round(Math.min(w,h)/45));
+      for(y=0;y<h;y++){
+        var y0=Math.max(0,y-r),y1=Math.min(h-1,y+r);
+        for(x=0;x<w;x++){
+          var x0=Math.max(0,x-r),x1=Math.min(w-1,x+r),cnt=(x1-x0+1)*(y1-y0+1);
+          var sum=integ[(y1+1)*W+(x1+1)]-integ[y0*W+(x1+1)]-integ[(y1+1)*W+x0]+integ[y0*W+x0],mean=sum/cnt,p=y*w+x,o=p*4;
+          var black=g[p]<mean*0.86&&g[p]<175;
+          d[o]=d[o+1]=d[o+2]=black?0:255;
+        }
+      }
+      ctx.putImageData(img,0,0);
+    }catch(e){}
+    return c;
+  }
   function prepCanvas(src,w,h){
     var long=Math.max(w,h),scale=1;
-    if(long>2600)scale=2600/long;else if(long<1500)scale=Math.min(2.5,1500/long);
+    if(long>3000)scale=3000/long;else if(long<1800)scale=Math.min(2.5,1800/long);
     var c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));
     var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
     try{x.filter='grayscale(1) contrast(1.3)'}catch(e){}
     x.drawImage(src,0,0,c.width,c.height);return eraseLeaders(c);
   }
-  async function ocrCanvas(canvas,tok){
+  /* a second copy of the page in black and white: it shows the lettering on coloured boxes that the plain copy can miss */
+  function binCopy(c){
+    var d=document.createElement('canvas');d.width=c.width;d.height=c.height;
+    d.getContext('2d').drawImage(c,0,0);return binarize(d);
+  }
+  function overlapArea(a,b){var w=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),h=Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0);return w>0&&h>0?w*h:0}
+  /* the black-and-white reading is only used to find headings the plain reading missed (lettering on coloured boxes); everything else stays as read plainly */
+  function mergePieces(a,b){
+    var out=a.slice(),mh=median(a.map(function(x){return x.h}))||20;
+    b.forEach(function(pb){
+      var t=cleanLine(String(pb.t||'').replace(/\uE000/g,' ')),area=Math.max(1,(pb.x1-pb.x0)*(pb.y1-pb.y0)),covered=0;
+      if(!t)return;
+      a.forEach(function(pa){covered+=overlapArea(pa,pb)});
+      if(covered/area>=.2)return;
+      var words=t.split(/\s+/).length,caps=LAT.test(t)&&!/[a-z]/.test(t)&&!AR.test(t)&&t.replace(/[^A-Za-z]/g,'').length>=4;
+      if(words<=4&&(SECTION_EN.test(t)||SECTION_AR.test(t)||(caps&&pb.h>=mh*1.2)))out.push(pb);
+    });
+    return out;
+  }
+  /* a picture → text pieces with their position */
+  async function ocrPieces(canvas,tok,off,inkCanvas){
     var w=await getWorker();
     if(!alive(tok))throw cancelErr();
     var r=await withTimeout(w.recognize(canvas),300000,'recognize'),d=(r&&r.data)||{};
     if(!alive(tok))throw cancelErr();
-    if(Array.isArray(d.lines)&&d.lines.length&&d.lines.some(function(l){return l.words&&l.words.length})){
-      var out=[],scriptOf=function(t){var a=(t.match(/[\u0600-\u06FF]/g)||[]).length,l=(t.match(/[A-Za-z]/g)||[]).length;return a>l?'ar':(l>0?'la':'')};
-      d.lines.forEach(function(l){
-        var ws=(l.words||[]).filter(function(x){return String(x.text||'').trim()});
-        if(!ws.length)return;
-        var major=scriptOf(ws.map(function(x){return x.text}).join(' '))||'la';
-        /* a word counts at the ends of a line only if it is a real-looking word in the line's script, or confidently read */
-        var solid=ws.map(function(x){
-          var s=scriptOf(x.text),letters=(x.text.match(/[A-Za-z\u0600-\u06FF]/g)||[]).length;
-          return (letters>=4&&s===major)||(x.confidence>=75&&/[A-Za-z0-9\u0600-\u06FF]/.test(x.text)&&(s===major||s===''));
-        });
-        var a=solid.indexOf(true),z=solid.lastIndexOf(true);
-        if(a<0)return;                                           /* nothing readable on this line */
-        var core=ws.slice(a,z+1),marker=(a>0||z<ws.length-1);   /* junk at an end of the line = dots and a price */
-        var hs=core.map(function(x){return x.bbox?(x.bbox.y1-x.bbox.y0):0}).filter(Boolean).sort(function(p,q){return p-q});
-        var mh=hs.length?hs[Math.floor(hs.length/2)]:20,thr=Math.max(14,mh*1.25),segs=[[core[0]]];
-        for(var i=1;i<core.length;i++){
-          var pb=core[i-1].bbox,cb=core[i].bbox,gap=(pb&&cb)?Math.max(cb.x0-pb.x1,pb.x0-cb.x1):0;
-          if(gap>thr)segs.push([core[i]]);else segs[segs.length-1].push(core[i]);
-        }
-        segs.forEach(function(sg,ix){out.push(sg.map(function(x){return x.text}).join(' ')+((marker&&ix===segs.length-1)?' \uE000':''))});
-      });
-      return out;
+    var out=[],scriptOf=function(t){var a=(t.match(/[\u0600-\u06FF]/g)||[]).length,l=(t.match(/[A-Za-z]/g)||[]).length;return a>l?'ar':(l>0?'la':'')};
+    /* how heavy is the lettering inside each box?  bold names are heavy, descriptions are light */
+    var cw=canvas.width,chh=canvas.height,pix=null;
+    try{pix=(inkCanvas||canvas).getContext('2d').getImageData(0,0,cw,chh).data}catch(e){}
+    function inkOf(x0,y0,x1,y1){
+      if(!pix)return 0;
+      x0=Math.max(0,x0|0);y0=Math.max(0,y0|0);x1=Math.min(cw,x1|0);y1=Math.min(chh,y1|0);
+      var dark=0,tot=0;
+      for(var y=y0;y<y1;y++)for(var x=x0;x<x1;x++){tot++;if(pix[(y*cw+x)*4]<128)dark++}
+      return tot?dark/tot:0;
     }
-    return String(d.text||'').split(/\r?\n/);
+    (d.lines||[]).forEach(function(l){
+      var ws=(l.words||[]).filter(function(x){return String(x.text||'').trim()&&x.bbox});
+      if(!ws.length)return;
+      var major=scriptOf(ws.map(function(x){return x.text}).join(' '))||'la';
+      var solid=ws.map(function(x){
+        var s=scriptOf(x.text),letters=(x.text.match(/[A-Za-z\u0600-\u06FF]/g)||[]).length;
+        return (letters>=3&&s===major)||(x.confidence>=70&&/[A-Za-z0-9\u0600-\u06FF]/.test(x.text)&&(s===major||s===''));
+      });
+      var a=solid.indexOf(true),z=solid.lastIndexOf(true);
+      if(a<0)return;
+      var core=ws.slice(a,z+1),marker=(a>0||z<ws.length-1);
+      var mh=median(core.map(function(x){return x.bbox.y1-x.bbox.y0}))||20,thr=Math.max(14,mh*1.25),segs=[[core[0]]];
+      for(var i=1;i<core.length;i++){
+        var pb=core[i-1].bbox,cb=core[i].bbox,gap=Math.max(cb.x0-pb.x1,pb.x0-cb.x1);
+        if(gap>thr)segs.push([core[i]]);else segs[segs.length-1].push(core[i]);
+      }
+      segs.forEach(function(sg,ix){
+        var hs=sg.map(function(x){return x.bbox.y1-x.bbox.y0}),bx0=Math.min.apply(null,sg.map(function(x){return x.bbox.x0})),bx1=Math.max.apply(null,sg.map(function(x){return x.bbox.x1})),
+            by0=Math.min.apply(null,sg.map(function(x){return x.bbox.y0})),by1=Math.max.apply(null,sg.map(function(x){return x.bbox.y1}));
+        out.push({t:sg.map(function(x){return x.text}).join(' ')+((marker&&ix===segs.length-1)?' \uE000':''),
+          x0:bx0,x1:bx1,y0:by0+off,y1:by1+off,h:median(hs),ink:inkOf(bx0,by0,bx1,by1)});
+      });
+    });
+    return out;
   }
-  async function readImage(file,tok){
+  async function readImage(file,tok,off){
     var bmp;
     try{bmp=await createImageBitmap(file)}catch(e){var err=new Error('format');err.code='format';throw err}
     prog(tok,'Reading the text in '+file.name+'…',0.1);
-    var lines=await ocrCanvas(prepCanvas(bmp,bmp.width,bmp.height),tok);
+    var ca=prepCanvas(bmp,bmp.width,bmp.height),pa=await ocrPieces(ca,tok,off,ca);
+    prog(tok,'Reading again, in black and white, for anything missed…',0.55);
+    var pb=await ocrPieces(binCopy(ca),tok,off,ca),pcs=mergePieces(pa,pb);
     try{bmp.close()}catch(e){}
-    return lines;
+    return {pieces:pcs,pages:1};
   }
-  async function readPdf(file,tok){
+  async function readPdf(file,tok,off0){
     await needPdf();
-    var buf=await file.arrayBuffer(),pdf=await window.pdfjsLib.getDocument({data:buf}).promise,n=Math.min(pdf.numPages,MAX_PAGES),lines=[],ocrPages=0;
+    var buf=await file.arrayBuffer(),pdf=await window.pdfjsLib.getDocument({data:buf}).promise,n=Math.min(pdf.numPages,MAX_PAGES),pcs=[],ocrPages=0;
     for(var p=1;p<=n;p++){
       if(!alive(tok))throw cancelErr();
       prog(tok,'Reading '+file.name+', page '+p+' of '+n+(pdf.numPages>n?' (first '+n+' pages)':'')+'…',(p-1)/n);
-      var page=await pdf.getPage(p),tc=await page.getTextContent(),rows=pdfRows(tc.items),chars=rows.join('').replace(/\s/g,'').length;
-      if(chars>=15)lines=lines.concat(rows);
-      else{                                                      /* a scanned page has no text: read it like a picture */
-        var vp=page.getViewport({scale:2.2}),cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
+      var page=await pdf.getPage(p),tc=await page.getTextContent(),H=page.view[3]-page.view[1],off=off0+(p-1)*PAGE_GAP;
+      var got=pdfPieces(tc.items,H,off),chars=got.map(function(g){return g.t}).join('').replace(/\s/g,'').length;
+      if(chars>=15)pcs=pcs.concat(got);
+      else{                                                      /* no text inside (a scan, or fonts turned into shapes): read it like a picture */
+        var vp=page.getViewport({scale:3.5}),cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
         await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
-        lines=lines.concat(await ocrCanvas(prepCanvas(cv,cv.width,cv.height),tok));ocrPages++;
+        var ca=prepCanvas(cv,cv.width,cv.height),pa=await ocrPieces(ca,tok,off,ca),pb=await ocrPieces(binCopy(ca),tok,off,ca);
+        pcs=pcs.concat(mergePieces(pa,pb));ocrPages++;
       }
     }
-    return {lines:lines,ocrPages:ocrPages};
+    return {pieces:pcs,pages:n,ocrPages:ocrPages};
   }
 
   /* ======================= 3. the screens ======================= */
@@ -10210,48 +10496,124 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   }
   function closeOverlay(id){var o=$(id);if(o)o.remove()}
   function showProgress(){
-    var ov=mkOverlay('mrProg','<div class="mr-box" role="dialog" aria-modal="true" aria-labelledby="mrPT"><h3 id="mrPT">Reading your menu…</h3>'
+    mkOverlay('mrProg','<div class="mr-box" role="dialog" aria-modal="true" aria-labelledby="mrPT"><h3 id="mrPT">Reading your menu…</h3>'
       +'<div class="mr-st" id="mrStatus" aria-live="polite">Starting…</div><div class="mr-bar"><i id="mrBarFill"></i></div>'
       +'<p class="mr-note">The file is read inside your browser and is not uploaded anywhere.</p>'
       +'<div class="mr-act"><button type="button" class="btn bs bsm" id="mrCancel">Cancel</button></div></div>');
     $('mrCancel').onclick=function(){runToken++;workerGen++;if(ocrWorker){try{ocrWorker.terminate()}catch(e){}}ocrWorker=null;ocrReady=null;closeOverlay('mrProg')};
     $('mrCancel').focus();
-    var last=0;
     onProgress=function(msg,frac){
       var st=$('mrStatus'),bar=$('mrBarFill');if(!st)return;
       if(msg)st.textContent=msg;
-      if(typeof frac==='number'&&bar){last=Math.max(0,Math.min(1,frac));bar.style.width=Math.round(last*100)+'%'}
+      if(typeof frac==='number'&&bar)bar.style.width=Math.round(Math.max(0,Math.min(1,frac))*100)+'%';
     };
   }
   function showError(msg){
-    var ov=mkOverlay('mrErr','<div class="mr-box" role="alertdialog" aria-modal="true" aria-labelledby="mrET"><h3 id="mrET">Could not read the menu</h3><p>'+esc(msg)+'</p><div class="mr-act"><button type="button" class="btn bp bsm" id="mrErrOk">OK</button></div></div>');
+    mkOverlay('mrErr','<div class="mr-box" role="alertdialog" aria-modal="true" aria-labelledby="mrET"><h3 id="mrET">Could not read the menu</h3><p>'+esc(msg)+'</p><div class="mr-act"><button type="button" class="btn bp bsm" id="mrErrOk">OK</button></div></div>');
     $('mrErrOk').onclick=function(){closeOverlay('mrErr')};$('mrErrOk').focus();
   }
+  var S={rows:[],lang:'both',ocr:false};
+  var KINDS=[['section','Section'],['item','Item'],['desc','Description'],['other','Ignore']];
+  function shows(r,lang){return lang==='en'?!!r.en:(lang==='ar'?!!r.ar:!!(r.en||r.ar))}
+  function counts(lang){
+    var c={section:0,item:0,desc:0,other:0};
+    S.rows.forEach(function(r){if(shows(r,lang))c[r.kind]++});return c;
+  }
+  function rowHtml(r,i){
+    var lg=S.lang,sel='<select class="mr-type" aria-label="What is this line?">'+KINDS.map(function(k){return '<option value="'+k[0]+'"'+(r.kind===k[0]?' selected':'')+'>'+k[1]+'</option>'}).join('')+'</select>';
+    var en=(lg!=='ar')?'<input type="text" class="mr-en" dir="ltr" value="'+esc(r.en)+'" placeholder="English" aria-label="English text">':'';
+    var ar=(lg!=='en')?'<input type="text" class="mr-ar" dir="rtl" value="'+esc(r.ar)+'" placeholder="العربية" aria-label="Arabic text">':'';
+    return '<div class="mr-row k-'+r.kind+'" data-i="'+i+'">'+sel+'<span class="mr-txts">'+en+ar+'</span><button type="button" class="mr-del" aria-label="Remove this line" title="Remove this line">×</button>'
+      +(r.why&&r.kind==='other'?'<span class="mr-why">'+esc(r.why)+'</span>':'')+'</div>';
+  }
+  function renderList(){
+    var list=$('mrList');if(!list)return;
+    var top=list.scrollTop;
+    list.innerHTML=S.rows.map(function(r,i){return shows(r,S.lang)?rowHtml(r,i):''}).join('')||'<p class="mr-note">Nothing in this language.</p>';
+    list.scrollTop=top;
+    var c=counts(S.lang);
+    $('mrSum').innerHTML='<b>'+c.section+'</b> section'+(c.section===1?'':'s')+' · <b>'+c.item+'</b> item'+(c.item===1?'':'s')+' · <b>'+c.desc+'</b> description'+(c.desc===1?'':'s')+(c.other?' · '+c.other+' left out':'');
+  }
+  /* sections → items → descriptions, as rows of a table, for the chosen language */
+  function tableFor(lang){
+    var recs=[],cur=null,sec=null,secRec=null;
+    S.rows.forEach(function(r){
+      if(r.kind==='other'||!shows(r,lang))return;
+      if(r.kind==='section'){sec=r;secRec={sec:r,item:null,desc:[]};recs.push(secRec);cur=null}
+      else if(r.kind==='item'){
+        if(secRec&&!secRec.desc.length&&recs[recs.length-1]===secRec)recs.pop();
+        cur={sec:sec,item:r,desc:[]};recs.push(cur);secRec=null;
+      }else{
+        if(cur)cur.desc.push(r);else if(secRec)secRec.desc.push(r);else recs.push({sec:sec,item:null,desc:[r]});
+      }
+    });
+    var f=function(o,k){return o?(o[k]||''):''},dj=function(a,k){return a.map(function(d){return d[k]}).filter(Boolean).join(' · ')};
+    var head,body;
+    if(lang==='both'){
+      head=['Section (English)','Section (Arabic)','Item (English)','Item (Arabic)','Description (English)','Description (Arabic)'];
+      body=recs.map(function(x){return [f(x.sec,'en'),f(x.sec,'ar'),f(x.item,'en'),f(x.item,'ar'),dj(x.desc,'en'),dj(x.desc,'ar')]});
+    }else{
+      var k=lang;head=lang==='en'?['Section','Item','Description']:['القسم','الصنف','الوصف'];
+      body=recs.map(function(x){return [f(x.sec,k),f(x.item,k),dj(x.desc,k)]});
+    }
+    return {head:head,body:body,recs:recs};
+  }
+  function toTSV(t){var clean=function(s){return String(s).replace(/[\t\r\n]+/g,' ').trim()};return [t.head].concat(t.body).map(function(r){return r.map(clean).join('\t')}).join('\n')}
+  function toCSV(t){var q=function(s){return '"'+String(s).replace(/[\r\n]+/g,' ').replace(/"/g,'""')+'"'};return '\uFEFF'+[t.head].concat(t.body).map(function(r){return r.map(q).join(',')}).join('\r\n')}
+  function copyText(text,okMsg){
+    function done(){say(okMsg,'s',5000)}
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+      ta.remove();if(ok)done();else say('Could not copy automatically. Use Download CSV instead.','e',6000);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done,fallback);else fallback();
+  }
+  function itemNames(){
+    var seen={},out=[];
+    tableFor(S.lang).recs.forEach(function(x){if(!x.item)return;var n=S.lang==='ar'?x.item.ar:(x.item.en||x.item.ar);n=(n||'').trim();if(n&&!seen[n.toLowerCase()]){seen[n.toLowerCase()]=1;out.push(n)}});
+    return out;
+  }
   function showReview(rows,info){
-    var keepN=rows.filter(function(r){return r.keep}).length;
-    var html='<div class="mr-box mr-wide" role="dialog" aria-modal="true" aria-labelledby="mrRT"><h3 id="mrRT">Check the item names</h3>'
-      +'<p class="mr-sub"><b>'+rows.length+'</b> lines found. <b id="mrKeepN">'+keepN+'</b> look like item names and are ticked. Prices, descriptions and headings are left unticked when they can be recognised.</p>'
-      +'<p class="mr-warn">'+(info.ocr?'This was read from a picture, so some letters may be wrong. ':'')+'Please read the list once before using it. You can edit any name.</p>'
-      +'<div class="mr-tools"><button type="button" class="mr-link" id="mrAll">Tick all</button><button type="button" class="mr-link" id="mrNone">Untick all</button></div>'
-      +'<div class="mr-list" id="mrList">'+rows.map(function(r,i){
-        return '<div class="mr-row'+(r.keep?'':' off')+'"><label><input type="checkbox" data-i="'+i+'"'+(r.keep?' checked':'')+' aria-label="Use this line"></label>'
-          +'<input type="text" class="mr-txt" dir="auto" data-t="'+i+'" value="'+esc(r.text)+'" aria-label="Item name">'
-          +(r.why?'<span class="mr-why">'+esc(r.why)+'</span>':'')+'</div>'}).join('')+'</div>'
-      +'<label class="mr-rep"><input type="checkbox" id="mrReplace"> Replace the current list instead of adding to it</label>'
-      +'<div class="mr-act"><button type="button" class="btn bs bsm" id="mrNo">Cancel</button><button type="button" class="btn bp" id="mrUse">Use 0 items</button></div></div>';
+    S.rows=rows.map(function(r){var p=parts(r.text);return {kind:r.kind,en:p.en,ar:p.ar,why:r.why||''}});
+    S.ocr=!!info.ocr;
+    var nEn=S.rows.filter(function(r){return r.en}).length,nAr=S.rows.filter(function(r){return r.ar}).length;
+    S.lang=(nEn&&nAr)?'both':(nAr?'ar':'en');
+    var c=counts(S.lang);
+    var html='<div class="mr-box mr-wide" role="dialog" aria-modal="true" aria-labelledby="mrRT"><h3 id="mrRT">Menu contents</h3>'
+      +'<p class="mr-sub" id="mrSum"></p>'
+      +'<fieldset class="mr-langs"><legend>Language</legend>'
+      +'<label><input type="radio" name="mrLang" value="en"'+(S.lang==='en'?' checked':'')+'> English ('+nEn+')</label>'
+      +'<label><input type="radio" name="mrLang" value="ar"'+(S.lang==='ar'?' checked':'')+'> العربية / Arabic ('+nAr+')</label>'
+      +'<label><input type="radio" name="mrLang" value="both"'+(S.lang==='both'?' checked':'')+'> Both</label></fieldset>'
+      +'<p class="mr-warn">'+(info.ocr?'This was read from a picture, so some letters may be wrong. ':'')+'Everything found is listed. Nothing is thrown away: change a line to <b>Ignore</b> or press × to remove it. Prices are not copied.</p>'
+      +'<div class="mr-list" id="mrList"></div>'
+      +'<div class="mr-act mr-acts"><button type="button" class="btn bp bsm" id="mrCopy">📋 Copy for my sheet</button><button type="button" class="btn bs bsm" id="mrCsv">⬇ Download CSV</button>'
+      +'<button type="button" class="btn bs bsm" id="mrUse">🔍 Use the item names for image search</button><span class="mr-sp"></span><button type="button" class="btn bs bsm" id="mrNo">Close</button></div>'
+      +'<label class="mr-rep"><input type="checkbox" id="mrReplace"> When using the item names, replace the current search list instead of adding to it</label></div>';
     var ov=mkOverlay('mrRev',html),list=$('mrList');
-    function count(){var n=list.querySelectorAll('input[type=checkbox]:checked').length;$('mrUse').textContent='Use '+n+' item'+(n===1?'':'s');$('mrUse').disabled=!n;$('mrKeepN').textContent=n}
-    list.addEventListener('change',function(e){if(e.target.type==='checkbox'){e.target.closest('.mr-row').classList.toggle('off',!e.target.checked);count()}});
-    list.addEventListener('input',function(e){if(e.target.classList.contains('mr-txt')){var cb=e.target.closest('.mr-row').querySelector('input[type=checkbox]');if(!cb.checked&&e.target.value.trim()){cb.checked=true;e.target.closest('.mr-row').classList.remove('off');count()}}});
-    $('mrAll').onclick=function(){list.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=true;c.closest('.mr-row').classList.remove('off')});count()};
-    $('mrNone').onclick=function(){list.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;c.closest('.mr-row').classList.add('off')});count()};
-    $('mrNo').onclick=function(){closeOverlay('mrRev')};
-    $('mrUse').onclick=function(){
-      var names=[];list.querySelectorAll('.mr-row').forEach(function(r){
-        if(r.querySelector('input[type=checkbox]').checked){var t=r.querySelector('.mr-txt').value.replace(/\s+/g,' ').trim();if(t)names.push(t)}});
-      addToMenu(names,$('mrReplace').checked);closeOverlay('mrRev');
+    renderList();
+    list.addEventListener('change',function(e){
+      if(e.target.classList.contains('mr-type')){var i=+e.target.closest('.mr-row').dataset.i;S.rows[i].kind=e.target.value;e.target.closest('.mr-row').className='mr-row k-'+S.rows[i].kind;var c2=counts(S.lang);$('mrSum').innerHTML=$('mrSum').innerHTML;renderSum()}
+    });
+    list.addEventListener('input',function(e){
+      var row=e.target.closest('.mr-row');if(!row)return;var i=+row.dataset.i;
+      if(e.target.classList.contains('mr-en'))S.rows[i].en=e.target.value;else if(e.target.classList.contains('mr-ar'))S.rows[i].ar=e.target.value;
+    });
+    list.addEventListener('click',function(e){
+      var d=e.target.closest('.mr-del');if(!d)return;var i=+d.closest('.mr-row').dataset.i;S.rows.splice(i,1);renderList();
+    });
+    function renderSum(){var c=counts(S.lang);$('mrSum').innerHTML='<b>'+c.section+'</b> section'+(c.section===1?'':'s')+' · <b>'+c.item+'</b> item'+(c.item===1?'':'s')+' · <b>'+c.desc+'</b> description'+(c.desc===1?'':'s')+(c.other?' · '+c.other+' left out':'')}
+    ov.addEventListener('change',function(e){if(e.target.name==='mrLang'){S.lang=e.target.value;renderList()}});
+    $('mrCopy').onclick=function(){var t=tableFor(S.lang);copyText(toTSV(t),'Copied '+t.body.length+' rows. Paste them into your sheet.')};
+    $('mrCsv').onclick=function(){
+      var t=tableFor(S.lang),blob=new Blob([toCSV(t)],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);a.download='menu-contents.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+      say('Downloaded menu-contents.csv ('+t.body.length+' rows).','s',5000);
     };
-    count();$('mrUse').focus();
+    $('mrUse').onclick=function(){var n=itemNames();if(!n.length){say('There are no items in this language to use.','e',5000);return}addToMenu(n,$('mrReplace').checked);closeOverlay('mrRev')};
+    $('mrNo').onclick=function(){closeOverlay('mrRev')};
+    $('mrCopy').focus();
   }
   function addToMenu(names,replace){
     var ta=$('menuTA');if(!ta||!names.length)return;
@@ -10260,7 +10622,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     var added=0;names.forEach(function(n){var k=n.toLowerCase();if(!have[k]){have[k]=1;cur.push(n);added++}});
     ta.value=cur.join('\n');
     ta.dispatchEvent(new Event('input',{bubbles:true}));
-    say((replace?'Menu list replaced with ':'Added ')+added+' item'+(added===1?'':'s')+'. Check them, then press Search Images.','s',6000);
+    say((replace?'Search list replaced with ':'Added ')+added+' item name'+(added===1?'':'s')+'. Check them, then press Search Images.','s',6000);
     var st=$('step2');if(st&&!st.open)st.open=true;
     try{ta.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}
   }
@@ -10272,14 +10634,14 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     var all=[],ocrUsed=false;
     try{
       for(var i=0;i<okFiles.length;i++){
-        var f=okFiles[i];
+        var f=okFiles[i],off=i*PAGE_GAP*100;
         if(!alive(tok))throw cancelErr();
         if(okFiles.length>1)prog(tok,'File '+(i+1)+' of '+okFiles.length+': '+f.name,0);
-        if(/\.pdf$/i.test(f.name)||f.type==='application/pdf'){var r=await readPdf(f,tok);all=all.concat(r.lines);if(r.ocrPages)ocrUsed=true}
-        else{all=all.concat(await readImage(f,tok));ocrUsed=true}
+        if(/\.pdf$/i.test(f.name)||f.type==='application/pdf'){var r=await readPdf(f,tok,off);all=all.concat(r.pieces);if(r.ocrPages)ocrUsed=true}
+        else{var r2=await readImage(f,tok,off);all=all.concat(r2.pieces);ocrUsed=true}
       }
     }catch(e){
-      if(!alive(tok)||(e&&e.code==='cancelled'))return;        /* cancelled: say nothing, touch nothing */
+      if(!alive(tok)||(e&&e.code==='cancelled'))return;
       closeOverlay('mrProg');
       if(e&&e.code==='format')showError('This picture format cannot be read here (for example HEIC from an iPhone). Save it as JPG or PNG and try again.');
       else if(e&&/load |tesseract|pdfjs|timeout/i.test(String(e.message)))showError('The reading tool could not be loaded or took too long. Check your internet connection and try again. It is only needed the first time.');
@@ -10288,14 +10650,13 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     }
     if(!alive(tok))return;
     closeOverlay('mrProg');
-    var rows=parseMenu(all);
+    var rows=structureMenu(all);
     if(!rows.length){showError('No text was found. If it is a photo, try a sharper and straighter picture. If it is a PDF made from a scan, a higher quality scan helps.');return}
     showReview(rows,{ocr:ocrUsed});
   }
   window.menuReaderPick=function(){var i=$('mrInput');if(i){i.value='';i.click()}};
-  document.addEventListener('change',function(e){if(e.target&&e.target.id==='mrInput'){var fl=Array.prototype.slice.call(e.target.files||[]);e.target.value='';startRead(fl)}});   /* reset so the same file can be chosen again */
+  document.addEventListener('change',function(e){if(e.target&&e.target.id==='mrInput'){var fl=Array.prototype.slice.call(e.target.files||[]);e.target.value='';startRead(fl)}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){if($('mrRev'))closeOverlay('mrRev');else if($('mrErr'))closeOverlay('mrErr')}});
-  /* drop a file on the menu box */
   function wireDrop(){
     var ta=$('menuTA');if(!ta||ta.dataset.mrDrop)return;ta.dataset.mrDrop='1';
     ['dragenter','dragover'].forEach(function(ev){ta.addEventListener(ev,function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0){e.preventDefault();ta.classList.add('mr-drop')}})});
