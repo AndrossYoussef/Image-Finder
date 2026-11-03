@@ -9756,6 +9756,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     var names=[],esc1=function(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
     RESULTS.forEach(function(r){
       if(!r)return;
+      if(r.confirmed>=0)return;                                    /* an image is chosen for this item: it is not "without an image" */
       var sc=Number(r.score)||0;
       if(r.bestIdx>=0&&sc>=0.80)return;                            /* has a confident image (80% or more) */
       var n=String(r.menuItem||r.item||'').replace(/\s+/g,' ').trim();if(!n)return;
@@ -9763,6 +9764,9 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
       var g=(r.bestIdx>=0&&sc>=0.15&&IMAGES[r.bestIdx])?' <span class="guess">closest guess: <bdi>'+esc1(IMAGES[r.bestIdx].name)+'</bdi> ('+Math.round(sc*100)+'%)</span>':'';
       names.push({n:n,g:g});
     });
+    var sig=names.map(function(x){return x.n+x.g}).join('\n');
+    if(sig===window.NOIMG_SIG&&!box.hidden===!!names.length)return;
+    window.NOIMG_SIG=sig;
     if(!names.length){box.hidden=true;box.innerHTML='';window.NOIMG_NAMES=[];return}
     window.NOIMG_NAMES=names.map(function(x){return x.n});
     var shown=names.slice(0,200);
@@ -9790,6 +9794,10 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   if(typeof window.renderResults==='function'){
     var origRender=window.renderResults;
     window.renderResults=function(){var out=origRender.apply(this,arguments);try{renderNoImageList()}catch(e){}return out};
+  }
+  if(typeof window.updateStats==='function'){
+    var origUS=window.updateStats;
+    window.updateStats=function(){var out=origUS.apply(this,arguments);try{renderNoImageList()}catch(e){}return out};
   }
 
   var grid=document.getElementById('grid');
