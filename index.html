@@ -1009,6 +1009,40 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 @media(max-width:820px){.dock{left:0}.dock-in{padding:10px 16px}.dock-s{display:none}}
 </style>
 <style id="oneZipStyle">#zipBtn{display:none}</style>
+<style id="menuReaderStyle">
+/* ---- how-to card and the PDF / photo reader ---- */
+.howto{margin:0 0 14px;padding:14px 16px;border:1px solid var(--or);border-radius:16px;background:var(--sur)}
+.howto[hidden]{display:none}
+.howto-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.howto-h h2{margin:0;font-size:1rem}
+.howto-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.howto-steps li{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;line-height:1.45;color:var(--tx2)}
+.howto-steps b{color:var(--tx)}
+.howto-steps .hn{flex:none;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#D2490A,#B23C00);color:#fff;font-weight:800;font-size:.8rem;display:grid;place-items:center}
+@media(max-width:820px){.howto-steps{grid-template-columns:1fr}}
+#menuTA.mr-drop{outline:3px dashed var(--or);outline-offset:-3px}
+.mr-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:95;display:grid;place-items:center;padding:16px}
+.mr-box{width:min(520px,94vw);max-height:88vh;overflow:auto;background:var(--sur);color:var(--tx);border:1px solid var(--bd);border-radius:18px;padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.mr-box.mr-wide{width:min(760px,96vw)}
+.mr-box h3{margin:0 0 8px;font-size:1.05rem}
+.mr-st{font-size:.85rem;color:var(--tx2);margin:6px 0 10px;min-height:1.3em}
+.mr-bar{height:8px;border-radius:99px;background:var(--sur2);overflow:hidden}
+.mr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#D2490A,#FF8A3D);transition:width .25s}
+.mr-note,.mr-sub,.mr-warn{font-size:.78rem;color:var(--mu);margin:10px 0 0}
+.mr-warn{color:var(--tx2)}
+.mr-act{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.mr-tools{display:flex;gap:14px;margin:10px 0 4px}
+.mr-link{background:none;border:0;padding:0;font:inherit;font-size:.78rem;font-weight:800;color:var(--tx);text-decoration:underline;cursor:pointer}
+.mr-list{max-height:46vh;overflow:auto;border:1px solid var(--bd);border-radius:12px;padding:6px;background:var(--sur2)}
+.mr-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:8px}
+.mr-row.off .mr-txt{opacity:.6}
+.mr-row label{display:flex;align-items:center}
+.mr-row input[type=checkbox]{width:18px;height:18px;accent-color:#D2490A}
+.mr-txt{flex:1 1 auto;min-width:0;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--tx);font:inherit;font-size:.86rem}
+.mr-why{flex:none;font-size:.68rem;color:var(--mu);max-width:34%}
+.mr-rep{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.8rem;color:var(--tx2)}
+.mr-wide .btn.bp:disabled{opacity:.5;cursor:default}
+</style>
 </head>
 <body>
 <h1 class="sr-only">Talabat Images Finder — menu image matching and cataloguing</h1>
@@ -1064,6 +1098,7 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
         title="Toggle light/dark mode" aria-label="Toggle light/dark mode"><span class="ticon" id="themeIcon">🌙</span></button>
       <button class="tbtn refresh-toggle" id="refreshBtn" onclick="resetSession()"
         title="Reset and start a new session" aria-label="Reset and start a new session"><span class="ticon refresh-icon">↻</span></button>
+      <button class="tbtn" id="helpBtn" type="button" title="How to use this tool" aria-label="How to use this tool"><span class="ticon">?</span></button>
     </div>
     <div class="rail-sig">
       <span>Shared Drive image library<button type="button" class="admin-dot" id="adminDot" aria-label="Library folder settings">⚙</button></span>
@@ -1073,6 +1108,14 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
 
 <!-- ══════════ MAIN ══════════ -->
 <div class="main" id="main">
+<section class="howto" id="howTo" hidden aria-labelledby="howTitle">
+  <div class="howto-h"><h2 id="howTitle">New here? Three steps</h2><button type="button" class="btn bp bsm" id="howGot">Got it</button></div>
+  <ol class="howto-steps">
+    <li><span class="hn">1</span><div><b>Paste</b> your menu items, one per line. Or press <b>Read from PDF / photo</b> and the list fills itself.</div></li>
+    <li><span class="hn">2</span><div><b>Check</b> the pictures. Tick the ones you want, or press <b>Confirm all confident</b>. Items with no good picture say <b>No matching image</b> and are listed so you can copy them.</div></li>
+    <li><span class="hn">3</span><div><b>Download</b> with the <b>Download ZIP</b> bar at the bottom of the page.</div></li>
+  </ol>
+</section>
 <div class="wrap">
 
   <!-- STATUS -->
@@ -1249,6 +1292,8 @@ body{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
     <div class="brow">
       <button class="btn bp" id="searchBtn" onclick="startSearch()">🔍 Search Images</button>
       <button class="btn bs" id="stopBtn" style="display:none" onclick="stopSearch()">⛔ Stop</button>
+      <button class="btn bs" id="mrBtn" type="button" onclick="menuReaderPick()" title="Fill the list from a menu PDF or a photo of a menu (names only, no prices)">📄 Read from PDF / photo</button>
+      <input type="file" id="mrInput" accept=".pdf,application/pdf,image/*" multiple hidden aria-label="Choose a menu PDF or picture">
       <button class="btn bd- bsm" onclick="clearMenuItems()">🗑️ Clear items</button>
     </div>
     <div class="prog" id="searchProg">
@@ -3349,7 +3394,7 @@ const NOISE=new Set(['v1','v2','v3','v4','v5','v6','ver','final','final2','draft
   'picture','tlb','talabat','export','archive','unsorted','jpg','jpeg','png','webp',
   '2020','2021','2022','2023','2024','2025','2026']);
 function stripNoise(tokens){
-  const kept=tokens.filter(t=>!NOISE.has(t)&&!/^\d{1,2}$/.test(t));
+  const kept=tokens.filter(t=>!NOISE.has(t)&&!/^\d{1,2}$/.test(t)&&!/^\d{2,5}x\d{2,5}$/.test(t)&&!/^\d{3,4}p$/.test(t)&&!/^\d{2,5}px$/.test(t));
   return kept.length?kept:tokens;           /* never strip a name to nothing */
 }
 
@@ -3515,7 +3560,7 @@ function foldPhrases(str){
   return s.trim();
 }
 function canonTokens(text){
-  let toks=foldPhrases(norm(defranco(String(text||'')))).split(' ').filter(Boolean);
+  let toks=foldPhrases(norm(defranco(String(text||'').replace(/(?<![0-9a-z])\d{2,5}\s*[x×]\s*\d{2,5}(?![0-9a-z])/gi,' ').replace(/(?<![0-9a-z])\d{3,4}p(?![0-9a-z])/gi,' ')))).split(' ').filter(Boolean);
   toks=toks.map(w=>NORM_AR_EN[normWord(w)]||w);
   toks=toks.reduce((a,w)=>a.concat(norm(w).split(' ')),[]).filter(Boolean);
   toks=toks.map(w=>{
@@ -3546,9 +3591,18 @@ function synEqV2(a,b){
   const c1=SYNMAP.get(normWord(a)),c2=SYNMAP.get(normWord(b));
   return c1!==undefined&&c1===c2;
 }
+/* singular / plural of an English word: berries -> berry, fries -> fry, sandwiches -> sandwich, nuggets -> nugget */
+function stemKey(w){
+  if(w.length<4||!/^[a-z]+$/.test(w))return w;
+  if(w.length>4&&/ies$/.test(w))return w.slice(0,-3)+'y';
+  if(/(ches|shes|sses|xes|zes)$/.test(w))return w.slice(0,-2);
+  if(/s$/.test(w)&&!/(ss|us|is)$/.test(w))return w.slice(0,-1);
+  return w;
+}
 function fuzzyEq(a,b){
   if(a===b)return 1;
   if(synEqV2(a,b))return .95;
+  if(Math.max(a.length,b.length)>=4&&stemKey(a)===stemKey(b))return .96;
   const ml=Math.max(a.length,b.length);
   if(ml<4)return 0;
   const sim=1-editDist(a,b)/ml;
@@ -3668,7 +3722,7 @@ function scoreV2(qTok,img){
   adj-=discriminatorPenalty(qTok,iTok);
   adj-=Math.max(0,iTok.length-qTok.length)*.004;
   adj+=assetOf(img);                        /* v3 ⑥ */
-  adj+=categoryAgreement(img);              /* auto-categorization feedback */
+  {let ca=categoryAgreement(img);if(ca<0&&sim>=.85)ca=Math.max(ca,-.04);adj+=ca}   /* auto-categorization feedback (a disagreement can lower a near-identical name by 4 points at most) */
 
   const score=Math.max(0,Math.min(.97,sim+adj));
   const method=/[\u0621-\u064A]/.test(qTok.join(''))?'phonetic':'semantic';
@@ -9132,7 +9186,7 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
   function h(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-  var BUILD_ID='2026-11-01 · final 2';
+  var BUILD_ID='2026-11-03 · final 3';
   var TOOLS_KEY='tif_admin_tools';
   if(lsGet(SYNC_KEY)==='1')document.body.classList.add('show-cloud-sync');
   if(lsGet(TOOLS_KEY)==='1')document.body.classList.add('admin-tools');
@@ -9868,6 +9922,399 @@ window.TIFICON = { P, MAP, iconify, makeSvg, hasGlyph };
     if(zl)mo.observe(zl,{childList:true,characterData:true,subtree:true});
   }
   setInterval(refresh,1500);refresh();
+})();
+</script>
+<script id="menuReaderScript">
+(function(){
+  "use strict";
+  /* ---------- reading item names from a PDF or a picture; the how-to card ---------- */
+  var PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  var PDFJS_WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  var TESS_URL='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+  var MAX_PAGES=40,MAX_FILES=10,MAX_LINES=600;
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function say(msg,kind,ms){if(typeof toast==='function')toast(msg,kind||'s',ms||5000)}
+
+  /* ======================= 1. turning raw lines into item names ======================= */
+  var AR_DIG={'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9','۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9'};
+  function latinDigits(s){return s.replace(/[٠-٩۰-۹]/g,function(c){return AR_DIG[c]})}
+  var CUR='(?:EGP|E\\.?G\\.?P\\.?|L\\.?E\\.?|E£|£E|SAR|SR|AED|USD|KWD|\\$|€|£|جنيه|جنية|ج\\.?م\\.?|ج|ريال|ر\\.?س|درهم|د\\.?إ)';
+  var SEP='[\\s.\\-–—_·…:|/\\\\]';
+  var TAIL=new RegExp('(?:'+SEP+'+|^)((?:'+CUR+'\\s*)?(\\d{1,5})([.,]\\d{1,3})?(?:\\s*'+CUR+')?)\\s*$','i');
+  var HEAD=new RegExp('^((?:'+CUR+'\\s*)?(\\d{1,5})([.,]\\d{1,3})?(?:\\s*'+CUR+')?)'+SEP+'+(?=\\S)','i');
+  var HAS_CUR=new RegExp(CUR,'i');
+  var AR=/[\u0600-\u06FF]/,LAT=/[A-Za-z]/,LETTER=/[A-Za-z\u0600-\u06FF]/;
+  var SECTION_EN=/^(menu|our menu|starters?|appetizers?|mains?|main course|main dishes|desserts?|drinks?|beverages?|sides?|side dishes|salads?|soups?|sandwiches|burgers?|pizzas?|pastas?|breakfast|lunch|dinner|combos?|kids|kids menu|extras|add[- ]?ons|hot drinks|cold drinks|specials?|offers?|shakes|coffee|juices|smoothies|mojitos?|menu items?|food menu|drinks menu)$/i;
+  var SECTION_AR=/^(القائمة|المنيو|قائمة الطعام|المقبلات|الطبق الرئيسي|الاطباق الرئيسية|الأطباق الرئيسية|الحلويات|المشروبات|مشروبات ساخنة|مشروبات باردة|السلطات|الشوربة|الشوربات|السندوتشات|ساندويتشات|البرجر|البيتزا|المعكرونة|الفطار|الإفطار|إضافات|وجبات|العروض|الوجبات)$/;
+  var DROP_LINE=/(https?:\/\/|www\.|@\w|\.com\b|\.net\b|\.org\b|^\s*(tel|phone|call|hotline|address|opening hours|open daily|delivery|follow us|instagram|facebook|whatsapp|order now)\b|^\s*(الرقم|العنوان|اتصل|للطلب|تليفون|هاتف))/i;
+  var DESC_WORDS=/\b(with|served|topped|includes?|choice of|comes with|made with|filled with|stuffed with|garnished)\b|يقدم|تقدم|يحتوي|مصنوع|مكونات|محشو|يُقدم/i;
+  function titleCaseIfShouting(t){
+    if(LAT.test(t)&&!/[a-z]/.test(t)&&!AR.test(t)&&t.replace(/[^A-Z]/g,'').length>=3)
+      return t.toLowerCase().replace(/(^|[\s(\-\/&])([a-z])/g,function(_,a,b){return a+b.toUpperCase()});
+    return t;
+  }
+  function cleanLine(raw){
+    var s=latinDigits(String(raw||'').normalize('NFKC')).replace(/\u200f|\u200e|\u202a|\u202b|\u202c/g,'').replace(/[\t\u00a0]+/g,' ');
+    s=s.replace(/[|\[\]{}<>«»=~^\\]/g,' ');
+    s=s.replace(/[.·…_\-–—]{3,}/g,'  ');                       /* dot leaders between a name and its price */
+    s=s.replace(/^[\s•·●○■□◆◇▪▫►▶➤✓✔*+\-–—_>~]+/,'');
+    s=s.replace(/^\(?\d{1,2}[.)\-]\s+(?=[A-Za-z\u0600-\u06FF])/,''); /* "1. Name" */
+    s=s.replace(/\(?\s*\d{2,4}\s*(?:kcal|cal|calories)\s*\)?/ig,' ');
+    return s.replace(/\s+/g,' ').trim();
+  }
+  /* take prices off the end (or the start of Arabic lines). Returns {text,priced} */
+  function stripPrices(line){
+    var s=line,priced=false;
+    for(var k=0;k<4;k++){
+      var m=TAIL.exec(s);if(!m)break;
+      var num=parseFloat(m[2]+(m[3]?m[3].replace(',','.'):'')),hasCur=HAS_CUR.test(m[1])&&/\D/.test(m[1].replace(/[\d.,\s]/g,'')),
+          sepBefore=/^[\s.\-–—_·…:|/\\]{2,}|[.\-–—_·…:|/\\]/.test(s.slice(m.index,m.index+Math.max(1,s.length-m.index-m[1].length)));
+      var looksPrice=hasCur||!!m[3]||num>=10||sepBefore||m.index===0;
+      if(!looksPrice)break;
+      s=s.slice(0,m.index).replace(/[\s.\-–—_·…:|/\\]+$/,'');priced=true;
+    }
+    var cm=new RegExp('(?:^|\\s)'+CUR+'\\s*$','i').exec(s);
+    if(cm&&s.replace(cm[0],'').trim()){s=s.slice(0,cm.index).replace(/[\s.\-–—_·…:|/\\]+$/,'');priced=true}
+    if(AR.test(s)){
+      var h=HEAD.exec(s);
+      if(h){var n2=parseFloat(h[2]+(h[3]?h[3].replace(',','.'):''));
+        if((HAS_CUR.test(h[1])&&/\D/.test(h[1].replace(/[\d.,\s]/g,'')))||h[3]||n2>=20){s=s.slice(h[0].length);priced=true}}
+    }
+    return {text:s.replace(/\s+/g,' ').trim(),priced:priced};
+  }
+  function parseMenu(rawLines){
+    var items=[],prev=null;
+    (rawLines||[]).slice(0,MAX_LINES*3).forEach(function(raw){
+      var marked=/\uE000/.test(raw);raw=String(raw||'').replace(/\uE000/g,' ');
+      var base=cleanLine(raw);if(!base)return;
+      if(DROP_LINE.test(base))return;
+      var sp=stripPrices(base);if(marked)sp.priced=true;
+      var text=sp.text.replace(/^[\s:\-–—,.]+|[\s:\-–—,]+$/g,'');
+      if(!LETTER.test(text)){                                    /* only a price, a number or a symbol */
+        if(sp.priced||/\d/.test(base)){if(prev&&!prev.priced)prev.priced=true}
+        return;
+      }
+      if(/^\d{7,}$/.test(text.replace(/\D/g,''))&&!LETTER.test(text))return;
+      if(text.replace(/[^A-Za-z\u0600-\u06FF]/g,'').length<2)return;
+      var words=text.split(/\s+/).filter(Boolean),commas=(text.match(/[,،]/g)||[]).length;
+      var desc=words.length>8||commas>=2||(/[.!؟?]$/.test(text)&&words.length>3)||(DESC_WORDS.test(text)&&words.length>5)||text.length>80;
+      var it={text:text,priced:sp.priced,desc:desc,words:words.length};
+      items.push(it);prev=it;
+    });
+    var cands=items.filter(function(i){return!i.desc});
+    var nPriced=cands.filter(function(i){return i.priced}).length;
+    var pricedMenu=cands.length>=4&&nPriced/cands.length>=0.35;
+    var anyLower=cands.some(function(i){return /[a-z]/.test(i.text)});
+    var seen={},out=[];
+    items.forEach(function(it){
+      var t=it.text,key=t.toLowerCase();
+      if(seen[key])return;seen[key]=1;
+      var head=SECTION_EN.test(t)||SECTION_AR.test(t)||/:$/.test(t)||(!it.priced&&anyLower&&LAT.test(t)&&!/[a-z]/.test(t)&&!AR.test(t)&&t.replace(/[^A-Za-z]/g,'').length>=4);   /* ALL CAPS only counts as a heading from 4 letters, so 7UP stays */
+      var keep=true,why='';
+      if(it.desc){keep=false;why='looks like a description'}
+      else if(head&&!it.priced){keep=false;why='looks like a heading'}
+      else if(pricedMenu&&!it.priced){keep=false;why='no price on this line: heading or description?'}
+      out.push({text:titleCaseIfShouting(t.replace(/:$/,'')),keep:keep,why:why,priced:it.priced});
+    });
+    return out.slice(0,MAX_LINES);
+  }
+  window.TIF_parseMenu=parseMenu;
+
+  /* ======================= 2. getting lines out of files ======================= */
+  var libs={},runToken=0,workerGen=0,ocrWorker=null,ocrReady=null,onProgress=function(){};
+  function alive(t){return t===runToken}
+  function cancelErr(){var e=new Error('cancelled');e.code='cancelled';return e}
+  function prog(t,msg,frac){if(alive(t))onProgress(msg,frac)}
+  function loadScript(url){return new Promise(function(res,rej){var s=document.createElement('script');s.src=url;s.async=true;s.onload=res;s.onerror=function(){rej(new Error('load '+url))};document.head.appendChild(s)})}
+  function needPdf(){
+    if(window.pdfjsLib){window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_WORKER;return Promise.resolve()}
+    return libs.pdf||(libs.pdf=loadScript(PDFJS_URL).then(function(){if(!window.pdfjsLib)throw new Error('pdfjs');window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_WORKER}).catch(function(e){libs.pdf=null;throw e}));
+  }
+  function needTess(){
+    if(window.Tesseract)return Promise.resolve();
+    return libs.tess||(libs.tess=loadScript(TESS_URL).then(function(){if(!window.Tesseract)throw new Error('tesseract')}).catch(function(e){libs.tess=null;throw e}));
+  }
+  /* a download that fails inside the reading tool does not always report an error: never wait forever */
+  function withTimeout(promise,ms,what){
+    return new Promise(function(res,rej){
+      var t=setTimeout(function(){rej(new Error('timeout '+what))},ms);
+      promise.then(function(v){clearTimeout(t);res(v)},function(e){clearTimeout(t);rej(e)});
+    });
+  }
+  function getWorker(){
+    if(ocrReady)return ocrReady;
+    var gen=++workerGen;
+    ocrReady=needTess().then(function(){
+      onProgress('Getting the reading tool ready (first time only, about 10 MB)…',0.05);
+      return withTimeout(Tesseract.createWorker(['eng','ara'],1,{logger:function(m){
+        if(m&&m.status==='recognizing text')onProgress(null,m.progress);
+        else if(m&&/loading/.test(m.status||''))onProgress('Getting the reading tool ready (first time only)…',null);
+      }}),window.TIF_MR_WORKER_TIMEOUT||150000,'worker');
+    }).then(function(w){if(gen!==workerGen){try{w.terminate()}catch(x){}throw cancelErr()}ocrWorker=w;return w}).catch(function(e){
+      try{if(ocrWorker)ocrWorker.terminate()}catch(x){}
+      ocrWorker=null;ocrReady=null;throw e});
+    return ocrReady;
+  }
+  function isArabicRow(strs){var a=0,l=0;strs.forEach(function(s){a+=(s.match(/[\u0600-\u06FF]/g)||[]).length;l+=(s.match(/[A-Za-z]/g)||[]).length});return a>l}
+  /* a PDF page → short text pieces in reading order; pieces far apart on one row (name … price, or two columns) stay separate */
+  function pdfRows(items){
+    var its=items.filter(function(i){return i&&i.str&&i.str.trim()}).map(function(i){return{s:i.str,x:i.transform[4],y:i.transform[5],w:i.width||0,h:Math.abs(i.height)||Math.abs(i.transform[3])||10}});
+    its.sort(function(a,b){return b.y-a.y||a.x-b.x});
+    var rows=[],cur=null;
+    its.forEach(function(it){if(!cur||Math.abs(it.y-cur.y)>Math.max(3,cur.h*.55)){cur={y:it.y,h:it.h,items:[]};rows.push(cur)}cur.items.push(it)});
+    var out=[];
+    rows.forEach(function(r){
+      r.items.sort(function(a,b){return a.x-b.x});
+      var segs=[],seg=[r.items[0]];
+      for(var k=1;k<r.items.length;k++){var p=r.items[k-1],it=r.items[k],gap=it.x-(p.x+p.w);if(gap>Math.max(14,r.h*1.8)){segs.push(seg);seg=[it]}else seg.push(it)}
+      segs.push(seg);
+      var rowRtl=isArabicRow(r.items.map(function(i){return i.s}));
+      var isAr=function(it){return /[\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(it.s)};
+      var texts=segs.map(function(sg){
+        var baseRtl=isArabicRow(sg.map(function(i){return i.s})),runs=[],cur=null;
+        sg.forEach(function(it){var a=isAr(it),neutral=!/[A-Za-z\u0600-\u06FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(it.s);
+          if(!cur||(!neutral&&cur.ar!==a)){cur={ar:a,items:[]};runs.push(cur)}cur.items.push(it)});
+        var parts=runs.map(function(run){
+          var arr=run.ar?run.items.slice().reverse():run.items,t='';
+          arr.forEach(function(it,ix){
+            if(ix>0){var q=arr[ix-1],g=run.ar?(q.x-(it.x+it.w)):(it.x-(q.x+q.w));t+=g>r.h*.15?' ':''}
+            t+=it.s;
+          });
+          return {x:run.items[0].x,t:t};
+        });
+        if(baseRtl)parts.reverse();
+        return parts.map(function(q){return q.t}).join(' ').normalize('NFKC').replace(/\s+/g,' ').trim();
+      });
+      if(rowRtl)texts.reverse();
+      texts.forEach(function(t){if(t)out.push(t)});
+    });
+    return out;
+  }
+  /* menus often join a name to its price with a dotted line. Letters next to it get misread, so rub out rows of dots and long thin lines first */
+  function eraseLeaders(c){
+    try{
+      var w=c.width,h=c.height,n=w*h,ctx=c.getContext('2d'),img=ctx.getImageData(0,0,w,h),d=img.data;
+      var gray=new Uint8Array(n),hist=new Uint32Array(256),i,j,x,y;
+      for(i=0,j=0;i<n;i++,j+=4){var g=(d[j]*299+d[j+1]*587+d[j+2]*114)/1000|0;gray[i]=g;hist[g]++}
+      var sum=0,t;for(t=0;t<256;t++)sum+=t*hist[t];
+      var sB=0,wB=0,best=-1,thr=128;
+      for(t=0;t<256;t++){wB+=hist[t];if(!wB)continue;var wF=n-wB;if(!wF)break;sB+=t*hist[t];var mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>best){best=v;thr=t}}
+      thr=Math.min(thr+10,205);
+      var lab=new Int32Array(n),parent=[0],next=1;
+      function find(a){while(parent[a]!==a){parent[a]=parent[parent[a]];a=parent[a]}return a}
+      for(y=0;y<h;y++){
+        for(x=0;x<w;x++){
+          var p=y*w+x;if(gray[p]>=thr)continue;
+          var l=x>0?lab[p-1]:0,u=y>0?lab[p-w]:0;
+          if(!l&&!u){parent.push(next);lab[p]=next++}
+          else if(l&&!u)lab[p]=l;
+          else if(!l&&u)lab[p]=u;
+          else{lab[p]=l;if(l!==u){var a=find(l),b=find(u);if(a!==b)parent[Math.max(a,b)]=Math.min(a,b)}}
+        }
+      }
+      var K=next,minx=new Int32Array(K).fill(1e9),maxx=new Int32Array(K).fill(-1),miny=new Int32Array(K).fill(1e9),maxy=new Int32Array(K).fill(-1),area=new Int32Array(K);
+      for(y=0;y<h;y++)for(x=0;x<w;x++){var q=lab[y*w+x];if(!q)continue;var r=find(q);if(x<minx[r])minx[r]=x;if(x>maxx[r])maxx[r]=x;if(y<miny[r])miny[r]=y;if(y>maxy[r])maxy[r]=y;area[r]++}
+      var D=Math.max(3,Math.round(Math.max(w,h)*0.006)),dots=[],kill=[];
+      for(var k=1;k<K;k++){
+        if(parent[k]!==k||area[k]===0)continue;
+        var bw=maxx[k]-minx[k]+1,bh=maxy[k]-miny[k]+1;
+        if(bw<=D&&bh<=D)dots.push({k:k,cx:(minx[k]+maxx[k])/2,cy:(miny[k]+maxy[k])/2});
+        else if(bh<=Math.max(3,D*0.7)&&bw>=D*8&&bw>=bh*12)kill.push(k);          /* a long thin line: underline, rule, dashes */
+      }
+      dots.sort(function(a,b){return a.cy-b.cy});
+      var rows=[],cur=null;
+      dots.forEach(function(dt){if(!cur||dt.cy-cur.last>D*0.8){cur=[];rows.push(cur)}cur.push(dt);cur.last=dt.cy});
+      rows.forEach(function(row){
+        row.sort(function(a,b){return a.cx-b.cx});
+        var run=[row[0]];
+        function flush(){if(run.length>=5)run.forEach(function(dt){kill.push(dt.k)});}
+        for(var m=1;m<row.length;m++){if(row[m].cx-run[run.length-1].cx<=D*5)run.push(row[m]);else{flush();run=[row[m]]}}
+        flush();
+      });
+      if(!kill.length)return c;
+      var killSet=new Uint8Array(K);kill.forEach(function(k){killSet[k]=1});
+      for(y=0;y<h;y++)for(x=0;x<w;x++){var q2=lab[y*w+x];if(q2&&killSet[find(q2)]){var o=(y*w+x)*4;d[o]=d[o+1]=d[o+2]=255}}
+      ctx.putImageData(img,0,0);
+    }catch(e){}
+    return c;
+  }
+  function prepCanvas(src,w,h){
+    var long=Math.max(w,h),scale=1;
+    if(long>2600)scale=2600/long;else if(long<1500)scale=Math.min(2.5,1500/long);
+    var c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));
+    var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+    try{x.filter='grayscale(1) contrast(1.3)'}catch(e){}
+    x.drawImage(src,0,0,c.width,c.height);return eraseLeaders(c);
+  }
+  async function ocrCanvas(canvas,tok){
+    var w=await getWorker();
+    if(!alive(tok))throw cancelErr();
+    var r=await withTimeout(w.recognize(canvas),300000,'recognize'),d=(r&&r.data)||{};
+    if(!alive(tok))throw cancelErr();
+    if(Array.isArray(d.lines)&&d.lines.length&&d.lines.some(function(l){return l.words&&l.words.length})){
+      var out=[],scriptOf=function(t){var a=(t.match(/[\u0600-\u06FF]/g)||[]).length,l=(t.match(/[A-Za-z]/g)||[]).length;return a>l?'ar':(l>0?'la':'')};
+      d.lines.forEach(function(l){
+        var ws=(l.words||[]).filter(function(x){return String(x.text||'').trim()});
+        if(!ws.length)return;
+        var major=scriptOf(ws.map(function(x){return x.text}).join(' '))||'la';
+        /* a word counts at the ends of a line only if it is a real-looking word in the line's script, or confidently read */
+        var solid=ws.map(function(x){
+          var s=scriptOf(x.text),letters=(x.text.match(/[A-Za-z\u0600-\u06FF]/g)||[]).length;
+          return (letters>=4&&s===major)||(x.confidence>=75&&/[A-Za-z0-9\u0600-\u06FF]/.test(x.text)&&(s===major||s===''));
+        });
+        var a=solid.indexOf(true),z=solid.lastIndexOf(true);
+        if(a<0)return;                                           /* nothing readable on this line */
+        var core=ws.slice(a,z+1),marker=(a>0||z<ws.length-1);   /* junk at an end of the line = dots and a price */
+        var hs=core.map(function(x){return x.bbox?(x.bbox.y1-x.bbox.y0):0}).filter(Boolean).sort(function(p,q){return p-q});
+        var mh=hs.length?hs[Math.floor(hs.length/2)]:20,thr=Math.max(14,mh*1.25),segs=[[core[0]]];
+        for(var i=1;i<core.length;i++){
+          var pb=core[i-1].bbox,cb=core[i].bbox,gap=(pb&&cb)?Math.max(cb.x0-pb.x1,pb.x0-cb.x1):0;
+          if(gap>thr)segs.push([core[i]]);else segs[segs.length-1].push(core[i]);
+        }
+        segs.forEach(function(sg,ix){out.push(sg.map(function(x){return x.text}).join(' ')+((marker&&ix===segs.length-1)?' \uE000':''))});
+      });
+      return out;
+    }
+    return String(d.text||'').split(/\r?\n/);
+  }
+  async function readImage(file,tok){
+    var bmp;
+    try{bmp=await createImageBitmap(file)}catch(e){var err=new Error('format');err.code='format';throw err}
+    prog(tok,'Reading the text in '+file.name+'…',0.1);
+    var lines=await ocrCanvas(prepCanvas(bmp,bmp.width,bmp.height),tok);
+    try{bmp.close()}catch(e){}
+    return lines;
+  }
+  async function readPdf(file,tok){
+    await needPdf();
+    var buf=await file.arrayBuffer(),pdf=await window.pdfjsLib.getDocument({data:buf}).promise,n=Math.min(pdf.numPages,MAX_PAGES),lines=[],ocrPages=0;
+    for(var p=1;p<=n;p++){
+      if(!alive(tok))throw cancelErr();
+      prog(tok,'Reading '+file.name+', page '+p+' of '+n+(pdf.numPages>n?' (first '+n+' pages)':'')+'…',(p-1)/n);
+      var page=await pdf.getPage(p),tc=await page.getTextContent(),rows=pdfRows(tc.items),chars=rows.join('').replace(/\s/g,'').length;
+      if(chars>=15)lines=lines.concat(rows);
+      else{                                                      /* a scanned page has no text: read it like a picture */
+        var vp=page.getViewport({scale:2.2}),cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
+        await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+        lines=lines.concat(await ocrCanvas(prepCanvas(cv,cv.width,cv.height),tok));ocrPages++;
+      }
+    }
+    return {lines:lines,ocrPages:ocrPages};
+  }
+
+  /* ======================= 3. the screens ======================= */
+  function mkOverlay(id,html){
+    var old=$(id);if(old)old.remove();
+    var ov=document.createElement('div');ov.id=id;ov.className='mr-ov';ov.innerHTML=html;document.body.appendChild(ov);return ov;
+  }
+  function closeOverlay(id){var o=$(id);if(o)o.remove()}
+  function showProgress(){
+    var ov=mkOverlay('mrProg','<div class="mr-box" role="dialog" aria-modal="true" aria-labelledby="mrPT"><h3 id="mrPT">Reading your menu…</h3>'
+      +'<div class="mr-st" id="mrStatus" aria-live="polite">Starting…</div><div class="mr-bar"><i id="mrBarFill"></i></div>'
+      +'<p class="mr-note">The file is read inside your browser and is not uploaded anywhere.</p>'
+      +'<div class="mr-act"><button type="button" class="btn bs bsm" id="mrCancel">Cancel</button></div></div>');
+    $('mrCancel').onclick=function(){runToken++;workerGen++;if(ocrWorker){try{ocrWorker.terminate()}catch(e){}}ocrWorker=null;ocrReady=null;closeOverlay('mrProg')};
+    $('mrCancel').focus();
+    var last=0;
+    onProgress=function(msg,frac){
+      var st=$('mrStatus'),bar=$('mrBarFill');if(!st)return;
+      if(msg)st.textContent=msg;
+      if(typeof frac==='number'&&bar){last=Math.max(0,Math.min(1,frac));bar.style.width=Math.round(last*100)+'%'}
+    };
+  }
+  function showError(msg){
+    var ov=mkOverlay('mrErr','<div class="mr-box" role="alertdialog" aria-modal="true" aria-labelledby="mrET"><h3 id="mrET">Could not read the menu</h3><p>'+esc(msg)+'</p><div class="mr-act"><button type="button" class="btn bp bsm" id="mrErrOk">OK</button></div></div>');
+    $('mrErrOk').onclick=function(){closeOverlay('mrErr')};$('mrErrOk').focus();
+  }
+  function showReview(rows,info){
+    var keepN=rows.filter(function(r){return r.keep}).length;
+    var html='<div class="mr-box mr-wide" role="dialog" aria-modal="true" aria-labelledby="mrRT"><h3 id="mrRT">Check the item names</h3>'
+      +'<p class="mr-sub"><b>'+rows.length+'</b> lines found. <b id="mrKeepN">'+keepN+'</b> look like item names and are ticked. Prices, descriptions and headings are left unticked when they can be recognised.</p>'
+      +'<p class="mr-warn">'+(info.ocr?'This was read from a picture, so some letters may be wrong. ':'')+'Please read the list once before using it. You can edit any name.</p>'
+      +'<div class="mr-tools"><button type="button" class="mr-link" id="mrAll">Tick all</button><button type="button" class="mr-link" id="mrNone">Untick all</button></div>'
+      +'<div class="mr-list" id="mrList">'+rows.map(function(r,i){
+        return '<div class="mr-row'+(r.keep?'':' off')+'"><label><input type="checkbox" data-i="'+i+'"'+(r.keep?' checked':'')+' aria-label="Use this line"></label>'
+          +'<input type="text" class="mr-txt" dir="auto" data-t="'+i+'" value="'+esc(r.text)+'" aria-label="Item name">'
+          +(r.why?'<span class="mr-why">'+esc(r.why)+'</span>':'')+'</div>'}).join('')+'</div>'
+      +'<label class="mr-rep"><input type="checkbox" id="mrReplace"> Replace the current list instead of adding to it</label>'
+      +'<div class="mr-act"><button type="button" class="btn bs bsm" id="mrNo">Cancel</button><button type="button" class="btn bp" id="mrUse">Use 0 items</button></div></div>';
+    var ov=mkOverlay('mrRev',html),list=$('mrList');
+    function count(){var n=list.querySelectorAll('input[type=checkbox]:checked').length;$('mrUse').textContent='Use '+n+' item'+(n===1?'':'s');$('mrUse').disabled=!n;$('mrKeepN').textContent=n}
+    list.addEventListener('change',function(e){if(e.target.type==='checkbox'){e.target.closest('.mr-row').classList.toggle('off',!e.target.checked);count()}});
+    list.addEventListener('input',function(e){if(e.target.classList.contains('mr-txt')){var cb=e.target.closest('.mr-row').querySelector('input[type=checkbox]');if(!cb.checked&&e.target.value.trim()){cb.checked=true;e.target.closest('.mr-row').classList.remove('off');count()}}});
+    $('mrAll').onclick=function(){list.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=true;c.closest('.mr-row').classList.remove('off')});count()};
+    $('mrNone').onclick=function(){list.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;c.closest('.mr-row').classList.add('off')});count()};
+    $('mrNo').onclick=function(){closeOverlay('mrRev')};
+    $('mrUse').onclick=function(){
+      var names=[];list.querySelectorAll('.mr-row').forEach(function(r){
+        if(r.querySelector('input[type=checkbox]').checked){var t=r.querySelector('.mr-txt').value.replace(/\s+/g,' ').trim();if(t)names.push(t)}});
+      addToMenu(names,$('mrReplace').checked);closeOverlay('mrRev');
+    };
+    count();$('mrUse').focus();
+  }
+  function addToMenu(names,replace){
+    var ta=$('menuTA');if(!ta||!names.length)return;
+    var cur=replace?[]:ta.value.split(/\r?\n/).map(function(s){return s.trim()}).filter(Boolean),have={};
+    cur.forEach(function(s){have[s.toLowerCase()]=1});
+    var added=0;names.forEach(function(n){var k=n.toLowerCase();if(!have[k]){have[k]=1;cur.push(n);added++}});
+    ta.value=cur.join('\n');
+    ta.dispatchEvent(new Event('input',{bubbles:true}));
+    say((replace?'Menu list replaced with ':'Added ')+added+' item'+(added===1?'':'s')+'. Check them, then press Search Images.','s',6000);
+    var st=$('step2');if(st&&!st.open)st.open=true;
+    try{ta.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}
+  }
+  async function startRead(fileList){
+    var files=Array.prototype.slice.call(fileList||[]).slice(0,MAX_FILES);if(!files.length)return;
+    var okFiles=files.filter(function(f){return /\.pdf$/i.test(f.name)||f.type==='application/pdf'||/^image\//.test(f.type)||/\.(png|jpe?g|webp|bmp|gif)$/i.test(f.name)});
+    if(!okFiles.length){showError('Please choose a PDF or a picture (JPG, PNG or WebP).');return}
+    var tok=++runToken;showProgress();
+    var all=[],ocrUsed=false;
+    try{
+      for(var i=0;i<okFiles.length;i++){
+        var f=okFiles[i];
+        if(!alive(tok))throw cancelErr();
+        if(okFiles.length>1)prog(tok,'File '+(i+1)+' of '+okFiles.length+': '+f.name,0);
+        if(/\.pdf$/i.test(f.name)||f.type==='application/pdf'){var r=await readPdf(f,tok);all=all.concat(r.lines);if(r.ocrPages)ocrUsed=true}
+        else{all=all.concat(await readImage(f,tok));ocrUsed=true}
+      }
+    }catch(e){
+      if(!alive(tok)||(e&&e.code==='cancelled'))return;        /* cancelled: say nothing, touch nothing */
+      closeOverlay('mrProg');
+      if(e&&e.code==='format')showError('This picture format cannot be read here (for example HEIC from an iPhone). Save it as JPG or PNG and try again.');
+      else if(e&&/load |tesseract|pdfjs|timeout/i.test(String(e.message)))showError('The reading tool could not be loaded or took too long. Check your internet connection and try again. It is only needed the first time.');
+      else showError('Something went wrong while reading this file. Try another copy of it, or a clearer picture.');
+      return;
+    }
+    if(!alive(tok))return;
+    closeOverlay('mrProg');
+    var rows=parseMenu(all);
+    if(!rows.length){showError('No text was found. If it is a photo, try a sharper and straighter picture. If it is a PDF made from a scan, a higher quality scan helps.');return}
+    showReview(rows,{ocr:ocrUsed});
+  }
+  window.menuReaderPick=function(){var i=$('mrInput');if(i){i.value='';i.click()}};
+  document.addEventListener('change',function(e){if(e.target&&e.target.id==='mrInput'){var fl=Array.prototype.slice.call(e.target.files||[]);e.target.value='';startRead(fl)}});   /* reset so the same file can be chosen again */
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){if($('mrRev'))closeOverlay('mrRev');else if($('mrErr'))closeOverlay('mrErr')}});
+  /* drop a file on the menu box */
+  function wireDrop(){
+    var ta=$('menuTA');if(!ta||ta.dataset.mrDrop)return;ta.dataset.mrDrop='1';
+    ['dragenter','dragover'].forEach(function(ev){ta.addEventListener(ev,function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0){e.preventDefault();ta.classList.add('mr-drop')}})});
+    ['dragleave','drop'].forEach(function(ev){ta.addEventListener(ev,function(){ta.classList.remove('mr-drop')})});
+    ta.addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length){e.preventDefault();startRead(e.dataTransfer.files)}});
+  }
+  wireDrop();
+
+  /* ======================= 4. the short "how to use this" card ======================= */
+  var HOW_KEY='tif_howto_seen_v1';
+  function seen(){try{return localStorage.getItem(HOW_KEY)==='1'}catch(e){return false}}
+  function mark(){try{localStorage.setItem(HOW_KEY,'1')}catch(e){}}
+  function showHow(scroll){var c=$('howTo');if(!c)return;c.hidden=false;if(scroll){try{c.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){}}}
+  function hideHow(){var c=$('howTo');if(c)c.hidden=true;mark()}
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('#howGot'))hideHow();
+    else if(e.target.closest&&e.target.closest('#helpBtn'))showHow(true);
+  });
+  if(!seen())showHow(false);
 })();
 </script>
 </body>
